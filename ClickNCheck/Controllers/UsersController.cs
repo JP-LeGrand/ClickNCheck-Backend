@@ -109,7 +109,7 @@ namespace ClickNCheck.Controllers
             return _context.JobProfile.Any(e => e.ID == id);
         }
 
-        [HttpGet()]
+        [HttpPost()]
         [Route("{id}/AssignRecruiters")]
         public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
         {
