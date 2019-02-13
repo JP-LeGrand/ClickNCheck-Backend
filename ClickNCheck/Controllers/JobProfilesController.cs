@@ -83,11 +83,16 @@ namespace ClickNCheck.Controllers
             return CreatedAtAction("GetJobProfile", new { id = jobProfile.ID }, jobProfile);
         }
 
-        // POST: api/JobProfiles
+        // POST: api/CreateJobProfile
         [HttpPost]
-        [Route("CreateJobProfile")]
-        public async Task<ActionResult<JobProfile>> CreateJobProfile(JobProfile jobProfile)
+        [Route("CreateJobProfile/{id}")]
+        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] JobProfile jobProfile)
         {
+            // find related organisation
+            var org = await _context.Organisation.FindAsync(id);
+            jobProfile.Organisation = org;
+
+            // save job profile
             _context.JobProfile.Add(jobProfile);
             await _context.SaveChangesAsync();
 

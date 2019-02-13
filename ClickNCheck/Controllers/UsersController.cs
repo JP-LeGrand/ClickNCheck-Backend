@@ -108,7 +108,7 @@ namespace ClickNCheck.Controllers
         {
             return _context.JobProfile.Any(e => e.ID == id);
         }
-
+        // POST: api/Users/5/AssignRecruiters
         [HttpPost()]
         [Route("{id}/AssignRecruiters")]
         public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
@@ -132,7 +132,7 @@ namespace ClickNCheck.Controllers
                 {
                     return NotFound("The recruiter "+recruiter.Name+recruiter.Surname + " does not exist");
                 }
-               //add recruiter to job ptofile
+               //add recruiter to job profile
                 jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
                   
             }
@@ -159,7 +159,7 @@ namespace ClickNCheck.Controllers
             return Ok(jobProfile);
         }
 
-        // GET: api/Recruiters/GetAllRecruiters/5
+        // GET: api/Users/GetAllRecruiters/5
         [HttpGet("GetAllRecruiters/{id}")]
         public IEnumerable<User> GetAllRecruiters(int id)
         {
@@ -167,6 +167,8 @@ namespace ClickNCheck.Controllers
 
             return recruiters;
         }
+
+
     }
 
     
