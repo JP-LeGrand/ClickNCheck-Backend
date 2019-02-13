@@ -13,46 +13,46 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdministratorsController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
 
-        public AdministratorsController(ClickNCheckContext context)
+        public UsersController(ClickNCheckContext context)
         {
             _context = context;
         }
 
-        // GET: api/Administrators
+        // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Administrator>>> GetAdministrator()
+        public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            return await _context.Administrator.ToListAsync();
+            return await _context.User.ToListAsync();
         }
 
-        // GET: api/Administrators/5
+        // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Administrator>> GetAdministrator(int id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
-            var administrator = await _context.Administrator.FindAsync(id);
+            var User = await _context.User.FindAsync(id);
 
-            if (administrator == null)
+            if (User == null)
             {
                 return NotFound();
             }
 
-            return administrator;
+            return User;
         }
 
-        // PUT: api/Administrators/5
+        // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAdministrator(int id, Administrator administrator)
+        public async Task<IActionResult> PutUser(int id, User User)
         {
-            if (id != administrator.ID)
+            if (id != User.ID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(administrator).State = EntityState.Modified;
+            _context.Entry(User).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace ClickNCheck.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AdministratorExists(id))
+                if (!UserExists(id))
                 {
                     return NotFound();
                 }
@@ -73,35 +73,35 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/Administrators
+        // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<Administrator>> PostAdministrator(Administrator administrator)
+        public async Task<ActionResult<User>> PostUser(User User)
         {
-            _context.Administrator.Add(administrator);
+            _context.User.Add(User);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAdministrator", new { id = administrator.ID }, administrator);
+            return CreatedAtAction("GetUser", new { id = User.ID }, User);
         }
 
-        // DELETE: api/Administrators/5
+        // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Administrator>> DeleteAdministrator(int id)
+        public async Task<ActionResult<User>> DeleteUser(int id)
         {
-            var administrator = await _context.Administrator.FindAsync(id);
-            if (administrator == null)
+            var User = await _context.User.FindAsync(id);
+            if (User == null)
             {
                 return NotFound();
             }
 
-            _context.Administrator.Remove(administrator);
+            _context.User.Remove(User);
             await _context.SaveChangesAsync();
 
-            return administrator;
+            return User;
         }
 
-        private bool AdministratorExists(int id)
+        private bool UserExists(int id)
         {
-            return _context.Administrator.Any(e => e.ID == id);
+            return _context.User.Any(e => e.ID == id);
         }
 
         private bool JobProfileExists(int id)
@@ -110,10 +110,10 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpGet()]
-        [Route("AddRecruiterToJob")]
-        public async Task<IActionResult> AddRecruiterToJob([FromBody]int[] ids)
+        [Route("{id}/AssignRecruiters")]
+        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
         {
-            int jobId = ids[0];
+            int jobId = id;
 
             //find job profile
             var jobProfile = await _context.JobProfile.FindAsync(jobId);
@@ -124,9 +124,9 @@ namespace ClickNCheck.Controllers
             }
 
             //find recruiters
-            for (int i = 1; i < ids.Length; i++)
+            for (int i = 0; i < ids.Length; i++)
             {
-                var recruiter = await _context.Recruiter.FindAsync(ids[i]);
+                var recruiter = await _context.User.FindAsync(ids[i]);
 
                 if (recruiter == null)
                 {
@@ -145,7 +145,7 @@ namespace ClickNCheck.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                var exists = _context.Administrator.Any(e => e.ID == jobId);
+                var exists = _context.User.Any(e => e.ID == jobId);
                 if (!JobProfileExists(jobId))
                 {
                     return NotFound();
@@ -157,6 +157,15 @@ namespace ClickNCheck.Controllers
             }
             
             return Ok(jobProfile);
+        }
+
+        // GET: api/Recruiters/GetAllRecruiters/5
+        [HttpGet("GetAllRecruiters/{id}")]
+        public IEnumerable<User> GetAllRecruiters(int id)
+        {
+            var recruiters = _context.User.Where(r => r.Organisation.ID == id && r.UserType == "Recruiter");
+
+            return recruiters;
         }
     }
 
