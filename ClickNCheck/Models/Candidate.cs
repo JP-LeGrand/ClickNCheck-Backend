@@ -29,7 +29,8 @@ namespace ClickNCheck.Models
         public Organisation Organisation { get; set; }
 
 
-        public int RecruiterID { get; set; }
+        [ForeignKey("RecruiterID")]
+        public User Recruiter { get; set; }
 
         public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; } = new List<Candidate_JobProfile>();
     }
