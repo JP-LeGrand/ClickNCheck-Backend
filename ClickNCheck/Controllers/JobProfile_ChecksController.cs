@@ -1,0 +1,120 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ClickNCheck.Data;
+using ClickNCheck.Models;
+
+namespace ClickNCheck.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class JobProfile_ChecksController : ControllerBase
+    {
+        private readonly ClickNCheckContext _context;
+
+        public JobProfile_ChecksController(ClickNCheckContext context)
+        {
+            _context = context;
+        }
+
+        // GET: api/JobProfile_Checks
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<JobProfile_Checks>>> GetJobProfile_Checks()
+        {
+            return await _context.JobProfile_Checks.ToListAsync();
+        }
+
+        // GET: api/JobProfile_Checks/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<JobProfile_Checks>> GetJobProfile_Checks(int id)
+        {
+            var jobProfile_Checks = await _context.JobProfile_Checks.FindAsync(id);
+
+            if (jobProfile_Checks == null)
+            {
+                return NotFound();
+            }
+
+            return jobProfile_Checks;
+        }
+
+        // PUT: api/JobProfile_Checks/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutJobProfile_Checks(int id, JobProfile_Checks jobProfile_Checks)
+        {
+            if (id != jobProfile_Checks.ChecksId)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(jobProfile_Checks).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!JobProfile_ChecksExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/JobProfile_Checks
+        [HttpPost]
+        public async Task<ActionResult<JobProfile_Checks>> PostJobProfile_Checks(JobProfile_Checks jobProfile_Checks)
+        {
+            _context.JobProfile_Checks.Add(jobProfile_Checks);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (JobProfile_ChecksExists(jobProfile_Checks.ChecksId))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtAction("GetJobProfile_Checks", new { id = jobProfile_Checks.ChecksId }, jobProfile_Checks);
+        }
+
+        // DELETE: api/JobProfile_Checks/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<JobProfile_Checks>> DeleteJobProfile_Checks(int id)
+        {
+            var jobProfile_Checks = await _context.JobProfile_Checks.FindAsync(id);
+            if (jobProfile_Checks == null)
+            {
+                return NotFound();
+            }
+
+            _context.JobProfile_Checks.Remove(jobProfile_Checks);
+            await _context.SaveChangesAsync();
+
+            return jobProfile_Checks;
+        }
+
+        private bool JobProfile_ChecksExists(int id)
+        {
+            return _context.JobProfile_Checks.Any(e => e.ChecksId == id);
+        }
+    }
+}
