@@ -9,23 +9,18 @@ namespace ClickNCheck.Models
 {
     public class Administrator
     {
-        
+
+        [Key]
         public int ID { get; set; }
-        [Required]
         public string Name { get; set; }
-        [Required]
         public string Surname { get; set; }
-        [Required]
+        [EmailAddress]
         public string Email { get; set; }
-        [Required]
-        public string Phone { get; set; }
-        [Required]
+        [Phone]
+        public int Phone { get; set; }
         public string Password { get; set; }
+        public int Org_ID { get; set; }
 
-        public int OrganisationID { get; set; }
         public Organisation Organisation { get; set; }
-
-        [ForeignKey("ManagerID")]
-        public Manager Manager { get; set; }
     }
 }

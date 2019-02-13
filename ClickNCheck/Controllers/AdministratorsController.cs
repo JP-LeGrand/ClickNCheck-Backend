@@ -158,6 +158,22 @@ namespace ClickNCheck.Controllers
             
             return Ok(jobProfile);
         }
+
+        public string generateCode()
+        {
+            const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random rand = new Random();
+
+            string code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
+
+            while (_context.LinkCodes.Find(code) != null)
+            {
+                code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
+
+            }
+
+            return code;
+        }
     }
 
     

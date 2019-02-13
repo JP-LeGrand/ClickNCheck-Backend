@@ -9,6 +9,10 @@ namespace ClickNCheck.Data
         {
         }
 
+        public ClickNCheckContext()
+        {
+        }
+
         public DbSet<Administrator> Administrator { get; set; }
         public DbSet<Organisation> Organisation { get; set; }
         public DbSet<Recruiter> Recruiter { get; set; }
@@ -18,6 +22,7 @@ namespace ClickNCheck.Data
         public DbSet<Candidate> Candidate { get; set; }
         public DbSet<Candidate_JobProfile> Candidate_JobProfile { get; set; }
         public DbSet<JobProfile_Checks> JobProfile_Checks { get; set; }
+        public virtual DbSet<LinkCode> LinkCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,5 +65,7 @@ namespace ClickNCheck.Data
             .WithMany(p => p.JobProfile_Checks)
             .HasForeignKey(pt => pt.JobProfileId);
         }
+
+        public DbSet<ClickNCheck.Models.LinkCode> LinkCode { get; set; }
     }
 }
