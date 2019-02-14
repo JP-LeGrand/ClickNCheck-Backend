@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Dummy;
 
 
-namespace Dummy
+namespace ClickNCheck
 {
     public class Program
     {

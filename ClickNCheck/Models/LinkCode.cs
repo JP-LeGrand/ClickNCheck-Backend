@@ -11,16 +11,8 @@ namespace ClickNCheck.Models
         [Key]
         public int ID { get; set; }
         public string Code { get; set; }
-<<<<<<< HEAD
-        public bool Valid { get; set; }
-    //    public int Admin_ID { get; set; }
-    //    public Administrator Administrator { get; set; }
-    }
-}
-=======
         public bool Used { get; set; }
         public int Admin_ID { get; set; }
         public User Administrator { get; set; }
     }
 }
->>>>>>> dev

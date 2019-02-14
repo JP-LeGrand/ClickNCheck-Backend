@@ -8,11 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 using ClickNCheck.Data;
 using ClickNCheck.Models;
-<<<<<<< HEAD
-using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Hosting.Server;
-=======
->>>>>>> dev
+
 
 namespace ClickNCheck.Controllers
 {
@@ -105,67 +101,6 @@ namespace ClickNCheck.Controllers
          * 
          */
 
-        [HttpPost()]
-        [Route("sendMail")] //check if you need this routes
-        public ActionResult sendMail(string person, string email)
-        {
-            string code = generateCode();
-            LinkCode _model = new LinkCode();
-            string emailBody = System.IO.File.ReadAllText("C:\\Users\\Mpinane Mohale\\Desktop\\Standard Bank\\Mine\\RegistrationEmail\\index.html");
-
-            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + person + "/signup/" + code + "\"");
-            //try removing these 2 variables
-            /*  var list = Recruiters.ReadDetails("C:\\testData.csv");
-               var email = Recruiters.getEmails(list);
-               foreach (var item in email) {
-                   string code = mailS.generateCode();
-                   _model.Code = code;
-                   _model.Used = false;
-                   _context.LinkCodes.Add(_model);
-
-                   mailS.SendMail(item, "testing", $"C:\\Users\\Mpinane Mohale\\Desktop\\Standard Bank\\Mine\\RegistrationEmail\\index.html");
-               }*/
-
-            _model.Code = code;
-            _model.Valid = true;
-            _context.LinkCodes.Add(_model);
-
-            EmailService mailS = new EmailService();
-            mailS.SendMail(email, "nane", emailBody);
-            _context.SaveChanges();
-            // return Ok(email);
-            return Ok();
-        }
-
-        public string generateCode()
-        {
-            const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            Random rand = new Random();
-
-            string code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
-
-            while (_context.LinkCodes.FirstOrDefault(c => c.Code == code) != null)
-            {
-                code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
-
-            }
-
-            return code;
-        }
-
-        [Route("signup/{code}")]
-        public ActionResult<string> checkCode(string code)
-        {
-            LinkCode our_code = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
-
-            if (our_code != null && our_code.Valid == true)
-            {
-                return "Yey, You can register";
-            }
-            else
-            {
-                return "Link Error: This link has either been used or is invalid";
-            }
-        }
+       
     }
 }

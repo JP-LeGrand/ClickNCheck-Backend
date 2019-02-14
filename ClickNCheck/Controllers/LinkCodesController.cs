@@ -29,7 +29,7 @@ namespace ClickNCheck.Controllers
 
         public void UpdateCodeStatus(LinkCode code)
         {
-            code.Valid = true;
+            code.Used = false;
             _context.Update(code);
             _context.SaveChanges();
         }
