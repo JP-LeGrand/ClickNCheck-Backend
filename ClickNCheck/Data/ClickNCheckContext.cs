@@ -20,6 +20,7 @@ namespace ClickNCheck.Data
         public DbSet<ContactPerson> ContactPerson { get; set; }
         public DbSet<PhysicalAddress> PhysicalAddress { get; set; }
         public DbSet<BillingAddress> BillingAddress { get; set; }
+        public DbSet<CheckCategory> CheckCategory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -62,20 +63,7 @@ namespace ClickNCheck.Data
             .WithMany(p => p.JobProfile_Checks)
             .HasForeignKey(pt => pt.JobProfileId);
 
-            modelBuilder.Entity<Organisation>()
-            .HasOne(a => a.ContactPerson)
-            .WithOne(b => b.Organisation)
-            .HasForeignKey<ContactPerson>(b => b.OrganisationID);
-
-            modelBuilder.Entity<Organisation>()
-             .HasOne(a => a.BillingAddress)
-             .WithOne(b => b.Organisation)
-             .HasForeignKey<BillingAddress>(b => b.OrganisationID);
-
-            modelBuilder.Entity<Organisation>()
-             .HasOne(a => a.PhysicalAddress)
-             .WithOne(b => b.Organisation)
-             .HasForeignKey<PhysicalAddress>(b => b.OrganisationID);
+           
         }
     }
 }

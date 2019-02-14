@@ -21,7 +21,7 @@ namespace ClickNCheck.Models
         [Required]
         public PhysicalAddress PhysicalAddress { get; set; }
         [Required]
-        
+
         public BillingAddress BillingAddress { get; set; }
 
     }
