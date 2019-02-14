@@ -19,6 +19,40 @@ namespace ClickNCheck.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("ClickNCheck.Models.BillingAddress", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Building")
+                        .IsRequired();
+
+                    b.Property<string>("City")
+                        .IsRequired();
+
+                    b.Property<int>("OrganisationID");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired();
+
+                    b.Property<string>("Province")
+                        .IsRequired();
+
+                    b.Property<string>("Street")
+                        .IsRequired();
+
+                    b.Property<string>("Suburb")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrganisationID")
+                        .IsUnique();
+
+                    b.ToTable("BillingAddress");
+                });
+
             modelBuilder.Entity("ClickNCheck.Models.Candidate", b =>
                 {
                     b.Property<int>("ID")
@@ -83,6 +117,31 @@ namespace ClickNCheck.Migrations
                     b.ToTable("Checks");
                 });
 
+            modelBuilder.Entity("ClickNCheck.Models.ContactPerson", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int>("OrganisationID");
+
+                    b.Property<string>("Phone")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrganisationID")
+                        .IsUnique();
+
+                    b.ToTable("ContactPerson");
+                });
+
             modelBuilder.Entity("ClickNCheck.Models.JobProfile", b =>
                 {
                     b.Property<int>("ID")
@@ -128,9 +187,49 @@ namespace ClickNCheck.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("RegistrationNumber")
+                        .IsRequired();
+
+                    b.Property<string>("TaxNumber")
+                        .IsRequired();
+
                     b.HasKey("ID");
 
                     b.ToTable("Organisation");
+                });
+
+            modelBuilder.Entity("ClickNCheck.Models.PhysicalAddress", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Building")
+                        .IsRequired();
+
+                    b.Property<string>("City")
+                        .IsRequired();
+
+                    b.Property<int>("OrganisationID");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired();
+
+                    b.Property<string>("Province")
+                        .IsRequired();
+
+                    b.Property<string>("Street")
+                        .IsRequired();
+
+                    b.Property<string>("Suburb")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrganisationID")
+                        .IsUnique();
+
+                    b.ToTable("PhysicalAddress");
                 });
 
             modelBuilder.Entity("ClickNCheck.Models.Recruiter_JobProfile", b =>
@@ -186,6 +285,14 @@ namespace ClickNCheck.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("ClickNCheck.Models.BillingAddress", b =>
+                {
+                    b.HasOne("ClickNCheck.Models.Organisation", "Organisation")
+                        .WithOne("BillingAddress")
+                        .HasForeignKey("ClickNCheck.Models.BillingAddress", "OrganisationID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ClickNCheck.Models.Candidate", b =>
                 {
                     b.HasOne("ClickNCheck.Models.Organisation", "Organisation")
@@ -210,6 +317,14 @@ namespace ClickNCheck.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("ClickNCheck.Models.ContactPerson", b =>
+                {
+                    b.HasOne("ClickNCheck.Models.Organisation", "Organisation")
+                        .WithOne("ContactPerson")
+                        .HasForeignKey("ClickNCheck.Models.ContactPerson", "OrganisationID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ClickNCheck.Models.JobProfile", b =>
                 {
                     b.HasOne("ClickNCheck.Models.Organisation", "Organisation")
@@ -227,6 +342,14 @@ namespace ClickNCheck.Migrations
                     b.HasOne("ClickNCheck.Models.JobProfile", "JobProfile")
                         .WithMany("JobProfile_Checks")
                         .HasForeignKey("JobProfileId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ClickNCheck.Models.PhysicalAddress", b =>
+                {
+                    b.HasOne("ClickNCheck.Models.Organisation", "Organisation")
+                        .WithOne("PhysicalAddress")
+                        .HasForeignKey("ClickNCheck.Models.PhysicalAddress", "OrganisationID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
