@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.Models
 {
+    public enum UserTypes
+    {
+        Administrator, Recruiter, Manager
+    }
+
+
     public class User
     {
         
@@ -21,15 +27,19 @@ namespace ClickNCheck.Models
         public string Phone { get; set; }
         [Required]
         public int EmployeeNumber { get; set; }
-        [Required]
+     
         public string Password { get; set; }
-        [Required]
+       
         public string Salt { get; set; }
         [Required]
-        public string UserType { get; set; }
-        
-        public string ManagerID { get; set; }
+        public UserTypes UserType { get; set; }
 
+        public int Otp { get; set; }
+
+        
+        public int ManagerID { get; set; }
+
+        public User user { get; set; }
         public int OrganisationID { get; set; }
         public Organisation Organisation { get; set; }
 
