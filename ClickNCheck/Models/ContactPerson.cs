@@ -11,9 +11,6 @@ namespace ClickNCheck.Models
         public string Phone { get; set; }
         [Required]
         public string Email { get; set; }
-        [Required]
-        public int OrganisationID { get; set; }
-        [Required]
-        public Organisation Organisation { get; set; }
+       
     }
 }
