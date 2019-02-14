@@ -12,6 +12,7 @@ namespace ClickNCheck.Models
         public int ID { get; set; }
         [Required]
         public string Name { get; set; }
+        public double Cost { get; set; }
         public string TurnaraoundTime { get; set; }
 
         
