@@ -160,15 +160,13 @@ namespace ClickNCheck.Controllers
         }
 
         // GET: api/Users/GetAllRecruiters/5
-        [HttpGet("GetAllRecruiters/{id}")]
+        [HttpGet("Organization/{id}/recruiters")]
         public IEnumerable<User> GetAllRecruiters(int id)
         {
             var recruiters = _context.User.Where(r => r.Organisation.ID == id && r.UserType == "Recruiter");
 
             return recruiters;
         }
-
-
     }
 
     

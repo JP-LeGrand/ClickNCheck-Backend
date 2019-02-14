@@ -115,6 +115,57 @@ namespace ClickNCheck.Controllers
             return jobProfile;
         }
 
+        // POST: api/Users/5/AssignRecruiters
+        [HttpPost()]
+        [Route("{id}/AssignRecruiters")]
+        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
+        {
+            int jobId = id;
+
+            //find job profile
+            var jobProfile = await _context.JobProfile.FindAsync(jobId);
+
+            if (jobProfile == null)
+            {
+                return NotFound("This Job Profile does not exist");
+            }
+
+            //find recruiters
+            for (int i = 0; i < ids.Length; i++)
+            {
+                var recruiter = await _context.User.FindAsync(ids[i]);
+
+                if (recruiter == null)
+                {
+                    return NotFound("The recruiter " + recruiter.Name + recruiter.Surname + " does not exist");
+                }
+                //add recruiter to job profile
+                jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
+
+            }
+            //save changes to job profile
+            _context.Entry(jobProfile).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                var exists = _context.User.Any(e => e.ID == jobId);
+                if (!JobProfileExists(jobId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok(jobProfile);
+        }
+
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
