@@ -35,7 +35,7 @@ namespace Tests
 
 
             IQueryable<LinkCode> mockLinkCode = new List<LinkCode> {
-               new LinkCode {ID = 1, Code = code, /*Admin_ID = 1,*/Valid = false}
+               new LinkCode {ID = 1, Code = code, /*Admin_ID = 1,*/Used = false}
             }.AsQueryable();
 
 
@@ -64,7 +64,7 @@ namespace Tests
             string code = "thiscodeexists";
 
             IQueryable<LinkCode> mockLinkCode = new List<LinkCode> {
-               new LinkCode {ID = 1, Code = code, /*Admin_ID = 1,*/Valid = false}
+               new LinkCode {ID = 1, Code = code, /*Admin_ID = 1,*/Used = false}
             }.AsQueryable();
 
 
@@ -92,7 +92,7 @@ namespace Tests
             string code = "thiscodeexists";
 
             IQueryable<LinkCode> mockLinkCode = new List<LinkCode> {
-               new LinkCode {ID = 1, Code = code, /*Admin_ID = 1,*/Valid = false}
+               new LinkCode {ID = 1, Code = code, /*Admin_ID = 1,*/Used = false}
             }.AsQueryable();
 
 
@@ -114,7 +114,7 @@ namespace Tests
             var dummyModel = new Mock<LinkCode>();
             dummyModel.Object.ID = 1;
             dummyModel.Object.Code = "thiscodeexists";
-            dummyModel.Object.Valid = false;
+            dummyModel.Object.Used = false;
           //  dummyModel.Object.Admin_ID = 1;
 
             //Act

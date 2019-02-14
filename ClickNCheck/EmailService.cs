@@ -14,13 +14,11 @@ namespace ClickNCheck
         string smtpAddress = "smtp.gmail.com";
         int portNumber = 587;
         bool enableSSL = true;
-<<<<<<< HEAD
+
         string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address  
         string password = "159357OLANI"; //Sender Password  
-=======
-        string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
-        string password = "159357OLANI"; //Sender Password
->>>>>>> dev
+
+
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -28,11 +26,9 @@ namespace ClickNCheck
             {
                 using (MailMessage mail = new MailMessage())
                 {
-<<<<<<< HEAD
+
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);//"<a href = 'https://localhost:44312/api/Organization/signup/"+Body +"'>Xolani</h1>");
-=======
-                    MailAssignment(mail, emailFromAddress, To, Subject, Body);
->>>>>>> dev
+
                     SmtpSend(mail);
                 }
             }
@@ -63,8 +59,6 @@ namespace ClickNCheck
 
 
     }
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> dev
+
