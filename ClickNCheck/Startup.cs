@@ -57,24 +57,10 @@ namespace Dummy
                   .AllowAnyMethod()
                   .AllowAnyHeader());
 
-<<<<<<< HEAD
-            app.UseCors(o => o.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
-=======
             app.UseHttpsRedirection();
             if (Configuration["EnableCORS"] == "True")
             {
 
-            }
-
-         
->>>>>>> dev
-
-            app.UseHttpsRedirection();
-            if (Configuration["EnableCORS"] == "True")
-            {
-                
             }
             app.UseSwagger();
 

@@ -122,7 +122,9 @@ namespace ClickNCheck.Controllers
             {
                 return NotFound("This Job Profile does not exist");
             }
-
+            EmailService emailService = new EmailService();
+            string emailBody = emailService.RecruiterMail();
+            
             //find recruiters
             for (int i = 0; i < ids.Length; i++)
             {
@@ -134,7 +136,8 @@ namespace ClickNCheck.Controllers
                 }
                //add recruiter to job ptofile
                 jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
-                  
+                emailService.SendMail(recruiter.Email, "New Job Profile", emailBody);
+                //emailService.SendMail(recruiter.Email,"New Job Profile Assignment",);
             }
             //save changes to job profile
             _context.Entry(jobProfile).State = EntityState.Modified;

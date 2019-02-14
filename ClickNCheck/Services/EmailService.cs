@@ -6,21 +6,17 @@ using System.Net.Mail;
 using System.Linq;
 using ClickNCheck.Models;
 using System.Net.Mime;
+using System.IO;
 
 namespace ClickNCheck
 {
     public class EmailService
     {
-        string smtpAddress = "smtp.gmail.com";
-        int portNumber = 587;
-        bool enableSSL = true;
-<<<<<<< HEAD
-        string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address  
-        string password = "159357OLANI"; //Sender Password  
-=======
-        string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
-        string password = "159357OLANI"; //Sender Password
->>>>>>> dev
+        readonly string smtpAddress = "smtp.gmail.com";
+        readonly int portNumber = 587;
+        readonly bool enableSSL = true;
+        readonly string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
+        readonly string password = "159357OLANI"; //Sender Password
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -28,11 +24,7 @@ namespace ClickNCheck
             {
                 using (MailMessage mail = new MailMessage())
                 {
-<<<<<<< HEAD
-                    MailAssignment(mail, emailFromAddress, To, Subject, Body);//"<a href = 'https://localhost:44312/api/Organization/signup/"+Body +"'>Xolani</h1>");
-=======
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);
->>>>>>> dev
                     SmtpSend(mail);
                 }
             }
@@ -55,16 +47,18 @@ namespace ClickNCheck
 
         public void SmtpSend(MailMessage mail)
         {
-            SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
-            smtp.Credentials = new NetworkCredential(emailFromAddress, password);
-            smtp.EnableSsl = enableSSL;
+            SmtpClient smtp = new SmtpClient(smtpAddress, portNumber)
+            {
+                Credentials = new NetworkCredential(emailFromAddress, password),
+                EnableSsl = enableSSL
+            };
             smtp.Send(mail);
         }
 
-
+        public string RecruiterMail()
+        {
+            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
+            return emailBody;
+        }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> dev
