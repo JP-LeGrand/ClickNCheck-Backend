@@ -163,7 +163,7 @@ namespace ClickNCheck.Controllers
         [HttpGet("GetAllRecruiters/{id}")]
         public IEnumerable<User> GetAllRecruiters(int id)
         {
-            var recruiters = _context.User.Where(r => r.Organisation.ID == id && r.UserType == "Recruiter");
+            var recruiters = _context.User.Where(r => r.Organisation.ID == id && r.UserType == UserTypes.Recruiter);
 
             return recruiters;
         }

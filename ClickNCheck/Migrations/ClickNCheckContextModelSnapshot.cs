@@ -19,6 +19,7 @@ namespace ClickNCheck.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+
             modelBuilder.Entity("ClickNCheck.Models.BillingAddress", b =>
                 {
                     b.Property<int>("ID")
@@ -47,6 +48,7 @@ namespace ClickNCheck.Migrations
 
                     b.ToTable("BillingAddress");
                 });
+
 
             modelBuilder.Entity("ClickNCheck.Models.Candidate", b =>
                 {
@@ -184,7 +186,7 @@ namespace ClickNCheck.Migrations
                     b.ToTable("JobProfile_Checks");
                 });
 
-            modelBuilder.Entity("ClickNCheck.Models.Organisation", b =>
+            modelBuilder.Entity("ClickNCheck.Models.LinkCode", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -202,8 +204,14 @@ namespace ClickNCheck.Migrations
                     b.Property<string>("RegistrationNumber")
                         .IsRequired();
 
-                    b.Property<string>("TaxNumber")
-                        .IsRequired();
+                    b.Property<int>("Admin_ID");
+
+                    b.Property<int?>("AdministratorID");
+
+
+                    b.Property<string>("Code");
+
+                    b.Property<bool>("Used");
 
                     b.HasKey("ID");
 
@@ -214,13 +222,19 @@ namespace ClickNCheck.Migrations
                     b.HasIndex("PhysicalAddressID");
 
                     b.ToTable("Organisation");
+
+                    b.HasIndex("AdministratorID");
+
+                    b.ToTable("LinkCodes");
+
                 });
 
-            modelBuilder.Entity("ClickNCheck.Models.PhysicalAddress", b =>
+            modelBuilder.Entity("ClickNCheck.Models.Organisation", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
 
                     b.Property<string>("Building")
                         .IsRequired();
@@ -238,11 +252,18 @@ namespace ClickNCheck.Migrations
                         .IsRequired();
 
                     b.Property<string>("Suburb")
+
+                    b.Property<string>("Name")
+
                         .IsRequired();
 
                     b.HasKey("ID");
 
+
                     b.ToTable("PhysicalAddress");
+
+                    b.ToTable("Organisation");
+
                 });
 
             modelBuilder.Entity("ClickNCheck.Models.Recruiter_JobProfile", b =>
@@ -269,34 +290,39 @@ namespace ClickNCheck.Migrations
 
                     b.Property<int>("EmployeeNumber");
 
-                    b.Property<string>("ManagerID");
+                    b.Property<int>("ManagerID");
 
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<int>("OrganisationID");
 
-                    b.Property<string>("Password")
-                        .IsRequired();
+                    b.Property<int>("Otp");
+
+                    b.Property<string>("Password");
 
                     b.Property<string>("Phone")
                         .IsRequired();
 
-                    b.Property<string>("Salt")
-                        .IsRequired();
+                    b.Property<string>("Salt");
 
                     b.Property<string>("Surname")
                         .IsRequired();
 
-                    b.Property<string>("UserType")
-                        .IsRequired();
+                    b.Property<int>("UserType");
+
+                    b.Property<int?>("userID");
 
                     b.HasKey("ID");
 
                     b.HasIndex("OrganisationID");
 
+                    b.HasIndex("userID");
+
+
                     b.ToTable("User");
                 });
+
 
             modelBuilder.Entity("ClickNCheck.Models.Candidate", b =>
                 {
@@ -322,6 +348,9 @@ namespace ClickNCheck.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+
+
+
             modelBuilder.Entity("ClickNCheck.Models.JobProfile", b =>
                 {
                     b.HasOne("ClickNCheck.Models.Organisation", "Organisation")
@@ -342,6 +371,7 @@ namespace ClickNCheck.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+
             modelBuilder.Entity("ClickNCheck.Models.Organisation", b =>
                 {
                     b.HasOne("ClickNCheck.Models.BillingAddress", "BillingAddress")
@@ -358,6 +388,13 @@ namespace ClickNCheck.Migrations
                         .WithMany()
                         .HasForeignKey("PhysicalAddressID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity("ClickNCheck.Models.LinkCode", b =>
+                {
+                    b.HasOne("ClickNCheck.Models.User", "Administrator")
+                        .WithMany()
+                        .HasForeignKey("AdministratorID");
+
                 });
 
             modelBuilder.Entity("ClickNCheck.Models.Recruiter_JobProfile", b =>
@@ -379,6 +416,10 @@ namespace ClickNCheck.Migrations
                         .WithMany()
                         .HasForeignKey("OrganisationID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ClickNCheck.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userID");
                 });
 #pragma warning restore 612, 618
         }
