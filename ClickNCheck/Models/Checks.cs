@@ -14,8 +14,7 @@ namespace ClickNCheck.Models
         public string Name { get; set; }
         public string TurnaraoundTime { get; set; }
 
-        [ForeignKey("OrganisationID")]
-        public Organisation Organisation { get; set; }
+        
         public ICollection<JobProfile_Checks> JobProfile_Checks { get; } = new List<JobProfile_Checks>();
     }
 }
