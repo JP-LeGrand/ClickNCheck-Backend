@@ -25,7 +25,7 @@ namespace Dummy
         public void ConfigureServices(IServiceCollection services)
         {
 
-            var connection = "Data Source=clickncheckserver.database.windows.net;Initial Catalog=clickNcheck;User ID=xolani_rabbit;Password=159357olanI";
+            var connection = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=clickNcheck;User ID=\"\";Password=\"\"";
             services.AddDbContext<ClickNCheckContext>
                 (options => options.UseSqlServer(connection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

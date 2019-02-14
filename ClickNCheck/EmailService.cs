@@ -16,18 +16,18 @@ namespace ClickNCheck
         bool enableSSL = true;
         string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address  
         string password = "159357OLANI"; //Sender Password  
-       
-        public bool SendMail(string To, string Subject, string Body, string code)
+
+        public bool SendMail(string To, string Subject, string Body)
         {
             try
             {
                 using (MailMessage mail = new MailMessage())
                 {
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);//"<a href = 'https://localhost:44312/api/Organization/signup/"+Body +"'>Xolani</h1>");
-                   SmtpSend(mail);
+                    SmtpSend(mail);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return false;
@@ -42,7 +42,6 @@ namespace ClickNCheck
             mailMessage.Subject = Subject;
             mailMessage.IsBodyHtml = true;
             mailMessage.Body = Body;
-          //  mailMessage.Attachments.Add(new Attachment("C:\\Users\\Mpinane Mohale\\Desktop\\Standard Bank\\Mine\\RegistrationEmail\\main.png", MediaTypeNames.Image.Jpeg));
         }
 
         public void SmtpSend(MailMessage mail)
@@ -53,20 +52,6 @@ namespace ClickNCheck
             smtp.Send(mail);
         }
 
-        public string generateCode()
-        {
-            
-            const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            Random rand = new Random();
 
-            string code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
-
-         /*  while (_context.LinkCodes.Find(code) != null)
-            {
-                code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
-            }*/
-
-            return code;
-        }
     }
 }
