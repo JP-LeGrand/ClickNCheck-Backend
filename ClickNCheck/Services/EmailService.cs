@@ -12,22 +12,12 @@ namespace ClickNCheck
 {
     public class EmailService
     {
-<<<<<<< HEAD:ClickNCheck/Services/EmailService.cs
+
         readonly string smtpAddress = "smtp.gmail.com";
         readonly int portNumber = 587;
         readonly bool enableSSL = true;
         readonly string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
         readonly string password = "159357OLANI"; //Sender Password
-=======
-        string smtpAddress = "smtp.gmail.com";
-        int portNumber = 587;
-        bool enableSSL = true;
-
-        string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address  
-        string password = "159357OLANI"; //Sender Password  
-
-
->>>>>>> Dev:ClickNCheck/EmailService.cs
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -35,14 +25,9 @@ namespace ClickNCheck
             {
                 using (MailMessage mail = new MailMessage())
                 {
-<<<<<<< HEAD:ClickNCheck/Services/EmailService.cs
+
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);
-=======
-
-                    MailAssignment(mail, emailFromAddress, To, Subject, Body);//"<a href = 'https://localhost:44312/api/Organization/signup/"+Body +"'>Xolani</h1>");
-
->>>>>>> Dev:ClickNCheck/EmailService.cs
-                    SmtpSend(mail);
+          SmtpSend(mail);
                 }
             }
             catch (Exception e)
@@ -78,10 +63,10 @@ namespace ClickNCheck
             return emailBody;
         }
     }
-<<<<<<< HEAD:ClickNCheck/Services/EmailService.cs
-}
-=======
 
 }
 
->>>>>>> Dev:ClickNCheck/EmailService.cs
+
+}
+
+
