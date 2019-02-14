@@ -73,6 +73,6 @@ namespace ClickNCheck.Data
 
         }
 
-        public DbSet<ClickNCheck.Models.LinkCode> LinkCode { get; set; }
+  
     }
 }
