@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 using ClickNCheck.Data;
 using ClickNCheck.Models;
-
+using System.Reflection;
+using System.IO;
 
 namespace ClickNCheck.Controllers
 {
@@ -25,32 +26,20 @@ namespace ClickNCheck.Controllers
 
         [HttpPost()]
         [Route("sendMail")] //check if you need this routes
-        public ActionResult sendMail(string person, string email)
+        public ActionResult sendMail(string email)
         {
             string code = generateCode();
             LinkCode _model = new LinkCode();
-            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\SignUpEmail.html");
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
 
-            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + person + "/signup/" + code + "\"");
-            //try removing these 2 variables
-            /*  var list = Recruiters.ReadDetails("C:\\testData.csv");
-               var email = Recruiters.getEmails(list);
-               foreach (var item in email) {
-                   string code = mailS.generateCode();
-                   _model.Code = code;
-                   _model.Used = false;
-                   _context.LinkCodes.Add(_model);
-
-                   mailS.SendMail(item, "testing", $"C:\\Users\\Mpinane Mohale\\Desktop\\Standard Bank\\Mine\\RegistrationEmail\\index.html");
-               }*/
-
+            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Administrators/signup/" + code + "\"");
             _model.Code = code;
             _model.Used = false;
             _context.LinkCodes.Add(_model);
-
+            _context.SaveChanges();
             EmailService mailS = new EmailService();
             mailS.SendMail(email, "nane", emailBody);
-            _context.SaveChanges();
+           
             // return Ok(email);
             return Ok();
         }
@@ -61,7 +50,24 @@ namespace ClickNCheck.Controllers
         {
             _context.User.AddRange(recruiter);
             _context.SaveChanges();
+            for (int i = 0; i < recruiter.Length; i++)
+            {
+                sendMail(recruiter[i].Email);
+            }
+            return Ok("yes");
+        }
 
+        [HttpPost()]
+        [Route("admin")]
+        public ActionResult<User> regAdmin(User[] admin)
+        {
+            _context.User.AddRange(admin);
+            _context.SaveChanges();
+
+            for(int i = 0; i < admin.Length; i++)
+            {
+                sendMail(admin[i].Email);
+            }
             return Ok("yes");
         }
 
@@ -88,7 +94,8 @@ namespace ClickNCheck.Controllers
 
             if (our_code != null && our_code.Used == false)
             {
-                return "Yey, You can register";
+                //return "Yey, You can register";
+                return Redirect("http://clickncheckkb.s3-website.us-east-2.amazonaws.com/");
             }
             else
             {
