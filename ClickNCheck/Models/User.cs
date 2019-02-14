@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.Models
 {
-    public class Recruiter
+    public class User
     {
+        
         public int ID { get; set; }
         [Required]
         public string Name { get; set; }
@@ -19,15 +20,19 @@ namespace ClickNCheck.Models
         [Required]
         public string Phone { get; set; }
         [Required]
+        public int EmployeeNumber { get; set; }
+        [Required]
         public string Password { get; set; }
+        [Required]
+        public string Salt { get; set; }
+        [Required]
+        public string UserType { get; set; }
+        
+        public string ManagerID { get; set; }
 
-
-        [ForeignKey("OrganisationID")]
+        public int OrganisationID { get; set; }
         public Organisation Organisation { get; set; }
 
-        [ForeignKey("ManagerID")]
-        public Manager Manager { get; set; }
-
-        public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; } = new List<Recruiter_JobProfile>();
+        public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; set; } = new List<Recruiter_JobProfile>();
     }
 }
