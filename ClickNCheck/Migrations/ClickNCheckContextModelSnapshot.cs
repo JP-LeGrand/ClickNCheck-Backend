@@ -114,7 +114,7 @@ namespace ClickNCheck.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CategoryID");
+                    b.Property<int>("Category");
 
                     b.Property<double>("Cost");
 
@@ -124,8 +124,6 @@ namespace ClickNCheck.Migrations
                     b.Property<string>("TurnaraoundTime");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("CategoryID");
 
                     b.ToTable("Checks");
                 });
@@ -321,14 +319,6 @@ namespace ClickNCheck.Migrations
                     b.HasOne("ClickNCheck.Models.JobProfile", "JobProfile")
                         .WithMany("Candidate_JobProfile")
                         .HasForeignKey("JobProfileId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ClickNCheck.Models.Checks", b =>
-                {
-                    b.HasOne("ClickNCheck.Models.CheckCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
