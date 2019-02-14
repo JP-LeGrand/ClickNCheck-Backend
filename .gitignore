@@ -259,6 +259,13 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+<<<<<<< HEAD
 
 
 /Migrations
+=======
+/ClickNCheck/Migrations/20190214091937_organisation table.cs
+/ClickNCheck/Migrations/20190214091937_organisation table.Designer.cs
+/ClickNCheck/Migrations/20190214092310_edite oganisation.cs
+/ClickNCheck/Migrations/20190214092310_edite oganisation.Designer.cs
+>>>>>>> dev

@@ -30,7 +30,7 @@ namespace ClickNCheck.Models
 
 
         [ForeignKey("RecruiterID")]
-        public Recruiter Recruiter { get; set; }
+        public User Recruiter { get; set; }
 
         public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; } = new List<Candidate_JobProfile>();
     }

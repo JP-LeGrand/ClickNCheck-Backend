@@ -11,6 +11,6 @@ namespace ClickNCheck.Models
         public JobProfile JobProfile { get; set; }
 
         public int RecruiterId { get; set; }
-        public Recruiter Recruiter { get; set; }
+        public User Recruiter { get; set; }
     }
 }

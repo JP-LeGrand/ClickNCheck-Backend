@@ -1,28 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ClickNCheck.Models
 {
-    public class Manager
+    public class ContactPerson
     {
-
         public int ID { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
-        public string Surname { get; set; }
+        public string Phone { get; set; }
         [Required]
         public string Email { get; set; }
         [Required]
-        public string Phone { get; set; }
-        [Required]
-        public string Password { get; set; }
-
         public int OrganisationID { get; set; }
+        [Required]
         public Organisation Organisation { get; set; }
-
     }
 }
