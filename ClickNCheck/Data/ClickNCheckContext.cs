@@ -9,6 +9,10 @@ namespace ClickNCheck.Data
         {
         }
 
+        public ClickNCheckContext()
+        {
+        }
+
         public DbSet<User> User { get; set; }
         public DbSet<Organisation> Organisation { get; set; }
         public DbSet<Recruiter_JobProfile> Recruiter_JobProfile { get; set; }
@@ -17,6 +21,7 @@ namespace ClickNCheck.Data
         public DbSet<Candidate> Candidate { get; set; }
         public DbSet<Candidate_JobProfile> Candidate_JobProfile { get; set; }
         public DbSet<JobProfile_Checks> JobProfile_Checks { get; set; }
+        public virtual DbSet<LinkCode> LinkCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
