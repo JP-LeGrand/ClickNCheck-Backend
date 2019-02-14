@@ -2,22 +2,22 @@
 
 namespace ClickNCheck.Migrations
 {
-    public partial class JobProfle_isCompleted : Migration
+    public partial class Checkscost : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "isCompleted",
-                table: "JobProfile",
+            migrationBuilder.AddColumn<double>(
+                name: "Cost",
+                table: "Checks",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0.0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "isCompleted",
-                table: "JobProfile");
+                name: "Cost",
+                table: "Checks");
         }
     }
 }

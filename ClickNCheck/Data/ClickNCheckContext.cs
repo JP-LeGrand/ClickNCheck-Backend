@@ -9,9 +9,8 @@ namespace ClickNCheck.Data
         {
         }
 
-        public DbSet<Administrator> Administrator { get; set; }
+        public DbSet<User> User { get; set; }
         public DbSet<Organisation> Organisation { get; set; }
-        public DbSet<Recruiter> Recruiter { get; set; }
         public DbSet<Recruiter_JobProfile> Recruiter_JobProfile { get; set; }
         public DbSet<JobProfile> JobProfile { get; set; }
         public DbSet<Checks> Checks { get; set; }
