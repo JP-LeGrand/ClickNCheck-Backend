@@ -110,11 +110,20 @@ namespace ClickNCheck.Controllers
             return jobProfile;
         }
 
+        [HttpPost()]
+        [Route("sendMail")] //check if you need this routes
+        public ActionResult sendMail(string email)
+        {
+            EmailService mailS = new EmailService();
+            string emailBody = mailS.RecruiterMail();
+            mailS.SendMail(email, "New Job Profile", emailBody);
+            // return Ok(email);
+            return Ok();
+        }
+
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
         }
-
-
     }
 }

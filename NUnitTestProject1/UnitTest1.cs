@@ -78,7 +78,7 @@ namespace Tests
         }
 
         [Test]
-        public void CodeInvalid()
+        public void CodeInUsed()
         {
             IQueryable<Administrator> mockAdministrator = new List<Administrator> {
                new Administrator {ID = 1, Email = "nane@gmail.com" }

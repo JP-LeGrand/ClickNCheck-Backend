@@ -29,7 +29,7 @@ namespace ClickNCheck.Controllers
         {
             string code = generateCode();
             LinkCode _model = new LinkCode();
-            string emailBody = System.IO.File.ReadAllText("C:\\Users\\Xolani Dlamini\\Documents\\Retro\\CnC\\Click-N-Check-Backend\\ClickNCheck\\Email.html");
+            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\SignUpEmail.html");
 
             emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + person + "/signup/" + code + "\"");
             //try removing these 2 variables
@@ -55,7 +55,7 @@ namespace ClickNCheck.Controllers
             return Ok();
         }
 
-        [HttpPost()]
+       [HttpPost()]
        [Route("recruiter")]
         public ActionResult<User> regRecruiter(User [] recruiter)
         {

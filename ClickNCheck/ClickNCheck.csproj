@@ -16,4 +16,16 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
+<<<<<<< HEAD
+  <ItemGroup>
+    <None Update="Files\SignUpEmail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\RecruiterEmail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+=======
+>>>>>>> Dev
 </Project>
