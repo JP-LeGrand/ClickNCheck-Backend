@@ -17,7 +17,6 @@ namespace ClickNCheck.Models
         public string PostalCode { get; set; }
         [Required]
         public string Province { get; set; }
-        public int OrganisationID { get; set; }
-        public Organisation Organisation { get; set; }
+       
     }
 }
