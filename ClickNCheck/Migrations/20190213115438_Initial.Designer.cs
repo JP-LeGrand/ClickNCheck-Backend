@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickNCheck.Migrations
 {
     [DbContext(typeof(ClickNCheckContext))]
-    [Migration("20190213080605_fixed errors")]
-    partial class fixederrors
+    [Migration("20190213115438_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
