@@ -18,6 +18,8 @@ namespace ClickNCheck.Controllers
     public class AdministratorsController : ControllerBase
     {
         private ClickNCheckContext _context;
+        EmailService mailS = new EmailService();
+        LinkCode _model = new LinkCode();
 
         public AdministratorsController(ClickNCheckContext context)
         {
@@ -29,6 +31,7 @@ namespace ClickNCheck.Controllers
         public ActionResult sendMail(string email)
         {
             string code = generateCode();
+
             LinkCode _model = new LinkCode();
             string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
 
@@ -38,6 +41,7 @@ namespace ClickNCheck.Controllers
             _context.LinkCodes.Add(_model);
             _context.SaveChanges();
             EmailService mailS = new EmailService();
+
             mailS.SendMail(email, "nane", emailBody);
            
             // return Ok(email);
@@ -70,6 +74,31 @@ namespace ClickNCheck.Controllers
             }
             return Ok("yes");
         }
+        
+        [HttpGet]
+        [Route("administrator/signUp")]
+         public async Task<ActionResult<IEnumerable<User>>> getAdministrators()
+            {
+             var _administrators = await _context.User.ToListAsync();
+             foreach (var _administrator in _administrators) {
+                var _email = _administrator.Email;
+                var code = generateCode();
+                string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                 emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + _administrator.UserType + "/ signup/" + code + "\"");
+                mailS.SendMail(_email, "Recruiter Sign Up Link", emailBody);
+                _model.Code = code;
+                _model.Used = false;
+                _context.LinkCodes.Add(_model);
+
+            }
+            _context.SaveChanges();
+
+            return Ok("yeesa");
+            }
+
+
+           
+        
 
         public string generateCode()
         {
@@ -85,6 +114,15 @@ namespace ClickNCheck.Controllers
             }
 
             return code;
+        }
+
+
+
+        public string randomNumberGenerator()
+        {
+            Random generator = new Random();
+            String r = generator.Next(0, 999999).ToString("D6");
+            return r;
         }
 
         [Route("signup/{code}")]

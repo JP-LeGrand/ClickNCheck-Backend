@@ -66,7 +66,3 @@ namespace ClickNCheck
 
 }
 
-
-
-
-
