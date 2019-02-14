@@ -72,5 +72,7 @@ namespace ClickNCheck.Data
             .HasForeignKey(pt => pt.JobProfileId);
 
         }
+
+        public DbSet<ClickNCheck.Models.LinkCode> LinkCode { get; set; }
     }
 }

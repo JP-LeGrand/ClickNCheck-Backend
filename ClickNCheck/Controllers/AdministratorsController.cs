@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 
+
 namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
@@ -94,5 +95,12 @@ namespace ClickNCheck.Controllers
                 return "Link Error: This link has either been used or is invalid";
             }
         }
+
+        /*
+         * Generating and sending links
+         * 
+         */
+
+       
     }
 }

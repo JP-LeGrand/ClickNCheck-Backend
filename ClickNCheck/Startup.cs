@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClickNCheck.Data;
+using ClickNCheck.Models;
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using ClickNCheck.Data;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace ClickNCheck
+namespace Dummy
 {
     public class Startup
     {
@@ -28,14 +24,21 @@ namespace ClickNCheck
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ClickNCheckContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            var connection = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=clickNcheck;User ID=\"\";Password=\"\"";
+            services.AddDbContext<ClickNCheckContext>
+                (options => options.UseSqlServer(connection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
+
+           
+
+            services.AddCors();
+          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +57,11 @@ namespace ClickNCheck
                   .AllowAnyMethod()
                   .AllowAnyHeader());
 
+<<<<<<< HEAD
+            app.UseCors(o => o.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+=======
             app.UseHttpsRedirection();
             if (Configuration["EnableCORS"] == "True")
             {
@@ -61,8 +69,13 @@ namespace ClickNCheck
             }
 
          
+>>>>>>> dev
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseHttpsRedirection();
+            if (Configuration["EnableCORS"] == "True")
+            {
+                
+            }
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
@@ -73,6 +86,7 @@ namespace ClickNCheck
             });
 
             app.UseMvc();
+         
         }
     }
 }

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClickNCheck", "ClickNCheck\ClickNCheck.csproj", "{2222B8F3-3564-4E1F-B01C-95C5C2A5961F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClickNCheck", "ClickNCheck\ClickNCheck.csproj", "{2222B8F3-3564-4E1F-B01C-95C5C2A5961F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProject1", "NUnitTestProject1\NUnitTestProject1.csproj", "{108EE02D-4252-46E3-94A0-A9A19410572A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClickNCheck.test", "NUnitTestProject1\ClickNCheck.test.csproj", "{108EE02D-4252-46E3-94A0-A9A19410572A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
