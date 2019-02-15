@@ -75,6 +75,7 @@ namespace ClickNCheck.Controllers
 
         // POST: api/Users
         [HttpPost]
+        [Route("CreateUser")]
         public async Task<ActionResult<User>> PostUser(User User)
         {
             _context.User.Add(User);
