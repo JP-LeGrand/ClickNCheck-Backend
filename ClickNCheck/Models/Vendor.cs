@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.Models
 {
-    public class Checks
+    public class Vendor
     {
         public int ID { get; set; }
-        [Required]
         public string Name { get; set; } 
-        public int Category { get; set; }
-        public double Cost { get; set; }
-        public string TurnaraoundTime { get; set; }
+        
 
         
-        public ICollection<JobProfile_Checks> JobProfile_Checks { get; } = new List<JobProfile_Checks>();
+        public ICollection<JobProfile_Vendor> JobProfile_Vendor { get; } = new List<JobProfile_Vendor>();
+        public ICollection<Vendor_Category> Vendor_Category { get; } = new List<Vendor_Category>();
     }
 }

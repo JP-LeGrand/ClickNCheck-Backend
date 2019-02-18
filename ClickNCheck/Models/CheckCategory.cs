@@ -9,7 +9,7 @@ namespace ClickNCheck.Models
     public class CheckCategory
     {
         public int ID { get; set; }
-        [Required]
         public string Category { get; set; }
+        public ICollection<Vendor_Category> Vendor_Category { get; } = new List<Vendor_Category>();
     }
 }
