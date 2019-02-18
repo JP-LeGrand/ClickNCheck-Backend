@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 using ClickNCheck.Data;
 using ClickNCheck.Models;
+using System.Reflection;
+using System.IO;
 
 namespace ClickNCheck.Controllers
 {
@@ -16,6 +18,8 @@ namespace ClickNCheck.Controllers
     public class AdministratorsController : ControllerBase
     {
         private ClickNCheckContext _context;
+        EmailService mailS = new EmailService();
+        LinkCode _model = new LinkCode();
 
         public AdministratorsController(ClickNCheckContext context)
         {
@@ -24,45 +28,77 @@ namespace ClickNCheck.Controllers
 
         [HttpPost()]
         [Route("sendMail")] //check if you need this routes
-        public ActionResult sendMail(string person, string email)
+        public ActionResult sendMail(string email)
         {
             string code = generateCode();
+
             LinkCode _model = new LinkCode();
-            string emailBody = System.IO.File.ReadAllText("C:\\Users\\Xolani Dlamini\\Documents\\Retro\\CnC\\Click-N-Check-Backend\\ClickNCheck\\Email.html");
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
 
-            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + person + "/signup/" + code + "\"");
-            //try removing these 2 variables
-            /*  var list = Recruiters.ReadDetails("C:\\testData.csv");
-               var email = Recruiters.getEmails(list);
-               foreach (var item in email) {
-                   string code = mailS.generateCode();
-                   _model.Code = code;
-                   _model.Used = false;
-                   _context.LinkCodes.Add(_model);
-
-                   mailS.SendMail(item, "testing", $"C:\\Users\\Mpinane Mohale\\Desktop\\Standard Bank\\Mine\\RegistrationEmail\\index.html");
-               }*/
-
+            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Administrators/signup/" + code + "\"");
             _model.Code = code;
             _model.Used = false;
             _context.LinkCodes.Add(_model);
-
-            EmailService mailS = new EmailService();
-            mailS.SendMail(email, "nane", emailBody);
             _context.SaveChanges();
+            EmailService mailS = new EmailService();
+
+            mailS.SendMail(email, "nane", emailBody);
+           
             // return Ok(email);
             return Ok();
         }
 
-        [HttpPost()]
+       [HttpPost()]
        [Route("recruiter")]
         public ActionResult<User> regRecruiter(User [] recruiter)
         {
             _context.User.AddRange(recruiter);
             _context.SaveChanges();
-
+            for (int i = 0; i < recruiter.Length; i++)
+            {
+                sendMail(recruiter[i].Email);
+            }
             return Ok("yes");
         }
+
+        [HttpPost()]
+        [Route("admin")]
+        public ActionResult<User> regAdmin(User[] admin)
+        {
+            _context.User.AddRange(admin);
+            _context.SaveChanges();
+
+            for(int i = 0; i < admin.Length; i++)
+            {
+                sendMail(admin[i].Email);
+            }
+            return Ok("yes");
+        }
+        
+        [HttpGet]
+        [Route("administrator/signUp")]
+         public async Task<ActionResult<IEnumerable<User>>> getAdministrators()
+            {
+             var _administrators = await _context.User.ToListAsync();
+             foreach (var _administrator in _administrators) {
+                var _email = _administrator.Email;
+                var code = generateCode();
+                string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                 emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + _administrator.UserType + "/ signup/" + code + "\"");
+                mailS.SendMail(_email, "Recruiter Sign Up Link", emailBody);
+                _model.Code = code;
+                _model.Used = false;
+                _context.LinkCodes.Add(_model);
+
+            }
+            _context.SaveChanges();
+
+            return Ok("yeesa");
+            }
+
+
+           
+        
 
         public string generateCode()
         {
@@ -80,6 +116,15 @@ namespace ClickNCheck.Controllers
             return code;
         }
 
+
+
+        public string randomNumberGenerator()
+        {
+            Random generator = new Random();
+            String r = generator.Next(0, 999999).ToString("D6");
+            return r;
+        }
+
         [Route("signup/{code}")]
         public ActionResult<string> checkCode(string code)
         {
@@ -87,12 +132,20 @@ namespace ClickNCheck.Controllers
 
             if (our_code != null && our_code.Used == false)
             {
-                return "Yey, You can register";
+                //return "Yey, You can register";
+                return Redirect("http://clickncheckkb.s3-website.us-east-2.amazonaws.com/");
             }
             else
             {
                 return "Link Error: This link has either been used or is invalid";
             }
         }
+
+        /*
+         * Generating and sending links
+         * 
+         */
+
+       
     }
 }

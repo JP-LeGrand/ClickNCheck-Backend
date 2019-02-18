@@ -6,16 +6,18 @@ using System.Net.Mail;
 using System.Linq;
 using ClickNCheck.Models;
 using System.Net.Mime;
+using System.IO;
 
 namespace ClickNCheck
 {
     public class EmailService
     {
-        string smtpAddress = "smtp.gmail.com";
-        int portNumber = 587;
-        bool enableSSL = true;
-        string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
-        string password = "159357OLANI"; //Sender Password
+
+        readonly string smtpAddress = "smtp.gmail.com";
+        readonly int portNumber = 587;
+        readonly bool enableSSL = true;
+        readonly string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
+        readonly string password = "159357OLANI"; //Sender Password
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -23,8 +25,9 @@ namespace ClickNCheck
             {
                 using (MailMessage mail = new MailMessage())
                 {
+
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);
-                    SmtpSend(mail);
+          SmtpSend(mail);
                 }
             }
             catch (Exception e)
@@ -46,12 +49,20 @@ namespace ClickNCheck
 
         public void SmtpSend(MailMessage mail)
         {
-            SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
-            smtp.Credentials = new NetworkCredential(emailFromAddress, password);
-            smtp.EnableSsl = enableSSL;
+            SmtpClient smtp = new SmtpClient(smtpAddress, portNumber)
+            {
+                Credentials = new NetworkCredential(emailFromAddress, password),
+                EnableSsl = enableSSL
+            };
             smtp.Send(mail);
         }
 
-
+        public string RecruiterMail()
+        {
+            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
+            return emailBody;
+        }
     }
+
 }
+

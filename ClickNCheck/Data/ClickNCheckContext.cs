@@ -162,5 +162,7 @@ namespace ClickNCheck.Data
                new AddressType() { ID = 2, Type = "Billing" });
 
         }
+
+  
     }
 }
