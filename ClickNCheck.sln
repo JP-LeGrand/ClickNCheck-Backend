@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClickNCheck", "ClickNCheck\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClickNCheck.test", "NUnitTestProject1\ClickNCheck.test.csproj", "{108EE02D-4252-46E3-94A0-A9A19410572A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "checkStubClasses", "..\checkStubClasses\checkStubClasses\checkStubClasses.csproj", "{59B3F8C7-B55D-4B97-9012-4D42C153BBE7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "checkStubClasses.test", "..\checkStubClasses\checkStubClasses.test\checkStubClasses.test.csproj", "{65801E6A-9170-4DAF-B8D2-04BED49C4B2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{108EE02D-4252-46E3-94A0-A9A19410572A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{108EE02D-4252-46E3-94A0-A9A19410572A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{108EE02D-4252-46E3-94A0-A9A19410572A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59B3F8C7-B55D-4B97-9012-4D42C153BBE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59B3F8C7-B55D-4B97-9012-4D42C153BBE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59B3F8C7-B55D-4B97-9012-4D42C153BBE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59B3F8C7-B55D-4B97-9012-4D42C153BBE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65801E6A-9170-4DAF-B8D2-04BED49C4B2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65801E6A-9170-4DAF-B8D2-04BED49C4B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65801E6A-9170-4DAF-B8D2-04BED49C4B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65801E6A-9170-4DAF-B8D2-04BED49C4B2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
