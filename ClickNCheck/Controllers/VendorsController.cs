@@ -21,15 +21,17 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        // GET: api/Vendors
-        [HttpGet("GetAllVendors/")]
+        // GET: api/Vendors/GetAllVendors
+        [HttpGet]
+        [Route("GetAllVendors")]
         public async Task<ActionResult<IEnumerable<Vendor>>> GetChecks()
         {
             return await _context.Checks.ToListAsync();
         }
 
-        // GET: api/Vendors/5
+        // GET: api/Vendors/GetVendor/5
         [HttpGet("{id}")]
+        [Route("GetVendor")]
         public async Task<ActionResult<Vendor>> GetVendor(int id)
         {
             var vendor = await _context.Checks.FindAsync(id);
@@ -42,8 +44,9 @@ namespace ClickNCheck.Controllers
             return vendor;
         }
 
-        // PUT: api/Vendors/5
+        // PUT: api/Vendors/UpdateVendor/5
         [HttpPut("{id}")]
+        [Route("UpdateVendor")]
         public async Task<IActionResult> PutVendor(int id, Vendor vendor)
         {
             if (id != vendor.ID)
@@ -72,8 +75,9 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/Vendors
+        // POST: api/Vendors/CreateVendor
         [HttpPost]
+        [Route("CreateVendor")]
         public async Task<ActionResult<Vendor>> PostVendor(Vendor vendor)
         {
             _context.Checks.Add(vendor);
@@ -82,8 +86,9 @@ namespace ClickNCheck.Controllers
             return CreatedAtAction("GetVendor", new { id = vendor.ID }, vendor);
         }
 
-        // DELETE: api/Vendors/5
+        // DELETE: api/Vendors/DeleteVendor/5
         [HttpDelete("{id}")]
+        [Route("DeleteVendor")]
         public async Task<ActionResult<Vendor>> DeleteVendor(int id)
         {
             var vendor = await _context.Checks.FindAsync(id);
