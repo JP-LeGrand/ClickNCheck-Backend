@@ -13,6 +13,5 @@ namespace ClickNCheck.Models
         public string Code { get; set; }
         public bool Used { get; set; }
         public int Admin_ID { get; set; }
-        public User Administrator { get; set; }
     }
 }

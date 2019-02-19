@@ -73,8 +73,9 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/Users/CreateUser
         [HttpPost]
+        [Route("CreateUser")]
         public async Task<ActionResult<User>> PostUser(User User)
         {
             _context.User.Add(User);
@@ -166,8 +167,7 @@ namespace ClickNCheck.Controllers
         [HttpGet("GetAllRecruiters/{id}")]
         public IEnumerable<User> GetAllRecruiters(int id)
         {
-            var recruiters = _context.User.Where(r => r.Organisation.ID == id && r.UserType == UserTypes.Recruiter);
-
+            var recruiters = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 3) AND OrganisationID = {id}").ToList();
             return recruiters;
         }
     }
