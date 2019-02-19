@@ -260,7 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 
-
 /ClickNCheck/Migrations/*
-
 

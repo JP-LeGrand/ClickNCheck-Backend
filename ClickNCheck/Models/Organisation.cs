@@ -9,14 +9,20 @@ namespace ClickNCheck.Models
     public class Organisation
     {
         public int ID { get; set; }
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string RegistrationNumber { get; set; }
+        [Required]
         public string TaxNumber { get; set; }
-        public AccountsPerson AccountsPerson { get; set; }
-        public string ContractUrl { get; set; }
+        [Required]
         public ContactPerson ContactPerson { get; set; }
-        public Address PhysicalAddress { get; set; }
-        public Address BillingAddress { get; set; }
+        
+        [Required]
+        public PhysicalAddress PhysicalAddress { get; set; }
+        [Required]
+
+        public BillingAddress BillingAddress { get; set; }
 
     }
 }
