@@ -25,13 +25,15 @@ namespace ClickNCheck.Controllers
 
         // GET: api/JobProfiles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobProfile>>> GetJobProfile()
+        [Route("GetAllJobProfiles")]
+        public async Task<ActionResult<IEnumerable<JobProfile>>> GetAllJobProfiles()
         {
             return await _context.JobProfile.ToListAsync();
         }
 
         // GET: api/JobProfiles/5
         [HttpGet("{id}")]
+        [Route("GetJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> GetJobProfile(int id)
         {
             var jobProfile = await _context.JobProfile.FindAsync(id);
@@ -46,6 +48,7 @@ namespace ClickNCheck.Controllers
 
         // PUT: api/JobProfiles/5
         [HttpPut("{id}")]
+        [Route("UpdateJobProfile/{id}")]
         public async Task<IActionResult> PutJobProfile(int id, JobProfile jobProfile)
         {
             if (id != jobProfile.ID)
@@ -75,15 +78,6 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/JobProfiles
-        [HttpPost]
-        public async Task<ActionResult<JobProfile>> PostJobProfile(JobProfile jobProfile)
-        {
-            _context.JobProfile.Add(jobProfile);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetJobProfile", new { id = jobProfile.ID }, jobProfile);
-        }
 
         // POST: api/CreateJobProfile
         [HttpPost]
@@ -128,6 +122,7 @@ namespace ClickNCheck.Controllers
 
         // DELETE: api/JobProfiles/5
         [HttpDelete("{id}")]
+        [Route("DeleteJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> DeleteJobProfile(int id)
         {
             var jobProfile = await _context.JobProfile.FindAsync(id);
@@ -142,7 +137,7 @@ namespace ClickNCheck.Controllers
             return jobProfile;
         }
 
-        // POST: api/Users/5/AssignRecruiters
+        // POST: api/JobProfiles/5/AssignRecruiters
         [HttpPost()]
         [Route("{id}/AssignRecruiters")]
         public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
