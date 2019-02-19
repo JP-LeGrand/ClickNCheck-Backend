@@ -28,7 +28,7 @@ namespace ClickNCheck.Data
         public DbSet<Recruiter_Candidate> Recruiter_Candidate { get; set; }
         public DbSet<ContactPerson> ContactPerson { get; set; }
         public DbSet<Roles> Roles { get; set; }
-        public DbSet<Services> Services { get; set; }
+        public DbSet<Models.Services> Services { get; set; }
         public DbSet<LinkCode> LinkCodes { get; set; }
         public DbSet<UserType> UserType { get; set; }
         public DbSet<Vendor> Vendor { get; set; }

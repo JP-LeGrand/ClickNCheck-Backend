@@ -84,7 +84,7 @@ namespace ClickNCheck.Controllers
                 var _email = _administrator.Email;
                 var code = generateCode();
                 string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                 emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + _administrator.UserType + "/ signup/" + code + "\"");
+                 emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/administrator/" + _administrator.ID + "/ signup/" + code + "\"");
                 mailS.SendMail(_email, "Recruiter Sign Up Link", emailBody);
                 _model.Code = code;
                 _model.Used = false;
