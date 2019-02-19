@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace ClickNCheck.Controllers
 {
@@ -86,17 +88,42 @@ namespace ClickNCheck.Controllers
         // POST: api/CreateJobProfile
         [HttpPost]
         [Route("CreateJobProfile/{id}")]
-        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] JobProfile jobProfile)
+        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] string jobProfile)
         {
+            //convert result to JSON object
+            JObject json = JObject.Parse(jobProfile);
+            // convert JSON to JobProfile object
+            JobProfile j = new JobProfile
+            {
+                Title = json["title"].ToString(),
+                JobCode = json["code"].ToString(),
+                isCompleted = (bool)json["isCompleted"],
+                
+            };
+            string checksString = json["checks"].ToString();
+            int[] checks = Array.ConvertAll(checksString.Split(','), int.Parse);
             // find related organisation
             var org = await _context.Organisation.FindAsync(id);
-            jobProfile.Organisation = org;
+            j.Organisation = org;
 
+            //find vendors
+            for (int i = 0; i < checks.Length; i++)
+            {
+                var vendor = await _context.Vendor.FindAsync(checks[i]);
+
+                if (vendor == null)
+                {
+                    return NotFound("The vendor " + vendor.Name + " does not exist");
+                }
+                //add recruiter to job profile
+                j.JobProfile_Vendor.Add(new JobProfile_Vendor { JobProfile = j, Vendor = vendor, Order = i+1 });
+
+            }
             // save job profile
-            _context.JobProfile.Add(jobProfile);
+            _context.JobProfile.Add(j);
             await _context.SaveChangesAsync();
 
-            return Ok(jobProfile);
+            return Ok(j);
         }
 
         // DELETE: api/JobProfiles/5

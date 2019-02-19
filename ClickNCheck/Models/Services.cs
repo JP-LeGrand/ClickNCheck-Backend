@@ -13,8 +13,7 @@ namespace ClickNCheck.Models
         public string TurnaroundTime { get; set; }
         public string URL { get; set; }
         public bool isAvailable { get; set; }
-        public int VendorID { get; set; }
-        public Vendor Vendor { get; set; }
+        
 
     }
 }
