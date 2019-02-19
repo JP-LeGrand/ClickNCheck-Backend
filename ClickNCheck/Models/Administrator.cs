@@ -7,15 +7,20 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.Models
 {
-    public class Checks
+    public class Administrator
     {
-        public int ID { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public string TurnaraoundTime { get; set; }
 
-        [ForeignKey("OrganisationID")]
+        [Key]
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
+        [Phone]
+        public int Phone { get; set; }
+        public string Password { get; set; }
+        public int Org_ID { get; set; }
+
         public Organisation Organisation { get; set; }
-        public ICollection<JobProfile_Checks> JobProfile_Checks { get; } = new List<JobProfile_Checks>();
     }
 }

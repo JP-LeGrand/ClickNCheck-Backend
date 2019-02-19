@@ -75,6 +75,7 @@ namespace ClickNCheck.Controllers
 
         // POST: api/Users
         [HttpPost]
+        [Route("CreateUser")]
         public async Task<ActionResult<User>> PostUser(User User)
         {
             _context.User.Add(User);
@@ -122,7 +123,9 @@ namespace ClickNCheck.Controllers
             {
                 return NotFound("This Job Profile does not exist");
             }
-
+            EmailService emailService = new EmailService();
+            string emailBody = emailService.RecruiterMail();
+            
             //find recruiters
             for (int i = 0; i < ids.Length; i++)
             {
@@ -134,7 +137,8 @@ namespace ClickNCheck.Controllers
                 }
                //add recruiter to job profile
                 jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
-                  
+                emailService.SendMail(recruiter.Email, "New Job Profile", emailBody);
+                //emailService.SendMail(recruiter.Email,"New Job Profile Assignment",);
             }
             //save changes to job profile
             _context.Entry(jobProfile).State = EntityState.Modified;
@@ -163,8 +167,7 @@ namespace ClickNCheck.Controllers
         [HttpGet("Organization/{id}/recruiters")]
         public IEnumerable<User> GetAllRecruiters(int id)
         {
-            var recruiters = _context.User.Where(r => r.Organisation.ID == id && r.UserType == "Recruiter");
-
+            var recruiters = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 3) AND OrganisationID = {id}").ToList();
             return recruiters;
         }
     }
