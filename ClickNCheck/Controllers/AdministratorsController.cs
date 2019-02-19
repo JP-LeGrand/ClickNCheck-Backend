@@ -28,22 +28,21 @@ namespace ClickNCheck.Controllers
 
         [HttpPost()]
         [Route("sendMail")] //check if you need this routes
-        public ActionResult sendMail(string email)
+        public ActionResult sendMail(string person, string email)
         {
             string code = generateCode();
+           
+            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\SignUpEmail.html");
 
-            LinkCode _model = new LinkCode();
-            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-
-            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Administrators/signup/" + code + "\"");
+            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + person + "/signup/" + code + "\"");
+           
             _model.Code = code;
             _model.Used = false;
             _context.LinkCodes.Add(_model);
-            _context.SaveChanges();
-            EmailService mailS = new EmailService();
 
+          
             mailS.SendMail(email, "nane", emailBody);
-           
+            _context.SaveChanges();
             // return Ok(email);
             return Ok();
         }
@@ -54,24 +53,7 @@ namespace ClickNCheck.Controllers
         {
             _context.User.AddRange(recruiter);
             _context.SaveChanges();
-            for (int i = 0; i < recruiter.Length; i++)
-            {
-                sendMail(recruiter[i].Email);
-            }
-            return Ok("yes");
-        }
 
-        [HttpPost()]
-        [Route("admin")]
-        public ActionResult<User> regAdmin(User[] admin)
-        {
-            _context.User.AddRange(admin);
-            _context.SaveChanges();
-
-            for(int i = 0; i < admin.Length; i++)
-            {
-                sendMail(admin[i].Email);
-            }
             return Ok("yes");
         }
         
@@ -84,7 +66,7 @@ namespace ClickNCheck.Controllers
                 var _email = _administrator.Email;
                 var code = generateCode();
                 string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                 emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Administrators/" + _administrator.ID + "/ signup/" + code + "\"");
+                 emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + _administrator.UserType + "/ signup/" + code + "\"");
                 mailS.SendMail(_email, "Recruiter Sign Up Link", emailBody);
                 _model.Code = code;
                 _model.Used = false;
@@ -132,8 +114,7 @@ namespace ClickNCheck.Controllers
 
             if (our_code != null && our_code.Used == false)
             {
-                //return "Yey, You can register";
-                return Redirect("http://clickncheckkb.s3-website.us-east-2.amazonaws.com/");
+                return "Yey, You can register";
             }
             else
             {

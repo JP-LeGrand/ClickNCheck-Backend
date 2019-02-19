@@ -21,9 +21,8 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        // GET: api/JobProfiles/GetAllJobProfiles
+        // GET: api/JobProfiles
         [HttpGet]
-        [Route("GetAllJobProfiles")]
         public async Task<ActionResult<IEnumerable<JobProfile>>> GetJobProfile()
         {
             return await _context.JobProfile.ToListAsync();
@@ -84,7 +83,7 @@ namespace ClickNCheck.Controllers
             return CreatedAtAction("GetJobProfile", new { id = jobProfile.ID }, jobProfile);
         }
 
-        // POST: api/JobProfiles/CreateJobProfile
+        // POST: api/JobProfiles
         [HttpPost]
         [Route("CreateJobProfile")]
         public async Task<ActionResult<JobProfile>> CreateJobProfile(JobProfile jobProfile)
