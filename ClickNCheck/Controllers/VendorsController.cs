@@ -21,6 +21,7 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
+
         // GET: api/Vendors
         [HttpGet]
         [Route("GetAllVendors")]
@@ -75,7 +76,7 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/Vendors
+        // POST: api/Vendors/CreateVendor
         [HttpPost]
         [Route("CreateVendor")]
         public async Task<ActionResult<Vendor>> PostVendor(Vendor vendor)
@@ -85,6 +86,7 @@ namespace ClickNCheck.Controllers
 
             return CreatedAtAction("GetVendor", new { id = vendor.ID }, vendor);
         }
+
 
         // DELETE: api/Vendors/5
         [HttpDelete]

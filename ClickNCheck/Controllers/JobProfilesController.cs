@@ -23,10 +23,11 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        // GET: api/JobProfiles
+        // GET: api/JobProfiles/GetAllJobProfiles
         [HttpGet]
         [Route("GetAllJobProfiles")]
         public async Task<ActionResult<IEnumerable<JobProfile>>> GetAllJobProfiles()
+ Dev
         {
             return await _context.JobProfile.ToListAsync();
         }
@@ -109,12 +110,12 @@ namespace ClickNCheck.Controllers
                 {
                     return NotFound("The vendor " + vendor.Name + " does not exist");
                 }
-                //add recruiter to job profile
+                //add vendor to job profile
                 j.JobProfile_Vendor.Add(new JobProfile_Vendor { JobProfile = j, Vendor = vendor, Order = i+1 });
-
             }
             // save job profile
             _context.JobProfile.Add(j);
+
             await _context.SaveChangesAsync();
 
             return Ok(j);
