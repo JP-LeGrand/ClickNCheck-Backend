@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Reflection;
 
 namespace ClickNCheck.Controllers
 {
@@ -16,7 +18,8 @@ namespace ClickNCheck.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
-
+      
+        private LinkCode _linkCode;
         public UsersController(ClickNCheckContext context)
         {
             _context = context;
@@ -27,6 +30,48 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
             return await _context.User.ToListAsync();
+        }
+
+        [HttpPost]
+        [Route("PostRecruiters")] // create organization
+        public ActionResult<User> PostRecruiters(User [] recruiters)
+        {
+           
+            for (int x = 0; x < recruiters.Length; x++)
+            {
+                EmailService _emailService = new EmailService();
+                LinkCode _linkCode = new LinkCode();
+                User _users = new User();
+                string code = _emailService.generateCode();
+                _linkCode.Code = code;
+                _linkCode.Used = false;
+                recruiters[x].LinkCode = _linkCode;
+                //_context.LinkCodes.Add(_linkCode);
+
+                //getting code ID from LinkCode table
+                //    var entry = _context.LinkCodes.FirstOrDefault(d => d.Code == code);
+                //  var codeID = entry.ID;
+
+                
+//                userEntry.LinkCodeID = codeID;
+  //              _context.User.Update(userEntry);
+
+
+
+                string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Administrators/signup/" + code + "\"");
+
+               _emailService.SendMail(recruiters[x].Email, "Recruiter Signup", emailBody);
+
+
+
+            }
+            _context.User.AddRange(recruiters);
+            _context.SaveChanges();
+
+
+
+            return Ok("success");
         }
 
         // GET: api/Users/5
@@ -169,6 +214,14 @@ namespace ClickNCheck.Controllers
         {
             var recruiters = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 3) AND OrganisationID = {id}").ToList();
             return recruiters;
+        }
+
+        [HttpGet]
+        [Route("userTypes")]
+        public async Task<IEnumerable<UserType>> userTypesAsync()
+        {
+            var  userTypes = await _context.UserType.ToListAsync();
+            return userTypes;
         }
     }
 
