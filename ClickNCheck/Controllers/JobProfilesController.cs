@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace ClickNCheck.Controllers
 {
@@ -23,13 +25,15 @@ namespace ClickNCheck.Controllers
 
         // GET: api/JobProfiles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobProfile>>> GetJobProfile()
+        [Route("GetAllJobProfiles")]
+        public async Task<ActionResult<IEnumerable<JobProfile>>> GetAllJobProfiles()
         {
             return await _context.JobProfile.ToListAsync();
         }
 
         // GET: api/JobProfiles/5
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("GetJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> GetJobProfile(int id)
         {
             var jobProfile = await _context.JobProfile.FindAsync(id);
@@ -43,7 +47,8 @@ namespace ClickNCheck.Controllers
         }
 
         // PUT: api/JobProfiles/5
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("UpdateJobProfile/{id}")]
         public async Task<IActionResult> PutJobProfile(int id, JobProfile jobProfile)
         {
             if (id != jobProfile.ID)
@@ -73,29 +78,51 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/JobProfiles
+
+        // POST: api/CreateJobProfile
         [HttpPost]
-        public async Task<ActionResult<JobProfile>> PostJobProfile(JobProfile jobProfile)
+        [Route("CreateJobProfile/{id}")]
+        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] string jobProfile)
         {
-            _context.JobProfile.Add(jobProfile);
+            //convert result to JSON object
+            JObject json = JObject.Parse(jobProfile);
+            // convert JSON to JobProfile object
+            JobProfile j = new JobProfile
+            {
+                Title = json["title"].ToString(),
+                JobCode = json["code"].ToString(),
+                isCompleted = (bool)json["isCompleted"],
+                
+            };
+            string checksString = json["checks"].ToString();
+            int[] checks = Array.ConvertAll(checksString.Split(','), int.Parse);
+            // find related organisation
+            var org = await _context.Organisation.FindAsync(id);
+            j.Organisation = org;
+
+            //find vendors
+            for (int i = 0; i < checks.Length; i++)
+            {
+                var vendor = await _context.Vendor.FindAsync(checks[i]);
+
+                if (vendor == null)
+                {
+                    return NotFound("The vendor " + vendor.Name + " does not exist");
+                }
+                //add recruiter to job profile
+                j.JobProfile_Vendor.Add(new JobProfile_Vendor { JobProfile = j, Vendor = vendor, Order = i+1 });
+
+            }
+            // save job profile
+            _context.JobProfile.Add(j);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetJobProfile", new { id = jobProfile.ID }, jobProfile);
-        }
-
-        // POST: api/JobProfiles
-        [HttpPost]
-        [Route("CreateJobProfile")]
-        public async Task<ActionResult<JobProfile>> CreateJobProfile(JobProfile jobProfile)
-        {
-            _context.JobProfile.Add(jobProfile);
-            await _context.SaveChangesAsync();
-
-            return Ok(jobProfile);
+            return Ok(j);
         }
 
         // DELETE: api/JobProfiles/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("DeleteJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> DeleteJobProfile(int id)
         {
             var jobProfile = await _context.JobProfile.FindAsync(id);
@@ -110,20 +137,62 @@ namespace ClickNCheck.Controllers
             return jobProfile;
         }
 
-        [HttpPost()]
-        [Route("sendMail")] //check if you need this routes
-        public ActionResult sendMail(string email)
+        // POST: api/JobProfiles/5/AssignRecruiters
+        [HttpPost]
+        [Route("{id}/AssignRecruiters")]
+        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
         {
-            EmailService mailS = new EmailService();
-            string emailBody = mailS.RecruiterMail();
-            mailS.SendMail(email, "New Job Profile", emailBody);
-            // return Ok(email);
-            return Ok();
+            int jobId = id;
+
+            //find job profile
+            var jobProfile = await _context.JobProfile.FindAsync(jobId);
+
+            if (jobProfile == null)
+            {
+                return NotFound("This Job Profile does not exist");
+            }
+
+            //find recruiters
+            for (int i = 0; i < ids.Length; i++)
+            {
+                var recruiter = await _context.User.FindAsync(ids[i]);
+
+                if (recruiter == null)
+                {
+                    return NotFound("The recruiter " + recruiter.Name + recruiter.Surname + " does not exist");
+                }
+                //add recruiter to job profile
+                jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
+
+            }
+            //save changes to job profile
+            _context.Entry(jobProfile).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                var exists = _context.User.Any(e => e.ID == jobId);
+                if (!JobProfileExists(jobId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok(jobProfile);
         }
 
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
         }
+
+
     }
 }
