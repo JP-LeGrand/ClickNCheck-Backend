@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
+using ClickNCheck.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+//using System.Xml;
 
 namespace ClickNCheck.Controllers
 {
@@ -16,6 +19,7 @@ namespace ClickNCheck.Controllers
     public class AvailableController : ControllerBase
     {
         private ClickNCheckContext _context;
+        private ConnectToAPI obje;
 
         public AvailableController(ClickNCheckContext context)
         {
@@ -45,12 +49,26 @@ namespace ClickNCheck.Controllers
         // POST: api/available
         [HttpPost]
         [Route("addVendor")]
-        public async Task<ActionResult<Vendor>> PostUser(Vendor Vendor)
+        public async Task<ActionResult<Vendor>> PostVendor(Vendor Vendor)
         {
             _context.Vendor.Add(Vendor);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetVendor", new { id = Vendor.ID }, Vendor);
+        }
+
+        // POST: api/available
+        [HttpPost]
+        [Route("sendRequest")]
+        public HttpWebResponse sendRequest([FromBody]Object obj)
+        {
+            int type = obj.ToString().ToLower().Contains("xml")? 0 : 1; // get from the form
+            string message = type == 1 ? ((JObject) obj).ToString() : obj.ToString(); // get from the form
+            string url = obj.ToString(); // get from the form
+
+            obje = new ConnectToAPI(type, url, message);
+            
+            return obje.run();
         }
 
         // PUT api/available/{id}
