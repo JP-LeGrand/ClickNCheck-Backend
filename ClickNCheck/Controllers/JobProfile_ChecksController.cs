@@ -23,6 +23,7 @@ namespace ClickNCheck.Controllers
 
         // GET: api/JobProfile_Checks
         [HttpGet]
+        [Route("GetJobProfile_Checks")]
         public async Task<ActionResult<IEnumerable<JobProfile_Vendor>>> GetJobProfile_Checks()
         {
             return await _context.JobProfile_Checks.ToListAsync();
@@ -30,6 +31,7 @@ namespace ClickNCheck.Controllers
 
         // GET: api/JobProfile_Checks/5
         [HttpGet("{id}")]
+        [Route("GetJobProfile_Check")]
         public async Task<ActionResult<JobProfile_Vendor>> GetJobProfile_Checks(int id)
         {
             var jobProfile_Checks = await _context.JobProfile_Checks.FindAsync(id);
@@ -44,6 +46,7 @@ namespace ClickNCheck.Controllers
 
         // PUT: api/JobProfile_Checks/5
         [HttpPut("{id}")]
+        [Route("UpdateJobProfile_Check")]
         public async Task<IActionResult> PutJobProfile_Checks(int id, JobProfile_Vendor jobProfile_Checks)
         {
             if (id != jobProfile_Checks.VendorId)
@@ -74,6 +77,7 @@ namespace ClickNCheck.Controllers
 
         // POST: api/JobProfile_Checks
         [HttpPost]
+        [Route("CreateJobProfile_Check")]
         public async Task<ActionResult<JobProfile_Vendor>> PostJobProfile_Checks(JobProfile_Vendor jobProfile_Checks)
         {
             _context.JobProfile_Checks.Add(jobProfile_Checks);
@@ -98,6 +102,7 @@ namespace ClickNCheck.Controllers
 
         // DELETE: api/JobProfile_Checks/5
         [HttpDelete("{id}")]
+        [Route("DeleteJobProfile_Check")]
         public async Task<ActionResult<JobProfile_Vendor>> DeleteJobProfile_Checks(int id)
         {
             var jobProfile_Checks = await _context.JobProfile_Checks.FindAsync(id);
