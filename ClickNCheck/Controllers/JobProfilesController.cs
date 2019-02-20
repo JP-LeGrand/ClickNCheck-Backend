@@ -27,7 +27,6 @@ namespace ClickNCheck.Controllers
         [HttpGet]
         [Route("GetAllJobProfiles")]
         public async Task<ActionResult<IEnumerable<JobProfile>>> GetAllJobProfiles()
- Dev
         {
             return await _context.JobProfile.ToListAsync();
         }
