@@ -49,12 +49,40 @@ namespace ClickNCheck.Controllers
         // POST: api/available
         [HttpPost]
         [Route("addVendor")]
-        public async Task<ActionResult<Vendor>> PostVendor(Vendor Vendor)
+        public async Task<ActionResult<Vendor>> addVendor([FromBody] JObject input)
         {
-            _context.Vendor.Add(Vendor);
+            //Console.WriteLine("The available:");
+            JToken checkCategories = input.SelectToken("categories");
+            List<int> theCheckCategories = new List<int>();
+
+            foreach ( var item in checkCategories)
+            {
+                theCheckCategories.Add((int)item);
+            }
+
+            Vendor v = new Vendor
+            {
+                Name = input.SelectToken("vendorName").ToString()
+            };
+
+            //find recruiters
+            for (int i = 0; i < theCheckCategories.Count; i++)
+            {
+                var checkCategory = await _context.CheckCategory.FindAsync(theCheckCategories[i]);
+
+                if (checkCategory == null)
+                {
+                    return NotFound("The check category " + checkCategory.Category + " does not exist");
+                }
+                //add recruiter to job profile
+                v.Vendor_Category.Add(new Vendor_Category { Vendor = v, CheckCategory = checkCategory });
+            }
+
+            _context.Vendor.Add(v);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVendor", new { id = Vendor.ID }, Vendor);
+            return await _context.Vendor.LastAsync();
+
         }
 
         // POST: api/available
@@ -69,13 +97,6 @@ namespace ClickNCheck.Controllers
             obje = new ConnectToAPI(type, url, message);
             
             return obje.run();
-        }
-
-        // PUT api/available/{id}
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-            //Add new service for vendor with id = {id}
         }
 
         // DELETE api/available/{id}

@@ -14,7 +14,7 @@ namespace ClickNCheck.Models
         
 
         
-        public ICollection<JobProfile_Vendor> JobProfile_Vendor { get; } = new List<JobProfile_Vendor>();
-        public ICollection<Vendor_Category> Vendor_Category { get; } = new List<Vendor_Category>();
+        public ICollection<JobProfile_Vendor> JobProfile_Vendor { set; get; } = new List<JobProfile_Vendor>();
+        public ICollection<Vendor_Category> Vendor_Category { set; get; } = new List<Vendor_Category>();
     }
 }

@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\checkStubClasses\checkStubClasses\checkStubClasses.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Files\SignUpEmail.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

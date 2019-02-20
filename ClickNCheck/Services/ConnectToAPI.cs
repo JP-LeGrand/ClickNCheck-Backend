@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace ClickNCheck.Services
 {
@@ -15,8 +16,7 @@ namespace ClickNCheck.Services
     {
         private readonly int apiType;
         private readonly string apiURL;
-        private HttpWebResponse soapResponse;
-        private HttpWebResponse restResponse;
+        private HttpWebResponse response;
         private Object inputForm;
 
         public ConnectToAPI(int apitype, string url, Object inputform)
@@ -27,31 +27,42 @@ namespace ClickNCheck.Services
         }
         public HttpWebResponse run()
         {
-            switch (apiType)
+            try
             {
-                case 0:
-                    soapResponse = connectXML(apiURL, inputForm);
-                    return soapResponse;
-                case 1:
-                    restResponse = connectJSON(apiURL, inputForm); 
-                    return restResponse;
-                default: break;
+                switch (apiType)
+                {
+                    case 0:
+                        response = connectXML(apiURL, (XmlDocument)inputForm);
+                        return response;
+                    case 1:
+                        response = connectJSON(apiURL, (JObject)inputForm);
+                        return response;
+                    default:
+                        throw new Exception("Unknown API type");
+                }
             }
-            return null;
+            catch (Exception e)
+
+            {
+                Console.WriteLine("Could not send internet message. "+e.Source);
+                return null;
+            };
         }
 
-        private HttpWebResponse connectJSON(string url, Object form)
+        //TODO
+        private HttpWebResponse connectJSON(string url, JObject form)
         {
             throw new Exception();
         }
 
-        private HttpWebResponse connectXML(string url, Object inputForm)
+        private HttpWebResponse connectXML(string url, XmlDocument inputForm)
         {
             try
             {
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load("./NormalEnquirySOAPRequest.xml");
                 string xmlText = fillValuesIntoTemplate(inputForm, xmlDoc).ToString();
+                //xml document content in a single string.
                 return send(url, xmlText);
             }
 
@@ -73,11 +84,12 @@ namespace ClickNCheck.Services
             return (HttpWebResponse)request.GetResponse();
         }
 
-        private XmlDocument fillValuesIntoTemplate(object formObj, XmlDocument xmlDocument)
+        private XmlDocument fillValuesIntoTemplate(XmlDocument formFromFrontend, XmlDocument xmlDocument)
         {
-            /* For each entry in formObj find them in the xml
+            /* For each entry in formFromFrontend find them in the xml
              * and put them in the xml template.
              */
+            
             return xmlDocument;
         }
     }
