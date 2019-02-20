@@ -73,6 +73,7 @@ namespace ClickNCheck
 
             string code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
 
+            //TODO:
            /* while (_context.LinkCodes.FirstOrDefault(c => c.Code == code) != null)
             {
                 code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
