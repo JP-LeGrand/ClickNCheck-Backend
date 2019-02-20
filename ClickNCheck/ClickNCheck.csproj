@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190218154200_newDatabaseMigration.cs" />
     <Compile Remove="Migrations\20190218154200_newDatabaseMigration.Designer.cs" />
+    <Compile Remove="Migrations\20190219134715_fefe.cs" />
+    <Compile Remove="Migrations\20190219134715_fefe.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +20,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
     <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
