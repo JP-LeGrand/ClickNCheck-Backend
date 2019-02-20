@@ -30,7 +30,7 @@ namespace ClickNCheck.Controllers
         }
 
         // GET: api/Candidates/5
-        [HttpGet("{id}")]
+        [HttpGet]
         [Route("GetCandidate/{id}")]
         public async Task<ActionResult<Candidate>> GetCandidate(int id)
         {
@@ -45,7 +45,7 @@ namespace ClickNCheck.Controllers
         }
 
         // PUT: api/Candidates/5
-        [HttpPut("{id}")]
+        [HttpPut]
         [Route("UpdateCandidate/{id}")]
         public async Task<IActionResult> PutCandidate(int id, Candidate candidate)
         {
@@ -87,7 +87,7 @@ namespace ClickNCheck.Controllers
         }
 
         // DELETE: api/Candidates/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [Route("DeleteCandidate/{id}")]
         public async Task<ActionResult<Candidate>> DeleteCandidate(int id)
         {
@@ -109,7 +109,7 @@ namespace ClickNCheck.Controllers
         }
 
         // POST: api/Candidates/5/AssignCandidates
-        [HttpPost()]
+        [HttpPost]
         [Route("{id}/AssignCandidates")]
         public async Task<IActionResult> AssignCandidates(int id, [FromBody]int[] ids)
         {

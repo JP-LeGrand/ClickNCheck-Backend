@@ -32,7 +32,7 @@ namespace ClickNCheck.Controllers
         }
 
         // GET: api/JobProfiles/5
-        [HttpGet("{id}")]
+        [HttpGet]
         [Route("GetJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> GetJobProfile(int id)
         {
@@ -47,7 +47,7 @@ namespace ClickNCheck.Controllers
         }
 
         // PUT: api/JobProfiles/5
-        [HttpPut("{id}")]
+        [HttpPut]
         [Route("UpdateJobProfile/{id}")]
         public async Task<IActionResult> PutJobProfile(int id, JobProfile jobProfile)
         {
@@ -121,7 +121,7 @@ namespace ClickNCheck.Controllers
         }
 
         // DELETE: api/JobProfiles/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [Route("DeleteJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> DeleteJobProfile(int id)
         {
@@ -138,7 +138,7 @@ namespace ClickNCheck.Controllers
         }
 
         // POST: api/JobProfiles/5/AssignRecruiters
-        [HttpPost()]
+        [HttpPost]
         [Route("{id}/AssignRecruiters")]
         public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
         {
