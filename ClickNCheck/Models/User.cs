@@ -21,9 +21,10 @@ namespace ClickNCheck.Models
         public string Password { get; set; }
         public string Salt { get; set; }
         public int Otp { get; set; }
-        public User ManagerID { get; set; }
+        public int ManagerID { get; set; }
         public int OrganisationID { get; set; }
         public Organisation Organisation { get; set; }
+        public int LinkCodeID { get; set; }
         public LinkCode LinkCode { get; set; }
         public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; set; } = new List<Recruiter_JobProfile>();
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();

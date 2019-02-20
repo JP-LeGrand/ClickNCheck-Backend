@@ -26,8 +26,7 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        [HttpPost()]
-        [Route("sendMail")] //check if you need this routes
+       
         public ActionResult sendMail(string email)
         {
             string code = generateCode();

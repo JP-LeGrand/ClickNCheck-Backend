@@ -7,6 +7,7 @@ using System.Linq;
 using ClickNCheck.Models;
 using System.Net.Mime;
 using System.IO;
+using ClickNCheck.Data;
 
 namespace ClickNCheck
 {
@@ -18,6 +19,7 @@ namespace ClickNCheck
         readonly bool enableSSL = true;
         readonly string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
         readonly string password = "159357OLANI"; //Sender Password
+         
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -61,6 +63,32 @@ namespace ClickNCheck
         {
             string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
             return emailBody;
+        }
+
+        public string generateCode()
+        {
+            ClickNCheckContext _context = new ClickNCheckContext();
+            const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random rand = new Random();
+
+            string code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
+
+           /* while (_context.LinkCodes.FirstOrDefault(c => c.Code == code) != null)
+            {
+                code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
+
+            } */
+
+            return code;
+        }
+
+
+
+        public string randomNumberGenerator()
+        {
+            Random generator = new Random();
+            String r = generator.Next(0, 999999).ToString("D6");
+            return r;
         }
     }
 }
