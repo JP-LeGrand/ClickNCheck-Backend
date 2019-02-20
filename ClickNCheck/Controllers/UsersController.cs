@@ -90,20 +90,7 @@ namespace ClickNCheck.Controllers
             return Ok();
         }
 
-        [Route("signup/{code}")]
-        public ActionResult<string> checkCode(string code)
-        {
-            LinkCode our_code = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
-
-            if (our_code != null && our_code.Used == false)
-            {
-                return "Yey, You can register";
-            }
-            else
-            {
-                return "Link Error: This link has either been used or is invalid";
-            }
-        }
+     
 
         public string generateCode()
         {
