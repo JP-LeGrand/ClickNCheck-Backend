@@ -19,8 +19,6 @@ namespace ClickNCheck.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
-      
-        private LinkCode _linkCode;
         public UsersController(ClickNCheckContext context)
         {
             _context = context;
@@ -34,7 +32,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
-        [Route("PostRecruiters")] // create organization
+        [Route("PostRecruiters/recruiters")] // create organization
         public ActionResult<User> PostRecruiters(User [] recruiters)
         {
            
@@ -48,18 +46,7 @@ namespace ClickNCheck.Controllers
                 _linkCode.Code = code;
                 _linkCode.Used = false;
                 recruiters[x].LinkCode = _linkCode;
-                //_context.LinkCodes.Add(_linkCode);
-
-                //getting code ID from LinkCode table
-                //    var entry = _context.LinkCodes.FirstOrDefault(d => d.Code == code);
-                //  var codeID = entry.ID;
-
-                
-//                userEntry.LinkCodeID = codeID;
-  //              _context.User.Update(userEntry);
-
-
-
+        
                 string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
                 emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
@@ -70,11 +57,13 @@ namespace ClickNCheck.Controllers
             }
             _context.User.AddRange(recruiters);
             _context.SaveChanges();
-
-
-
+            
             return Ok("success");
         }
+
+      
+
+        [HttpGet]
         [Route("signup/{code}")]
         public ActionResult<string> checkCode(string code)
         {
@@ -82,21 +71,36 @@ namespace ClickNCheck.Controllers
 
             if (_userCode != null)
             {
-                return "Yey, You can register";
-               // return Redirect("http://clickncheckkb.s3-website.us-east-2.amazonaws.com/");
+         
+              return Redirect("https://s3.amazonaws.com/clickncheck-frontend-tafara/Click-N-Check-Frontend/src/html/admin/admin_registration.html?code=" + code);
+
             }
             else
             {
-                return "Link Error: This link has either been used or is invalid";
+                return Ok(code);
             }
+  
         }
 
-      /*  [Route("signup/passord")]
-        public ActionResult<User> updatePassword(string code)
+        [HttpPost]
+        [Route("registration")]
+        public ActionResult<string> registerUser([FromBody] string [] Password)
         {
+            //  var code = Response.
 
-        }*/
+            var pass = Password[0];
+            var code = Password[1];
 
+            var codeEntry = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
+            var codeID = codeEntry.ID;
+
+            var userEntry = _context.User.FirstOrDefault(d => d.LinkCodeID == codeID);
+
+            userEntry.Password = pass;
+            _context.User.Update(userEntry);
+
+            return Ok();
+        }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
