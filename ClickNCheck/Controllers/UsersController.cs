@@ -10,6 +10,7 @@ using ClickNCheck.Models;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Reflection;
+using ClickNCheck.Services;
 
 namespace ClickNCheck.Controllers
 {
@@ -39,10 +40,11 @@ namespace ClickNCheck.Controllers
            
             for (int x = 0; x < recruiters.Length; x++)
             {
+                CodeGenerator _codeGenerator = new CodeGenerator();
                 EmailService _emailService = new EmailService();
                 LinkCode _linkCode = new LinkCode();
                 User _users = new User();
-                string code = _emailService.generateCode();
+                string code = _codeGenerator.generateCode();
                 _linkCode.Code = code;
                 _linkCode.Used = false;
                 recruiters[x].LinkCode = _linkCode;
@@ -59,7 +61,7 @@ namespace ClickNCheck.Controllers
 
 
                 string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Administrators/signup/" + code + "\"");
+                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
                _emailService.SendMail(recruiters[x].Email, "Recruiter Signup", emailBody);
 
@@ -73,6 +75,28 @@ namespace ClickNCheck.Controllers
 
             return Ok("success");
         }
+        [Route("signup/{code}")]
+        public ActionResult<string> checkCode(string code)
+        {
+            LinkCode _userCode = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
+
+            if (_userCode != null)
+            {
+                return "Yey, You can register";
+               // return Redirect("http://clickncheckkb.s3-website.us-east-2.amazonaws.com/");
+            }
+            else
+            {
+                return "Link Error: This link has either been used or is invalid";
+            }
+        }
+
+      /*  [Route("signup/passord")]
+        public ActionResult<User> updatePassword(string code)
+        {
+
+        }*/
+
 
         // GET: api/Users/5
         [HttpGet("{id}")]
