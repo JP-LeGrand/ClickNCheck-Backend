@@ -11,6 +11,7 @@ namespace ClickNCheck.Models
     {
         public int ID { get; set; }
         public string Name { get; set; }
+        public int ServicesID { get; set; }
         public Services Services { get; set; }
 
 

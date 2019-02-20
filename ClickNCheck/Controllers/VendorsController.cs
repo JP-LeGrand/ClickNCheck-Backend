@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace ClickNCheck.Controllers
 {
@@ -27,7 +29,13 @@ namespace ClickNCheck.Controllers
         [Route("GetAllVendors")]
         public async Task<ActionResult<IEnumerable<Vendor>>> GetAllVendors()
         {
-            return await _context.Checks.ToListAsync();
+
+            var vendors = await _context.Checks.ToListAsync();
+            var categories = await _context.CheckCategory.ToListAsync();
+            var json = JsonConvert.SerializeObject(vendors);
+            json += JsonConvert.SerializeObject(categories);
+
+            return Ok(json);
         }
 
         // GET: api/Vendors/5
