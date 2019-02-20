@@ -161,24 +161,6 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<AddressType>().HasData(
                new AddressType() { ID = 2, Type = "Billing" });
 
-            
-
-            
-
-            modelBuilder.Entity<Vendor>().HasData(new
-            {
-                ID = 1,
-                //ServicesID = 1,
-                Name = "Compuscan"
-            });
-
-            modelBuilder.Entity<Vendor>().HasData(new
-            {
-                ID = 2,
-                ServicesID = 1,
-                Name = "Experian"
-            });
-
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 1,
@@ -189,6 +171,24 @@ namespace ClickNCheck.Data
                 URL = "www.google.com",
                 VendorID = 1
             });
+
+
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 1,
+                ServicesID = 1,
+                Name = "Compuscan"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 2,
+                ServicesID = 1,
+                Name = "Experian"
+            });
+
+           
         }
 
   
