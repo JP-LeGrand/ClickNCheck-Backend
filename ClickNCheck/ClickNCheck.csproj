@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190218154200_newDatabaseMigration.cs" />
     <Compile Remove="Migrations\20190218154200_newDatabaseMigration.Designer.cs" />
+    <Compile Remove="Migrations\20190219134715_fefe.cs" />
+    <Compile Remove="Migrations\20190219134715_fefe.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

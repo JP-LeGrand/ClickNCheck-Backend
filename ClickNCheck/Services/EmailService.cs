@@ -63,6 +63,5 @@ namespace ClickNCheck
             return emailBody;
         }
     }
-
 }
 
