@@ -18,35 +18,7 @@ namespace Tests
         }
 
 
-        [Test]
-        public void GeneratesUniqueCode()
-        {
-            //Arrange
-            IQueryable<Administrator> mockAdministrator = new List<Administrator> {
-               new Administrator {ID = 1, Email = "nane@gmail.com" }
-            }.AsQueryable();
-
-
-            var mockSet = new Mock<DbSet<LinkCode>>();
-            var mockContext = new Mock<ClickNCheckContext>();
-            mockContext.Setup(c => c.LinkCodes).Returns(mockSet.Object);
-            var controller = new AdministratorsController(mockContext.Object);
-            var code = controller.generateCode();
-
-
-            IQueryable<LinkCode> mockLinkCode = new List<LinkCode> {
-               new LinkCode {ID = 1, Code = code, /*Admin_ID = 1,*/Used = false}
-            }.AsQueryable();
-
-
-            mockSet.Setup(m => m.Find(code)).Returns(mockLinkCode.Where(x => x.Code == code).First);
-
-            //Act
-            var result = controller.generateCode();
-
-            //Assert
-            Assert.AreNotEqual(code, result);
-        }
+        
 
 
         [Test]
