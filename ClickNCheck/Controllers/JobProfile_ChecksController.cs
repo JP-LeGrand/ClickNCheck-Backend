@@ -23,14 +23,16 @@ namespace ClickNCheck.Controllers
 
         // GET: api/JobProfile_Checks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobProfile_Checks>>> GetJobProfile_Checks()
+        [Route("GetJobProfile_Checks")]
+        public async Task<ActionResult<IEnumerable<JobProfile_Vendor>>> GetJobProfile_Checks()
         {
             return await _context.JobProfile_Checks.ToListAsync();
         }
 
         // GET: api/JobProfile_Checks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobProfile_Checks>> GetJobProfile_Checks(int id)
+        [Route("GetJobProfile_Check")]
+        public async Task<ActionResult<JobProfile_Vendor>> GetJobProfile_Checks(int id)
         {
             var jobProfile_Checks = await _context.JobProfile_Checks.FindAsync(id);
 
@@ -44,9 +46,10 @@ namespace ClickNCheck.Controllers
 
         // PUT: api/JobProfile_Checks/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJobProfile_Checks(int id, JobProfile_Checks jobProfile_Checks)
+        [Route("UpdateJobProfile_Check")]
+        public async Task<IActionResult> PutJobProfile_Checks(int id, JobProfile_Vendor jobProfile_Checks)
         {
-            if (id != jobProfile_Checks.ChecksId)
+            if (id != jobProfile_Checks.VendorId)
             {
                 return BadRequest();
             }
@@ -74,7 +77,8 @@ namespace ClickNCheck.Controllers
 
         // POST: api/JobProfile_Checks
         [HttpPost]
-        public async Task<ActionResult<JobProfile_Checks>> PostJobProfile_Checks(JobProfile_Checks jobProfile_Checks)
+        [Route("CreateJobProfile_Check")]
+        public async Task<ActionResult<JobProfile_Vendor>> PostJobProfile_Checks(JobProfile_Vendor jobProfile_Checks)
         {
             _context.JobProfile_Checks.Add(jobProfile_Checks);
             try
@@ -83,7 +87,7 @@ namespace ClickNCheck.Controllers
             }
             catch (DbUpdateException)
             {
-                if (JobProfile_ChecksExists(jobProfile_Checks.ChecksId))
+                if (JobProfile_ChecksExists(jobProfile_Checks.VendorId))
                 {
                     return Conflict();
                 }
@@ -93,12 +97,13 @@ namespace ClickNCheck.Controllers
                 }
             }
 
-            return CreatedAtAction("GetJobProfile_Checks", new { id = jobProfile_Checks.ChecksId }, jobProfile_Checks);
+            return CreatedAtAction("GetJobProfile_Checks", new { id = jobProfile_Checks.VendorId }, jobProfile_Checks);
         }
 
         // DELETE: api/JobProfile_Checks/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<JobProfile_Checks>> DeleteJobProfile_Checks(int id)
+        [Route("DeleteJobProfile_Check")]
+        public async Task<ActionResult<JobProfile_Vendor>> DeleteJobProfile_Checks(int id)
         {
             var jobProfile_Checks = await _context.JobProfile_Checks.FindAsync(id);
             if (jobProfile_Checks == null)
@@ -114,7 +119,7 @@ namespace ClickNCheck.Controllers
 
         private bool JobProfile_ChecksExists(int id)
         {
-            return _context.JobProfile_Checks.Any(e => e.ChecksId == id);
+            return _context.JobProfile_Checks.Any(e => e.VendorId == id);
         }
     }
 }

@@ -22,16 +22,13 @@ namespace ClickNCheck.Models
         public string Maiden_Surname { get; set; }
         
         public string Email { get; set; }
-        
+        public bool HasConsented { get; set; }
         public string Phone { get; set; }
+        public string Password { get; set; }
 
         [ForeignKey("OrganisationID")]
         public Organisation Organisation { get; set; }
-
-
-        [ForeignKey("RecruiterID")]
-        public User Recruiter { get; set; }
-
+        public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();
         public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; } = new List<Candidate_JobProfile>();
     }
 }
