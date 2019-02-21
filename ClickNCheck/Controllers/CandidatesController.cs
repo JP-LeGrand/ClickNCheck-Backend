@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
+using ClickNCheck.Services;
 
 namespace ClickNCheck.Controllers
 {
@@ -15,6 +16,8 @@ namespace ClickNCheck.Controllers
     public class CandidatesController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
+        CodeGenerator codeGenerator = new CodeGenerator();
+        EmailService service = new EmailService();
 
         public CandidatesController(ClickNCheckContext context)
         {
@@ -80,9 +83,23 @@ namespace ClickNCheck.Controllers
         [Route("CreateCandidate")]
         public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
         {
-            _context.Candidate.Add(candidate);
-            await _context.SaveChangesAsync();
+            candidate.Password = codeGenerator.ReferenceNumber();
+            var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
+            var mailBody = service.CandidateMail();
+            //reformat email content
+            mailBody.Replace("{CandidateName}",candidate.Name);
+            mailBody.Replace("{OrganisationName}", org.Name);
+            mailBody.Replace("{referenceNumber}", candidate.Password);
+            try
+            {
+                service.SendMail(candidate.Email, "New Verificaiton Request", mailBody);
+                _context.Candidate.Add(candidate);
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
 
+            }
             return CreatedAtAction("GetCandidate", new { id = candidate.ID }, candidate);
         }
 
