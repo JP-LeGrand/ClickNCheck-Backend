@@ -234,6 +234,7 @@ namespace ClickNCheck.Controllers
                 jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
                 emailService.SendMail(recruiter.Email, "New Job Profile", emailBody);
                 //emailService.SendMail(recruiter.Email,"New Job Profile Assignment",);
+                //ghost
             }
             //save changes to job profile
             _context.Entry(jobProfile).State = EntityState.Modified;
