@@ -11,6 +11,7 @@ using ClickNCheck.Models;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Reflection;
+using ClickNCheck.Services;
 
 using Microsoft.AspNetCore.Authorization;
 
@@ -21,7 +22,6 @@ namespace ClickNCheck.Controllers
     [Authorize]
     public class UsersController : ControllerBase
     {
-
         private ClickNCheckContext _context;
         EmailService mailS = new EmailService();
         LinkCode _model = new LinkCode();
@@ -90,20 +90,7 @@ namespace ClickNCheck.Controllers
             return Ok();
         }
 
-        [Route("signup/{code}")]
-        public ActionResult<string> checkCode(string code)
-        {
-            LinkCode our_code = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
-
-            if (our_code != null && our_code.Used == false)
-            {
-                return "Yey, You can register";
-            }
-            else
-            {
-                return "Link Error: This link has either been used or is invalid";
-            }
-        }
+     
 
         public string generateCode()
         {
@@ -128,33 +115,23 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
-        [Route("PostRecruiters")] // create organization
+        [Route("PostRecruiters/recruiters")] // create organization
         public ActionResult<User> PostRecruiters(User [] recruiters)
         {
            
             for (int x = 0; x < recruiters.Length; x++)
             {
+                CodeGenerator _codeGenerator = new CodeGenerator();
                 EmailService _emailService = new EmailService();
                 LinkCode _linkCode = new LinkCode();
                 User _users = new User();
-                string code = _emailService.generateCode();
+                string code = _codeGenerator.generateCode();
                 _linkCode.Code = code;
                 _linkCode.Used = false;
                 recruiters[x].LinkCode = _linkCode;
-                //_context.LinkCodes.Add(_linkCode);
-
-                //getting code ID from LinkCode table
-                //    var entry = _context.LinkCodes.FirstOrDefault(d => d.Code == code);
-                //  var codeID = entry.ID;
-
-                
-//                userEntry.LinkCodeID = codeID;
-  //              _context.User.Update(userEntry);
-
-
-
+        
                 string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Administrators/signup/" + code + "\"");
+                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
                _emailService.SendMail(recruiters[x].Email, "Recruiter Signup", emailBody);
 
@@ -163,10 +140,49 @@ namespace ClickNCheck.Controllers
             }
             _context.User.AddRange(recruiters);
             _context.SaveChanges();
-
-
-
+            
             return Ok("success");
+        }
+
+      
+
+        [HttpGet]
+        [Route("signup/{code}")]
+        public ActionResult<string> checkCode(string code)
+        {
+            LinkCode _userCode = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
+
+            if (_userCode != null)
+            {
+         
+              return Redirect("https://s3.amazonaws.com/clickncheck-frontend-tafara/Click-N-Check-Frontend/src/html/admin/admin_registration.html?code=" + code);
+
+            }
+            else
+            {
+                return Ok(code);
+            }
+  
+        }
+
+        [HttpPost]
+        [Route("registration")]
+        public ActionResult<string> registerUser([FromBody] string [] Password)
+        {
+            //  var code = Response.
+
+            var pass = Password[0];
+            var code = Password[1];
+
+            var codeEntry = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
+            var codeID = codeEntry.ID;
+
+            var userEntry = _context.User.FirstOrDefault(d => d.LinkCodeID == codeID);
+
+            userEntry.Password = pass;
+            _context.User.Update(userEntry);
+
+            return Ok();
         }
 
         // GET: api/Users/5
