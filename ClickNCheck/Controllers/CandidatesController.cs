@@ -86,6 +86,17 @@ namespace ClickNCheck.Controllers
             return CreatedAtAction("GetCandidate", new { id = candidate.ID }, candidate);
         }
 
+        [HttpPost]
+        [Route("CreateBulkCandidate")]
+        public async Task<ActionResult<Candidate>> CreateBulkCandidate([FromBody] List<Candidate> candidates)
+        {
+
+            await _context.Candidate.AddRangeAsync(candidates);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         // DELETE: api/Candidates/5
         [HttpDelete]
         [Route("DeleteCandidate/{id}")]

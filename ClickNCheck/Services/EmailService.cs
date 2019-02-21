@@ -65,7 +65,11 @@ namespace ClickNCheck
             return emailBody;
         }
 
-       
+       public string CandidateMail()
+        {
+            string emailBody = File.ReadAllText(@"..\ClickNCheck\Files\CandidateEmail.html");
+            return emailBody;
+        }
     }
 }
 
