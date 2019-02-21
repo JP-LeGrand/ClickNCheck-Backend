@@ -19,42 +19,21 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UsersController : ControllerBase
     {
         private ClickNCheckContext _context;
         EmailService mailS = new EmailService();
         LinkCode _model = new LinkCode();
         User _userModel = new User();
+        Roles _role = new Roles();
 
         public UsersController(ClickNCheckContext context)
         {
             _context = context;
         }
 
-        [HttpPost()]
-        [Route("sendEmail")] //check if you need this routes
-        public ActionResult sendMail(string person, string email)
-        {
-            string code = generateCode();
-
-            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\SignUpEmail.html");
-
-            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + person + "/signup/" + code + "\"");
-
-            _model.Code = code;
-            _model.Used = false;
-            _context.LinkCodes.Add(_model);
-
-
-            mailS.SendMail(email, "nane", emailBody);
-            _context.SaveChanges();
-            // return Ok(email);
-
-            return Ok();
-
-        }
-
+       
         [HttpPost()]
         [Route("signUp")]
         public ActionResult<User> regAdmin(User[] administrators)
@@ -65,48 +44,9 @@ namespace ClickNCheck.Controllers
             return Ok("yes");
         }
 
-        [HttpGet]
-        [Route("bulkEmail")]
-        public async Task<ActionResult<IEnumerable<User>>> getAdministrators()
-        {
-            var _administrators = await _context.User.ToListAsync();
-            foreach (var _administrator in _administrators)
-            {
-                var _email = _administrator.Email;
-                var code = generateCode();
-                var id = _administrator.ID;
-                _model.Code = code;
-                _model.Used = false;
-                _context.LinkCodes.Add(_model);
-                string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + "/signup/" + code + "\"");
-                mailS.SendMail(_email, "Admin Sign Up Link", emailBody);
+      
 
-
-            }
-
-            _context.SaveChanges();
-
-            return Ok();
-        }
-
-       
-
-        public string generateCode()
-        {
-            const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            Random rand = new Random();
-
-            string code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
-
-            while (_context.LinkCodes.FirstOrDefault(c => c.Code == code) != null)
-            {
-                code = new string(Enumerable.Repeat(characters, 10).Select(s => s[rand.Next(s.Length)]).ToArray());
-
-            }
-
-            return code;
-        }
+      
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
@@ -115,33 +55,51 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
-        [Route("PostRecruiters/recruiters")] // create organization
-        public ActionResult<User> PostRecruiters(User [] recruiters)
+        [Route("PostUsers/{id}")]
+        public ActionResult<User> PostUsers(User[] users, int id)
         {
-           
-            for (int x = 0; x < recruiters.Length; x++)
+
+            var _entryType = _context.UserType.FirstOrDefault(x => x.ID == id);
+            
+
+            for (int x = 0; x < users.Length; x++)
             {
                 CodeGenerator _codeGenerator = new CodeGenerator();
                 EmailService _emailService = new EmailService();
                 LinkCode _linkCode = new LinkCode();
-                User _users = new User();
                 string code = _codeGenerator.generateCode();
                 _linkCode.Code = code;
                 _linkCode.Used = false;
-                recruiters[x].LinkCode = _linkCode;
-        
-                string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                users[x].LinkCode = _linkCode;
 
-               _emailService.SendMail(recruiters[x].Email, "Recruiter Signup", emailBody);
+                users[x].Roles.Add(new Roles { User = users[x], UserType = _entryType });
+                if (_entryType.Type == "Recruiter")
+                {
+                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+
+                    _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
+                }
+                else if (_entryType.Type == "Manager")
+
+                {
+                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+
+                    _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
+
+                }
+              
 
 
 
             }
-            _context.User.AddRange(recruiters);
+            _context.User.AddRange(users);
             _context.SaveChanges();
+
             
-            return Ok("success");
+
+            return Ok(_entryType.Type);
         }
 
       
@@ -166,7 +124,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
-        [Route("registration")]
+        [Route("    ")]
         public ActionResult<string> registerUser([FromBody] string [] Password)
         {
             //  var code = Response.
@@ -331,7 +289,7 @@ namespace ClickNCheck.Controllers
         [Route("userTypes")]
         public async Task<IEnumerable<UserType>> userTypesAsync()
         {
-            var  userTypes = await _context.UserType.ToListAsync();
+            var  userTypes = await _context.UserType.Where(u => u.Type != "Administrator" && u.Type != "SuperAdmin").ToListAsync();
             return userTypes;
         }
     }
