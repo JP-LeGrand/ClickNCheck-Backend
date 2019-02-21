@@ -9,6 +9,7 @@
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Province { get; set; }
+        public int AddressTypeID { get; set; }
         public AddressType AddressType { get; set; }
     }
 }
