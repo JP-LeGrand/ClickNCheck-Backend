@@ -12,6 +12,7 @@ namespace ClickNCheck.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public string RegistrationNumber { get; set; }
+        public string CostCentreNumber { get; set; }
         public string TaxNumber { get; set; }
         [ForeignKey("AccountsPersonID")]
         public AccountsPerson AccountsPerson { get; set; }
