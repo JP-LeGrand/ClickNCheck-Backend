@@ -89,9 +89,9 @@ namespace ClickNCheck.Controllers
             User user = _context.User.Find(Convert.ToInt32(user_otp[0]));
             if (user.Otp.ToString() == user_otp[1])
             {
-                user.Otp = 0;
+               /* user.Otp = 0;
                 _context.Update(user);
-                _context.SaveChanges();
+                _context.SaveChanges();*/
                 return Ok(BuildToken(user));
 
             }

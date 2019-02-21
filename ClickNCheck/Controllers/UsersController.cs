@@ -13,6 +13,8 @@ using System.IO;
 using System.Reflection;
 
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ClickNCheck.Controllers
 {
@@ -87,7 +89,7 @@ namespace ClickNCheck.Controllers
 
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value);
         }
 
         [Route("signup/{code}")]
