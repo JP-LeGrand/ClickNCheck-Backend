@@ -31,7 +31,7 @@ namespace ClickNCheck.Controllers
             _config = config;
         }
 
-        [HttpPost()]
+        [HttpPost]
         [Route("login")]
         //, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] string[] credentials) //string email, string password)

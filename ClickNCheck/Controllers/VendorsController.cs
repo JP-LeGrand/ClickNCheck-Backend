@@ -30,10 +30,12 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<IEnumerable<Vendor>>> GetAllVendors()
         {
 
-            var vendors = await _context.Checks.ToListAsync();
-            var categories = await _context.CheckCategory.ToListAsync();
-            var json = JsonConvert.SerializeObject(vendors);
-            json += JsonConvert.SerializeObject(categories);
+            //var vendors = await _context.Checks.ToListAsync();
+            //var categories = await _context.CheckCategory.ToListAsync();
+            var vendor_cat = await _context.Vendor_Category.ToListAsync();
+            //var json = JsonConvert.SerializeObject(vendors);
+            //json += JsonConvert.SerializeObject(categories);
+            var json = JsonConvert.SerializeObject(vendor_cat);
 
             return Ok(json);
         }
