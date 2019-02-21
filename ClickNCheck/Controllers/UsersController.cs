@@ -22,7 +22,7 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private ClickNCheckContext _context;
@@ -204,24 +204,50 @@ namespace ClickNCheck.Controllers
 
 
         [HttpPost]
-        [Route("register/recruiter")]
+        [Route("register")]
         public ActionResult<string> registerRecruiter([FromBody] string[] id_pass_manager)
         {
             //  var code = Response.
 
             int recruiter_id = Convert.ToInt32(id_pass_manager[0]);
-            var pass = id_pass_manager[1];
-            var manager_id = id_pass_manager[2];
+            string pass = id_pass_manager[1];
+            int manager_id = -1;
+
+            if (id_pass_manager.Length > 2)
+            {
+                manager_id = Convert.ToInt32(id_pass_manager[2]);
+            }
+            
 
            // var codeEntry = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
             //var codeID = codeEntry.ID;
 
             User user = _context.User.FirstOrDefault(d => d.ID == recruiter_id);
 
-            user.Password = pass;
-            _context.User.Update(user);
-            _context.SaveChangesAsync();
-            return Ok();
+            
+            
+            var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
+            // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
+            var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
+            // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
+
+            if (recruiters.Contains(user.ID))
+            {
+                user.Password = pass;
+                user.ManagerID = manager_id;
+                _context.User.Update(user);
+                _context.SaveChangesAsync();
+                return Ok("recruiter");
+            }
+            else if (admins.Contains(user.ID))
+            {
+                user.Password = pass;
+                _context.User.Update(user);
+                _context.SaveChangesAsync();
+                return Ok("admin");
+            }
+
+            return BadRequest();
         }
 
         // GET: api/Users/5

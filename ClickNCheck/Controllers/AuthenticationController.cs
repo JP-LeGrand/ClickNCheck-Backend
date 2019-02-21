@@ -89,10 +89,24 @@ namespace ClickNCheck.Controllers
             User user = _context.User.Find(Convert.ToInt32(user_otp[0]));
             if (user.Otp.ToString() == user_otp[1])
             {
-               /* user.Otp = 0;
-                _context.Update(user);
-                _context.SaveChanges();*/
-                return Ok(BuildToken(user));
+                /* user.Otp = 0;
+                 _context.Update(user);
+                 _context.SaveChanges();*/
+                var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
+                // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
+                var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
+                // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
+
+                if (admins.Contains(user.ID))
+                {
+                    string []token_role = { BuildToken(user), "admin" };
+                    return Ok(token_role);
+                }
+                else if (recruiters.Contains(user.ID))
+                {
+                    string[] token_role = { BuildToken(user), "recruiter" };
+                    return Ok(token_role);
+                }
 
             }
             return Unauthorized();
