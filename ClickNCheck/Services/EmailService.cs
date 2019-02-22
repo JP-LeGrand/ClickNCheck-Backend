@@ -8,6 +8,7 @@ using ClickNCheck.Models;
 using System.Net.Mime;
 using System.IO;
 
+
 namespace ClickNCheck
 {
     public class EmailService
@@ -18,6 +19,7 @@ namespace ClickNCheck
         readonly bool enableSSL = true;
         readonly string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
         readonly string password = "159357OLANI"; //Sender Password
+         
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -60,6 +62,12 @@ namespace ClickNCheck
         public string RecruiterMail()
         {
             string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
+            return emailBody;
+        }
+
+       public string CandidateMail()
+        {
+            string emailBody = File.ReadAllText(@"..\ClickNCheck\Files\CandidateEmail.html");
             return emailBody;
         }
     }

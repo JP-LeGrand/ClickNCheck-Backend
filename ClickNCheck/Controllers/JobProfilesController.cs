@@ -82,20 +82,16 @@ namespace ClickNCheck.Controllers
         // POST: api/CreateJobProfile
         [HttpPost]
         [Route("CreateJobProfile/{id}")]
-        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] string jobProfile)
+        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] JObject jobProfile)
         {
-            //convert result to JSON object
-            JObject json = JObject.Parse(jobProfile);
             // convert JSON to JobProfile object
-            JobProfile j = new JobProfile
-            {
-                Title = json["title"].ToString(),
-                JobCode = json["code"].ToString(),
-                isCompleted = (bool)json["isCompleted"],
-                
-            };
-            string checksString = json["checks"].ToString();
-            int[] checks = Array.ConvertAll(checksString.Split(','), int.Parse);
+            JobProfile j = new JobProfile();
+
+            j.Title = jobProfile["title"].ToString();
+            j.JobCode = jobProfile["code"].ToString();
+            j.isCompleted = (bool)jobProfile["isCompleted"];
+            JArray array = (JArray)jobProfile["checks"];
+            int[] checks = array.Select(jv => (int)jv).ToArray();
             // find related organisation
             var org = await _context.Organisation.FindAsync(id);
             j.Organisation = org;
