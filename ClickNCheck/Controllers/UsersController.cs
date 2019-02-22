@@ -37,29 +37,6 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost()]
-        [Route("sendEmail")] //check if you need this routes
-        public ActionResult sendMail(string person, string email)
-        {
-            string code = generateCode();
-
-            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\SignUpEmail.html");
-
-            emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + person + "/signup/" + code + "\"");
-
-            _model.Code = code;
-            _model.Used = false;
-            _context.LinkCodes.Add(_model);
-
-
-            mailS.SendMail(email, "nane", emailBody);
-            _context.SaveChanges();
-            // return Ok(email);
-
-            return Ok();
-
-        }
-
-        [HttpPost()]
         [Route("signUp")]
         public ActionResult<User> regAdmin(User[] administrators)
         {
@@ -69,30 +46,6 @@ namespace ClickNCheck.Controllers
             return Ok("yes");
         }
 
-        [HttpGet]
-        [Route("bulkEmail")]
-        public async Task<ActionResult<IEnumerable<User>>> getAdministrators()
-        {
-            var _administrators = await _context.User.ToListAsync();
-            foreach (var _administrator in _administrators)
-            {
-                var _email = _administrator.Email;
-                var code = generateCode();
-                var id = _administrator.ID;
-                _model.Code = code;
-                _model.Used = false;
-                _context.LinkCodes.Add(_model);
-                string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/" + "/signup/" + code + "\"");
-                mailS.SendMail(_email, "Admin Sign Up Link", emailBody);
-
-
-            }
-
-            _context.SaveChanges();
-
-            return Ok(User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value);
-        }
 
         // GET: api/Users
         [HttpGet]
