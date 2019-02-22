@@ -367,9 +367,9 @@ namespace ClickNCheck.Controllers
         public IEnumerable<User> GetAllRecruiters(int id)
         {
             var roles = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.User).ToList();
-            //var recruiters = _contextUsers.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
-            var recruiters = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 3) AND OrganisationID = {id}").ToList();
-            return recruiters;
+            var recruiters = _context.User.Where(x => x.OrganisationID == id && roles.Contains(x));
+            //var recruiters = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 3) AND OrganisationID = {id}").ToList();
+            return roles;
         }
 
         [HttpGet]
