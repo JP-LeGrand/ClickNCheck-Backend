@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-//using System.Xml;
 
 namespace ClickNCheck.Controllers
 {
@@ -56,7 +48,6 @@ namespace ClickNCheck.Controllers
         [Route("addVendor")]
         public async Task<ActionResult<Vendor>> addVendor([FromBody] JObject input)
         {
-            //Console.WriteLine("The available:");
             JToken checkCategories = input.SelectToken("categories");
             List<int> theCheckCategories = new List<int>();
 
@@ -70,7 +61,7 @@ namespace ClickNCheck.Controllers
                 Name = input.SelectToken("vendorName").ToString()
             };
 
-            //find recruiters
+            //find checkCategory
             for (int i = 0; i < theCheckCategories.Count; i++)
             {
                 var checkCategory = await _context.CheckCategory.FindAsync(theCheckCategories[i]);
@@ -87,7 +78,6 @@ namespace ClickNCheck.Controllers
             await _context.SaveChangesAsync();
 
             return await _context.Vendor.LastAsync();
-
         }
 
         // POST: api/available/{id}/sendrequest
@@ -95,12 +85,15 @@ namespace ClickNCheck.Controllers
         [Route("{id}/sendRequest")]
         public async Task<Object> sendRequest(int id, [FromBody]Object obj)
         {
-            ConnectToAPI connect = new ConnectToAPI(0, "https://www.efr.fg");
+            ConnectToAPI connect = new ConnectToAPI(0, "https://webservices-uat.compuscan.co.za/NormalSearchService?wsdl");
             string res = await connect.run((JObject)obj);
 
             res = ConnectToAPI.extractCompuscanRetValue(res);
             if (res != null)
             {
+                string pwd = $"{Directory.GetCurrentDirectory()}",
+                    zipPath = $"{pwd}/../Services";
+                //find out how to access and use Blob storage not local storage
                 if (ConnectToAPI.makeZipFile(@"C:/vault/chub_777.zip", res))
                 {
                     if (ConnectToAPI.extractTheZip(@"C:/vault/chub_777.zip", @"C:/chub_777"))

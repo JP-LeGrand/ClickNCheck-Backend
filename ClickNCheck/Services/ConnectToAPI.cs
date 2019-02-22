@@ -56,7 +56,7 @@ namespace ClickNCheck.Services
             return soapText;
         }
 
-        //TODO
+        //TODO REST API
         private async Task<string> connectJSON(string url, JObject form)
         {
             throw new Exception();
