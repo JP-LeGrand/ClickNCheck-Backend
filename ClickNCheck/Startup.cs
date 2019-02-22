@@ -40,7 +40,11 @@ namespace ClickNCheck
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
 
-
+            services.AddMvc()
+                .AddJsonOptions(
+                    options => options.SerializerSettings.ReferenceLoopHandling =
+                    Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
