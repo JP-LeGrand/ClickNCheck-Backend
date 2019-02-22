@@ -33,7 +33,7 @@ namespace ClickNCheck.Controllers
         }
 
        
-        [HttpPost()]
+        [HttpPost]
         [Route("signUp")]
         public ActionResult<User> regAdmin(User[] administrators)
         {
@@ -105,7 +105,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
-        [Route("    ")]
+        [Route("registerUser")]
         public ActionResult<string> registerUser([FromBody] string [] Password)
         {
             //  var code = Response.
