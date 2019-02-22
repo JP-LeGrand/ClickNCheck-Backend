@@ -4,8 +4,8 @@
       <web:DoNormalEnquiry>
          <!--Optional:-->
          <request>
-            <pUsrnme>******</pUsrnme>
-            <pPasswrd>******</pPasswrd>
+            <pUsrnme>77985-1</pUsrnme>
+            <pPasswrd>devtest</pPasswrd>
             <pVersion>1.0</pVersion>
             <pOrigin>CC-SOAPUI</pOrigin>
             <pOrigin_Version>5.2.1</pOrigin_Version>
@@ -35,7 +35,7 @@
 									<WorkTelNo></WorkTelNo>
 									<CellTelNo></CellTelNo>
 									<ResultType>XPDF2</ResultType>
-									<RunCodix>Y</RunCodix>
+									<RunCodix>N</RunCodix>
 									<CodixParams></CodixParams>
 									<Adrs_Mandatory>Y</Adrs_Mandatory>
 									<Enq_Purpose>12</Enq_Purpose>

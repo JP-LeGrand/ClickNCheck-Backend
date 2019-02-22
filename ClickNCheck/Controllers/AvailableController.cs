@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 //using System.Xml;
 
@@ -19,7 +24,7 @@ namespace ClickNCheck.Controllers
     public class AvailableController : ControllerBase
     {
         private ClickNCheckContext _context;
-        private ConnectToAPI obje;
+        ////private ConnectToAPI obje;
 
         public AvailableController(ClickNCheckContext context)
         {
@@ -55,7 +60,7 @@ namespace ClickNCheck.Controllers
             JToken checkCategories = input.SelectToken("categories");
             List<int> theCheckCategories = new List<int>();
 
-            foreach ( var item in checkCategories)
+            foreach (var item in checkCategories)
             {
                 theCheckCategories.Add((int)item);
             }
@@ -85,18 +90,27 @@ namespace ClickNCheck.Controllers
 
         }
 
-        // POST: api/available
+        // POST: api/available/{id}/sendrequest
         [HttpPost]
-        [Route("sendRequest")]
-        public HttpWebResponse sendRequest([FromBody]Object obj)
+        [Route("{id}/sendRequest")]
+        public async Task<Object> sendRequest(int id, [FromBody]Object obj)
         {
-            int type = obj.ToString().ToLower().Contains("xml")? 0 : 1; // get from the form
-            string message = type == 1 ? ((JObject) obj).ToString() : obj.ToString(); // get from the form
-            string url = obj.ToString(); // get from the form
+            ConnectToAPI connect = new ConnectToAPI(0, "https://www.efr.fg");
+            string res = await connect.run((JObject)obj);
 
-            obje = new ConnectToAPI(type, url, message);
-            
-            return obje.run();
+            res = ConnectToAPI.extractCompuscanRetValue(res);
+            if (res != null)
+            {
+                if (ConnectToAPI.makeZipFile(@"C:/vault/chub_777.zip", res))
+                {
+                    if (ConnectToAPI.extractTheZip(@"C:/vault/chub_777.zip", @"C:/chub_777"))
+                    {
+
+                    }
+                }
+            }
+
+            return res;
         }
 
         // DELETE api/available/{id}

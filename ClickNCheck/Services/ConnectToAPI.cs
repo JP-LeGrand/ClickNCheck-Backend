@@ -9,6 +9,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using ClickNCheck.Models;
+using System.Text;
+using System.IO.Compression;
 
 namespace ClickNCheck.Services
 {
@@ -16,81 +19,186 @@ namespace ClickNCheck.Services
     {
         private readonly int apiType;
         private readonly string apiURL;
-        private HttpWebResponse response;
-        private Object inputForm;
 
-        public ConnectToAPI(int apitype, string url, Object inputform)
+        public ConnectToAPI(int apitype, string url)
         {
             apiType = apitype;
             apiURL = url;
-            inputForm = inputform;
         }
-        public HttpWebResponse run()
+        public async Task<string> run(JObject databaseModel)
         {
+            string inputForm = fillCredentials(databaseModel);
             try
             {
                 switch (apiType)
                 {
                     case 0:
-                        response = connectXML(apiURL, (XmlDocument)inputForm);
-                        return response;
+                        return await connectXML(apiURL, soapText);
                     case 1:
-                        response = connectJSON(apiURL, (JObject)inputForm);
-                        return response;
+                        return await connectJSON(apiURL, (JObject)inputForm);
                     default:
                         throw new Exception("Unknown API type");
                 }
             }
             catch (Exception e)
-
             {
-                Console.WriteLine("Could not send internet message. "+e.Source);
                 return null;
             };
         }
 
+        private string fillCredentials(JObject databaseModel)
+        {
+            foreach (var column in databaseModel)
+            {
+                //using soapText and send string
+
+            }
+            return soapText;
+        }
+
         //TODO
-        private HttpWebResponse connectJSON(string url, JObject form)
+        private async Task<string> connectJSON(string url, JObject form)
         {
             throw new Exception();
         }
 
-        private HttpWebResponse connectXML(string url, XmlDocument inputForm)
+        private async Task<string> connectXML(string url, string soapText)
         {
-            try
+            if(true)
             {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load("./NormalEnquirySOAPRequest.xml");
-                string xmlText = fillValuesIntoTemplate(inputForm, xmlDoc).ToString();
-                //xml document content in a single string.
-                return send(url, xmlText);
+                var webWebServiceUrl = "https://webservices-uat.compuscan.co.za/NormalSearchService?wsdl";
+                var req = (HttpWebRequest)WebRequest.Create(webWebServiceUrl);
+                req.ContentType = "text/xml"; //"application/soap+xml;";
+                req.Method = "POST";
+
+                using (Stream stm = await req.GetRequestStreamAsync())
+                {
+                    using (var stmw = new StreamWriter(stm))
+                    {
+                        stmw.Write(soapText);
+                    }
+                }
+
+                var responseHttpStatusCode = HttpStatusCode.Unused;
+                string responseText = null;
+
+                using (var response = (HttpWebResponse)req.GetResponseAsync().Result)
+                {
+                    responseHttpStatusCode = response.StatusCode;
+
+                    if (responseHttpStatusCode == HttpStatusCode.OK)
+                    {
+                        int contentLength = (int)response.ContentLength;
+
+                        if (contentLength > 0)
+                        {
+                            int readBytes = 0;
+                            int bytesToRead = contentLength;
+                            byte[] resultBytes = new byte[contentLength];
+
+                            using (var responseStream = response.GetResponseStream())
+                            {
+                                while (bytesToRead > 0)
+                                {
+                                    // Read may return anything from 0 to 10. 
+                                    int actualBytesRead = responseStream.Read(resultBytes, readBytes, bytesToRead);
+
+                                    // The end of the file is reached. 
+                                    if (actualBytesRead == 0)
+                                        break;
+
+                                    readBytes += actualBytesRead;
+                                    bytesToRead -= actualBytesRead;
+                                }
+
+                                responseText = System.Text.Encoding.UTF8.GetString(resultBytes);
+                            }
+                        }
+                    }
+                }
+
+
+                return responseText;
             }
-
-            catch (Exception) { return null; }
+            throw new Exception();
         }
-
-        private HttpWebResponse send(string destinationUrl, string xmlText)
+        public static bool makeZipFile(string path, string yourBase64String)
         {
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(destinationUrl);
-            byte[] bytes;
-            bytes = System.Text.Encoding.ASCII.GetBytes(xmlText);
-            request.ContentType = "text/xml; encoding='utf-8'";
-            request.ContentLength = bytes.Length;
-            request.Method = "POST";
-            Stream requestStream = request.GetRequestStream();
-            requestStream.Write(bytes, 0, bytes.Length);
-            requestStream.Close();
-            return (HttpWebResponse)request.GetResponse();
+            File.WriteAllBytes(@path, Convert.FromBase64String(yourBase64String));
+            return true;
         }
 
-        private XmlDocument fillValuesIntoTemplate(XmlDocument formFromFrontend, XmlDocument xmlDocument)
+        public static bool extractTheZip(string zipFilepath, string dest)
         {
-            /* For each entry in formFromFrontend find them in the xml
-             * and put them in the xml template.
-             */
-            
-            return xmlDocument;
+            ZipFile.ExtractToDirectory(zipFilepath, dest);
+            return true;
         }
+        public static string extractCompuscanRetValue(string res)
+        {
+            if (res.Contains("<transactionCompleted>true</transactionCompleted>"))
+            {
+                int start = (res.IndexOf("<retData>") + "<retData>".Length);
+                int end = res.IndexOf("</retData>");
+                return res.Substring(start, end - start);
+            }
+            return null;
+        }
+
+        public static string decodeBase64(string base64EncodedData)
+        {   
+            return Encoding.UTF8.GetString(System.Convert.FromBase64String(base64EncodedData));
+        }
+
+        const string soapText =
+        @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:web=""http://webServices/"">
+        <soapenv:Header/>
+        <soapenv:Body>
+        <web:DoNormalEnquiry>
+        <!--Optional:-->    
+        <request>
+        <pUsrnme>77985-1</pUsrnme>
+        <pPasswrd>devtest</pPasswrd>
+        <pVersion>1.0</pVersion>
+        <pOrigin>CC-SOAPUI</pOrigin>
+        <pOrigin_Version>5.2.1</pOrigin_Version>
+        <pInput_Format>XML</pInput_Format>
+        <pTransaction><![CDATA[<Transactions>
+							<Search_Criteria>
+								<CS_Data>Y</CS_Data>
+								<CPA_Plus_NLR_Data>Y</CPA_Plus_NLR_Data>
+								<Deeds_Data>N</Deeds_Data>
+								<Directors_Data>N</Directors_Data>
+								<Identity_number>8209147250087</Identity_number>
+								<Surname>Doe</Surname>
+								<Forename>John</Forename>
+								<Forename2></Forename2>
+								<Forename3></Forename3>
+								<Gender>M</Gender>
+								<Passport_flag>N</Passport_flag>
+								<DateOfBirth>19820914</DateOfBirth>
+								<Address1>10 Mars Street</Address1>
+								<Address2>Mars</Address2>
+								<Address3></Address3>
+								<Address4></Address4>
+								<PostalCode>1234</PostalCode>
+								<HomeTelCode></HomeTelCode>
+								<HomeTelNo></HomeTelNo>
+								<WorkTelCode></WorkTelCode>
+								<WorkTelNo></WorkTelNo>
+								<CellTelNo></CellTelNo>
+								<ResultType>XPDF2</ResultType>
+								<RunCodix>N</RunCodix>
+								<CodixParams></CodixParams>
+								<Adrs_Mandatory>Y</Adrs_Mandatory>
+								<Enq_Purpose>12</Enq_Purpose>
+								<Run_CompuScore>Y</Run_CompuScore>
+								<ClientConsent>Y</ClientConsent>            
+							</Search_Criteria>
+						</Transactions>]]>
+                    </pTransaction>
+        </request>
+        </web:DoNormalEnquiry>
+        </soapenv:Body>
+        </soapenv:Envelope>";
     }
 }
