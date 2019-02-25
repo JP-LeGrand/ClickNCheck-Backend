@@ -21,6 +21,6 @@ namespace ClickNCheck.Models
         
         public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; set; } = new List<Recruiter_JobProfile>();
         public ICollection<JobProfile_Vendor> JobProfile_Vendor { get; set; } = new List<JobProfile_Vendor>();
-        public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; set; } = new List<Candidate_JobProfile>();
+        public ICollection<VerificationRequest> VerificationRequest { get; set; } = new List<VerificationRequest>();
     }
 }
