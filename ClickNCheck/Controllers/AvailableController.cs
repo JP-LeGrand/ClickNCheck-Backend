@@ -82,23 +82,34 @@ namespace ClickNCheck.Controllers
 
         // POST: api/available/{id}/sendrequest
         [HttpPost]
-        [Route("{id}/sendRequest")]
-        public async Task<Object> sendRequest(int id, [FromBody]Object obj)
+        [Route("{id}/sendRequest/{serviceId}")]
+        public async Task<Object> sendRequest(int id, [FromBody]Candidate candidate, int serviceId)
         {
-            ConnectToAPI connect = new ConnectToAPI(0, "https://webservices-uat.compuscan.co.za/NormalSearchService?wsdl");
-            string res = await connect.run((JObject)obj);
+            //TODO
+            //fetch vendor services of id in the database
+            //find his url and his webservice type (0 = soap, 1 =  rest)
+            var vendor = await _context.Vendor.FindAsync(id);
+
+            if (vendor == null)
+            {
+                return NotFound("Vendor ID not found!");
+            }
+            
+            var Service = vendor.Services.(serviceId);
+            
+            ConnectToAPI connect = new ConnectToAPI();// 0, "https://webservices-uat.compuscan.co.za/NormalSearchService?wsdl");
+            string res = await connect.runCheck((Candidate)candidate);
 
             res = ConnectToAPI.extractCompuscanRetValue(res);
             if (res != null)
             {
-                string pwd = $"{Directory.GetCurrentDirectory()}",
-                    zipPath = $"{pwd}/../Services";
+                string storagePath = $"C:/vault/{candidate.Organisation.Name}/{candidate.Name}/{DateTime.Now}";
                 //find out how to access and use Blob storage not local storage
-                if (ConnectToAPI.makeZipFile(@"C:/vault/chub_777.zip", res))
+                if (ConnectToAPI.makeZipFile($@"{storagePath}.zip", res))
                 {
-                    if (ConnectToAPI.extractTheZip(@"C:/vault/chub_777.zip", @"C:/chub_777"))
+                    if (ConnectToAPI.extractTheZip($@"{storagePath}.zip", $@"{storagePath}"))
                     {
-
+                        return Ok($"Results extracted to {storagePath}");
                     }
                 }
             }

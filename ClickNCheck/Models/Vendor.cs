@@ -14,14 +14,13 @@ namespace ClickNCheck.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public int ServicesID { get; set; }
-        public Services Services { get; set; }
 
         [JsonIgnore]
         [IgnoreDataMember]
-        public ICollection<JobProfile_Vendor> JobProfile_Vendor { get; } = new List<JobProfile_Vendor>();
+        public ICollection<JobProfile_Vendor> JobProfile_Vendor { get; set; } = new List<JobProfile_Vendor>();
         [JsonIgnore]
         [IgnoreDataMember]
-        public ICollection<Vendor_Category> Vendor_Category { get; } = new List<Vendor_Category>();
+        public ICollection<Vendor_Category> Vendor_Category { get; set; } = new List<Vendor_Category>();
 
 
     }

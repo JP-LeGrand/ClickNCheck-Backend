@@ -17,25 +17,26 @@ namespace ClickNCheck.Services
 {
     public class ConnectToAPI
     {
-        private readonly int apiType;
-        private readonly string apiURL;
+        private int apiType;
+        private string apiURL;
 
-        public ConnectToAPI(int apitype, string url)
+        public ConnectToAPI()
+        {}
+
+        public async Task<string> runCheck(int apitype, string url, Candidate candidateDatabaseModel)
         {
             apiType = apitype;
             apiURL = url;
-        }
-        public async Task<string> run(JObject databaseModel)
-        {
-            string inputForm = fillCredentials(databaseModel);
             try
             {
                 switch (apiType)
                 {
                     case 0:
+                        string soapText = fillSOAPCredentials(candidateDatabaseModel);
                         return await connectXML(apiURL, soapText);
                     case 1:
-                        return await connectJSON(apiURL, (JObject)inputForm);
+                        JObject jsonMessage = fillRESTCredentials(candidateDatabaseModel);
+                        return await connectJSON(apiURL, form: jsonMessage);
                     default:
                         throw new Exception("Unknown API type");
                 }
@@ -46,13 +47,18 @@ namespace ClickNCheck.Services
             };
         }
 
-        private string fillCredentials(JObject databaseModel)
+        private JObject fillRESTCredentials(Candidate candidateDatabaseModel)
         {
-            foreach (var column in databaseModel)
-            {
-                //using soapText and send string
+            throw new NotImplementedException();
+        }
 
-            }
+        private string fillSOAPCredentials(Candidate candidateDatabaseModel)
+        {
+            int id = candidateDatabaseModel.ID;
+            string id_pass = candidateDatabaseModel.ID_Passport;
+            string name = candidateDatabaseModel.Name,
+                surname = candidateDatabaseModel.Surname;
+            //RETURN FILLED SOAP TEXT
             return soapText;
         }
 

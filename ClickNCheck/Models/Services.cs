@@ -13,5 +13,8 @@ namespace ClickNCheck.Models
         public string TurnaroundTime { get; set; }
         public string URL { get; set; }
         public bool isAvailable { get; set; }
+        public int APIType { get; set; }
+        public string APIUserName { get; set; }
+        public string APIPassword { get; set; }
     }
 }
