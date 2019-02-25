@@ -27,15 +27,12 @@ namespace ClickNCheck.Models
         public bool HasConsented { get; set; }
         public string Phone { get; set; }
         public string Password { get; set; }
-        [JsonIgnore]
-        [IgnoreDataMember]
+        
         [ForeignKey("OrganisationID")]
         public Organisation Organisation { get; set; }
-        [JsonIgnore]
-        [IgnoreDataMember]
+        
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();
-        [JsonIgnore]
-        [IgnoreDataMember]
-        public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; set; } = new List<Candidate_JobProfile>();
+        
+        public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; } = new List<Candidate_JobProfile>();
     }
 }

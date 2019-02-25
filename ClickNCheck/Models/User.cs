@@ -28,14 +28,11 @@ namespace ClickNCheck.Models
         public Organisation Organisation { get; set; }
         public int LinkCodeID { get; set; }
         public LinkCode LinkCode { get; set; }
-        [JsonIgnore]
-        [IgnoreDataMember]
+        
         public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; set; } = new List<Recruiter_JobProfile>();
-        [JsonIgnore]
-        [IgnoreDataMember]
+        
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();
-        [JsonIgnore]
-        [IgnoreDataMember]
+        
         public ICollection<Roles> Roles { get; set; } = new List<Roles>();
 
     }

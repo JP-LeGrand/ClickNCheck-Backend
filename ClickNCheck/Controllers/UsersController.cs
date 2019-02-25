@@ -22,7 +22,7 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UsersController : ControllerBase
     {
         private ClickNCheckContext _context;
@@ -364,12 +364,36 @@ namespace ClickNCheck.Controllers
 
         // GET: api/Users/GetAllRecruiters/5
         [HttpGet("Organization/{id}/recruiters")]
-        public IEnumerable<User> GetAllRecruiters(int id)
+        public async Task<IEnumerable<object>> GetAllRecruitersAsync(int id)
         {
-            var roles = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.User).ToList();
-            var recruiters = _context.User.Where(x => x.OrganisationID == id && roles.Contains(x));
-            //var recruiters = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 3) AND OrganisationID = {id}").ToList();
-            return roles;
+            var orgs = await _context.Organisation.Where(i => i.ID == id).ToListAsync();
+            var roles = _context.Roles;
+            var user_types = _context.UserType;
+
+            var recruiters = await _context.User.Join(orgs,
+                                                        u => u.OrganisationID,
+                                                        o => o.ID,
+                                                        (user, org) => new
+                                                        {
+                                                            user.ID,
+                                                            user.Name,
+                                                            user.Surname,
+                                                            user.Roles
+                                                        })
+                                                        .Join(roles,
+                                                        u => u.ID,
+                                                        r => r.UserId,
+                                                        (user, role) => new
+                                                        {
+                                                            user.ID,
+                                                            user.Name,
+                                                            user.Surname,
+                                                            role.UserTypeId
+                                                        })
+                                                        .Where(u => u.UserTypeId == 3)
+                                                        .ToListAsync();
+
+            return recruiters;
         }
 
         [HttpGet]
