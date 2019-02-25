@@ -19,7 +19,7 @@ namespace ClickNCheck.Data
         public DbSet<JobProfile> JobProfile { get; set; }
         public DbSet<Vendor> Checks { get; set; }
         public DbSet<Candidate> Candidate { get; set; }
-        public DbSet<Candidate_JobProfile> Candidate_JobProfile { get; set; }
+        public DbSet<Candidate_VerificationRequest> Candidate_VerificationRequest { get; set; }
         public DbSet<JobProfile_Vendor> JobProfile_Checks { get; set; }
         public DbSet<AccountsPerson> AccountsPerson { get; set; }
         public DbSet<AddressType> AddressType { get; set; }
@@ -33,6 +33,7 @@ namespace ClickNCheck.Data
         public DbSet<UserType> UserType { get; set; }
         public DbSet<Vendor> Vendor { get; set; }
         public DbSet<Vendor_Category> Vendor_Category { get; set; }
+        public DbSet<VerificationRequest> VerificationRequest { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -64,18 +65,18 @@ namespace ClickNCheck.Data
             .WithMany(p => p.Recruiter_Candidate)
             .HasForeignKey(pt => pt.CandidateId);
 
-            modelBuilder.Entity<Candidate_JobProfile>()
-                .HasKey(t => new { t.CandidateId, t.JobProfileId });
+            modelBuilder.Entity<Candidate_VerificationRequest>()
+                .HasKey(t => new { t.CandidateId, t.VerificationRequestId });
 
-            modelBuilder.Entity<Candidate_JobProfile>()
+            modelBuilder.Entity<Candidate_VerificationRequest>()
             .HasOne(pt => pt.Candidate)
             .WithMany(p => p.Candidate_JobProfile)
             .HasForeignKey(pt => pt.CandidateId);
 
-            modelBuilder.Entity<Candidate_JobProfile>()
-            .HasOne(pt => pt.JobProfile)
-            .WithMany(p => p.Candidate_JobProfile)
-            .HasForeignKey(pt => pt.JobProfileId);
+            modelBuilder.Entity<Candidate_VerificationRequest>()
+            .HasOne(pt => pt.VerificationRequest)
+            .WithMany(p => p.Candidate_VerificationRequest)
+            .HasForeignKey(pt => pt.VerificationRequestId);
 
             modelBuilder.Entity<Vendor_Category>()
                 .HasKey(t => new { t.CheckCategoryId, t.VendorId });
@@ -115,6 +116,10 @@ namespace ClickNCheck.Data
             .HasOne(pt => pt.UserType)
             .WithMany(p => p.Roles)
             .HasForeignKey(pt => pt.UserTypeId);
+
+            modelBuilder.Entity<JobProfile>()
+            .HasMany(c => c.VerificationRequest)
+            .WithOne(e => e.JobProfile);
 
             modelBuilder.Entity<UserType>().HasData(
                 new UserType() { ID = 1, Type = "Administrator"});

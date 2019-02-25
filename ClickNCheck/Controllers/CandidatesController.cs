@@ -143,6 +143,9 @@ namespace ClickNCheck.Controllers
         {
             int jobId = id;
 
+            VerificationRequest v = new VerificationRequest();
+            v.DateStarted = DateTime.Now;
+            
             //find job profile
             var jobProfile = await _context.JobProfile.FindAsync(jobId);
 
@@ -151,7 +154,7 @@ namespace ClickNCheck.Controllers
                 return NotFound("This Job Profile does not exist");
             }
 
-            //find recruiters
+            //find Candidates
             for (int i = 0; i < ids.Length; i++)
             {
                 var candidate = await _context.Candidate.FindAsync(ids[i]);
@@ -160,10 +163,13 @@ namespace ClickNCheck.Controllers
                 {
                     return NotFound("The recruiter " + candidate.Name + candidate.Surname + " does not exist");
                 }
-                //add recruiter to job profile
-                jobProfile.Candidate_JobProfile.Add(new Candidate_JobProfile { JobProfile = jobProfile, Candidate = candidate });
+                //add Candidates to verification request
+                v.Candidate_VerificationRequest.Add(new Candidate_VerificationRequest { VerificationRequest = v, Candidate = candidate });
 
             }
+
+            //add verification request to job profile
+            jobProfile.VerificationRequest.Add(v);
             //save changes to job profile
             _context.Entry(jobProfile).State = EntityState.Modified;
 
