@@ -1,156 +1,199 @@
-﻿
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
-        <!--<link rel="stylesheet" href="email.css" />-->
-        <style>
-                        body {
-            font-family: HelveticaNeue;
-            position: relative;
-            margin: 0;
-            padding-bottom: 6rem;
-            min-height: 100%;
-            }
+﻿<!DOCTYPE html>
+<html>
 
-            label {
-            float: left;
-            }
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Recruiter Registration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+</head>
 
+<body>
+    <style>
+        body {
+            background-color: #02529c;
+        }
 
-            .headSection {
-            margin-bottom: 0px;
-            height: 137px;
-            background-color: white;
-            text-align: center;
-            }
-
-
-            .headSection img{
-            height: 29px;
-            width: 177px;
-            margin-top: 72px;
-            object-fit: contain;
-            }
-
-            h1{
-           /* margin-top: 72px;*/
-            color: #02529c;
-            }
-
-            .mainSection {
-            width: 622px;
-            height: fit-content;
+        .mainSection {
+            width: 653px;
             margin: auto;
-            border-radius: 8px;
+            display: block;
+            overflow: auto;
+            border-radius: 7px;
             box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.14);
             background-color: #ffffff;
-            }
+        }
 
-            .registrationHeading {
-            text-align: center;
-            height: 45px;
-            font-family: HelveticaNeue;
+        .logo {
+            padding-top: 30px;
+            margin: 0px 190px 0px 190px;
+        }
+
+        .Hi-User {
+            width: 372px;
+            height: 27px;
+            font-family: Roboto;
             font-size: 24px;
-            font-weight: 300;
+            font-weight: bold;
             font-style: normal;
             font-stretch: normal;
-            line-height: 1.88;
+            line-height: 1.13;
             letter-spacing: 0.6px;
             color: #2b3844;
-            /*padding-top: 28px;*/
-            }
+            margin: 0px 30px 0px 30px;
+        }
 
-            .registrationHeading .text-style-1 {
+        .Company-name-has-s {
+            width: 592px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .text-style-1 {
             font-weight: bold;
-            }
+        }
 
-            p,button {
-            width: 471px;
-            display: block;
-            margin: auto;
-            margin-bottom:33px;
-            }
-
-
-            button {
-            border:0;
-            width: 471px;
-            height: 50px;
-            margin-top: 25px;
-            border-radius: 7px;
-            background-color: #0091d1;
-            font-family: HelveticaNeue;
-            font-size: 12px;
+        .--xXXX---XXXX {
+            width: 442px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 14px;
             font-weight: bold;
             font-style: normal;
             font-stretch: normal;
-            line-height: 2.17;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .If-you-are-aware-of {
+            width: 592px;
+            height: 110px;
+            font-family: Roboto;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .Fingerprints-can-be {
+            width: 592px;
+            height: 22px;
+            font-family: Roboto;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .Please-Note-You-hav {
+            width: 411px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 12px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.83;
+            letter-spacing: 0.8px;
+            text-align: center;
+            color: #2b3844;
+            margin: 0px 92px 0px 92px;
+        }
+
+        .Regards-X-Team {
+            width: 411px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 12px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.83;
+            letter-spacing: 0.8px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .Rectangle-Copy-14 {
+            width: 270px;
+            height: 40px;
+            border-radius: 7px;
+            background-color: #0091d1;
+            border-color: #0091d1;
+            border-style: solid;
+            margin: 29px 191px 72px 191px;
+        }
+
+        .submit-via-online {
+            width: 192px;
+            height: 12px;
+            font-family: HelveticaNeue;
+            font-size: 10px;
+            font-weight: bold;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: normal;
             letter-spacing: 0.8px;
             text-align: center;
             color: #ffffff;
-            }
+        }
+    </style>
 
-            button:hover{
-            cursor: pointer;
-            }
+    <div class="mainSection">
 
-            a {
-            text-decoration: none;
-            }
 
-            .footSection {
-            background-color: #02529c;
-            position: absolute;
-            height: 50px;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            color: #ffffff;
-            text-align: center;
-            
-            }
-
-            footer a{
-            display: inline;
-            color: white;
-            } 
-        </style>  
-        <title>Administrator Registration</title>
-    </head>
-    <body>
-        <header class="headSection"> 
-            
-            <h1>clickncheck</h1>
-        </header>
-        
-        <div class="mainSection">
-            <div class="registrationHeading">Administrator <b>Registration</b></div> 
-            
-            <p>
-                Hi,
-                <br/>
-                <br/>
-                Your organisation's administrator has assigned you a new job profile.
-                Please click on the button below to proceed with your ClicknCheck Administrator Registration.
-                <br/>
-                <br/>
-                Please follow the link below to view the job profile.
-            </p>
-
-            <div class="form-group">
-               <a href="#" ><button>Go to registration &rarr; </button></a> 
-            </div> 
+        <div class="logo">
+            <img src="https://clicknchecksite.blob.core.windows.net/clickncheck-administrative-documents/main.svg" alt="clicknchck" height="80px" width="200px">
         </div>
 
-        <footer class="footSection">
-            <a id="ClicknCheck">ClicknCheck 2018</a>&nbsp;
-            <a id="T&Cs">T’s & C’s</a>&nbsp;
-            <a id="ContactUs">Contact Us</a>
-        </footer>
-    </body>
+        <div class="Hi-User">
+            <span>Hello, </span>
+        </div>
+
+        <div class="Company-name-has-s">
+            <p>
+                Your organisation's administrator has assigned you a new job profile.
+                Please click on the button below to proceed with your ClicknCheck Administrator Registration.
+            </p>
+        </div>
+
+        <div class="Please-Note-You-hav">
+            <p>
+                <span class="text-style-1">Please Note:</span> You have 10 days to provide us with the required confirmtations and inputs
+            </p>
+        </div>
+
+        <div class="Regards-X-Team">
+            <p>
+                Regards
+                <br>
+                Click N Check Team
+            </p>
+        </div>
+
+        <div class="form-group">
+            <a href="#"><button class="Rectangle-Copy-14"> <span class="submit-via-online">GO TO REGISTRATION &rarr;</span></button> </button></a>
+        </div>
+    </div>
+</body>
+
 </html>
