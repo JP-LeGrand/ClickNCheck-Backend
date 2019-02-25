@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace ClickNCheck.Models
@@ -26,8 +28,11 @@ namespace ClickNCheck.Models
         public Organisation Organisation { get; set; }
         public int LinkCodeID { get; set; }
         public LinkCode LinkCode { get; set; }
+        
         public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; set; } = new List<Recruiter_JobProfile>();
+        
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();
+        
         public ICollection<Roles> Roles { get; set; } = new List<Roles>();
 
     }

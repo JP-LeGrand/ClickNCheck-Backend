@@ -432,6 +432,7 @@ namespace ClickNCheck.Data
                 JobCode = "555",
                 isCompleted = true,
                 isTemplate = true,
+                checksNeedVerification = false,
                 OrganisationID = 1
             });
 
@@ -442,6 +443,7 @@ namespace ClickNCheck.Data
                 JobCode = "555",
                 isCompleted = true,
                 isTemplate = false,
+                checksNeedVerification = false,
                 OrganisationID = 1
             });
         }

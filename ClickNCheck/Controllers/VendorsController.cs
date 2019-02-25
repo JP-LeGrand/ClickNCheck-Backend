@@ -27,17 +27,35 @@ namespace ClickNCheck.Controllers
         // GET: api/Vendors
         [HttpGet]
         [Route("GetAllVendors")]
-        public async Task<ActionResult<IEnumerable<Vendor>>> GetAllVendors()
+        public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
         {
+            var vendor_cats = _context.Vendor_Category;
+            var categories = _context.CheckCategory;
 
-            //var vendors = await _context.Checks.ToListAsync();
-            //var categories = await _context.CheckCategory.ToListAsync();
-            var vendor_cat = await _context.Vendor_Category.ToListAsync();
-            //var json = JsonConvert.SerializeObject(vendors);
-            //json += JsonConvert.SerializeObject(categories);
-            var json = JsonConvert.SerializeObject(vendor_cat);
+            var allVendors = await _context.Vendor.Join(vendor_cats,
+                                                        vendor => vendor.ID,
+                                                        vendor_cat => vendor_cat.VendorId,
+                                                        (vendor, vendor_cat) => new
+                                                        {
+                                                            ID = vendor.ID, 
+                                                            Name = vendor.Name,
+                                                            CategoryID = vendor_cat.CheckCategoryId
+                                                        }
+                                                    ).Join(categories,
+                                                        vendor_cat => vendor_cat.CategoryID,
+                                                        category => category.ID,
+                                                        (vendor, category) => new
+                                                        {
+                                                            ID = vendor.ID,
+                                                            Name = vendor.Name,
+                                                            Category = category.Category
+                                                        }
+                                                    ).GroupBy(vendor => vendor.ID).ToListAsync();
 
-            return Ok(json);
+            //var checks = await _context.CheckCategory.ToListAsync();
+            //var services = await _context.Services.ToListAsync();
+            
+            return Ok(allVendors);
         }
 
         // GET: api/Vendors/5
@@ -95,6 +113,30 @@ namespace ClickNCheck.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetVendor", new { id = vendor.ID }, vendor);
+        }
+
+        [HttpGet]
+        [Route("CreateVendorTest")]
+        public async Task<ActionResult<Vendor>> CreateVendorTest()
+        {
+            Vendor vendor = new Vendor();
+            vendor.Name = "Lexis Nexis";
+
+            var services = await _context.Services.FindAsync(1);
+            var categories = await _context.CheckCategory.ToListAsync();
+
+            vendor.Services = services;
+
+
+            for (int i = 0; i < categories.Capacity; i++)
+            {
+                vendor.Vendor_Category.Add(new Vendor_Category { Vendor = vendor, CheckCategory = categories[i] });
+            }
+
+            _context.Checks.Add(vendor);
+            await _context.SaveChangesAsync();
+
+            return Ok(vendor);
         }
 
 
