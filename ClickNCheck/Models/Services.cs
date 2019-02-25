@@ -15,6 +15,8 @@ namespace ClickNCheck.Models
         public bool isAvailable { get; set; }
         public int APIType { get; set; }
         public string APIUserName { get; set; }
+        public int VendorID { get; set; }
+        public Vendor Vendor { get; set; }
         public string APIPassword { get; set; }
     }
 }

@@ -33,6 +33,6 @@ namespace ClickNCheck.Models
         
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();
         
-        public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; } = new List<Candidate_JobProfile>();
+        public ICollection<Candidate_VerificationRequest> Candidate_JobProfile { get; } = new List<Candidate_VerificationRequest>();
     }
 }
