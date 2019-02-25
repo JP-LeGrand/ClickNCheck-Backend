@@ -174,7 +174,7 @@ namespace ClickNCheck.Data
                 Name = "A service",
                 TurnaroundTime = "2 days",
                 URL = "www.google.com",
-                
+                VendorID = 1
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -184,7 +184,8 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Another service",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com"
+                URL = "www.google.com",
+                VendorID = 1
             });
 
             modelBuilder.Entity<Vendor>().HasData(new

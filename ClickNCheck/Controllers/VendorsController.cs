@@ -125,7 +125,7 @@ namespace ClickNCheck.Controllers
             var services = await _context.Services.FindAsync(1);
             var categories = await _context.CheckCategory.ToListAsync();
 
-            vendor.Services = services;
+            vendor.Services.Add(services);
 
 
             for (int i = 0; i < categories.Capacity; i++)

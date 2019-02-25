@@ -14,11 +14,8 @@ namespace ClickNCheck.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public int ServicesID { get; set; }
-        public Services Services { get; set; }
-
-        
+        public ICollection<Services> Services { get; } = new List<Services>();
         public ICollection<JobProfile_Vendor> JobProfile_Vendor { get; } = new List<JobProfile_Vendor>();
-        
         public ICollection<Vendor_Category> Vendor_Category { get; } = new List<Vendor_Category>();
 
 
