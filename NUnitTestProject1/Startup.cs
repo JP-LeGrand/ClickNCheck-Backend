@@ -13,9 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ClickNCheck.Data;
 using Swashbuckle.AspNetCore.Swagger;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace ClickNCheck
 {
@@ -38,26 +35,6 @@ namespace ClickNCheck
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
-            });
-
-            //services.AddMvc()
-            //    .AddJsonOptions(
-            //        options => options.SerializerSettings.ReferenceLoopHandling =
-            //        Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            //    );
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                };
             });
         }
 
@@ -94,8 +71,6 @@ namespace ClickNCheck
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-
-            app.UseAuthentication();
 
             app.UseMvc();
         }

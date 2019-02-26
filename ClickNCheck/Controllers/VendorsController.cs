@@ -27,11 +27,35 @@ namespace ClickNCheck.Controllers
         // GET: api/Vendors
         [HttpGet]
         [Route("GetAllVendors")]
-        public async Task<ActionResult<IEnumerable<Vendor>>> GetAllVendors()
+        public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
         {
-            var vendorCat = await _context.Vendor_Category.ToListAsync();
+            var vendor_cats = _context.Vendor_Category;
+            var categories = _context.CheckCategory;
 
-            return Ok(vendorCat);
+            var allVendors = await _context.Vendor.Join(vendor_cats,
+                                                        vendor => vendor.ID,
+                                                        vendor_cat => vendor_cat.VendorId,
+                                                        (vendor, vendor_cat) => new
+                                                        {
+                                                            ID = vendor.ID, 
+                                                            Name = vendor.Name,
+                                                            CategoryID = vendor_cat.CheckCategoryId
+                                                        }
+                                                    ).Join(categories,
+                                                        vendor_cat => vendor_cat.CategoryID,
+                                                        category => category.ID,
+                                                        (vendor, category) => new
+                                                        {
+                                                            ID = vendor.ID,
+                                                            Name = vendor.Name,
+                                                            Category = category.Category
+                                                        }
+                                                    ).GroupBy(vendor => vendor.ID).ToListAsync();
+
+            //var checks = await _context.CheckCategory.ToListAsync();
+            //var services = await _context.Services.ToListAsync();
+            
+            return Ok(allVendors);
         }
 
         // GET: api/Vendors/5
@@ -101,7 +125,7 @@ namespace ClickNCheck.Controllers
             var services = await _context.Services.FindAsync(1);
             var categories = await _context.CheckCategory.ToListAsync();
 
-            vendor.Services = services;
+            vendor.Services.Add(services);
 
 
             for (int i = 0; i < categories.Capacity; i++)

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using checkStub;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-//using System.Xml;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ClickNCheck.Controllers
 {
@@ -19,7 +16,7 @@ namespace ClickNCheck.Controllers
     public class AvailableController : ControllerBase
     {
         private ClickNCheckContext _context;
-        private ConnectToAPI obje;
+        ////private ConnectToAPI obje;
 
         public AvailableController(ClickNCheckContext context)
         {
@@ -49,33 +46,124 @@ namespace ClickNCheck.Controllers
         // POST: api/available
         [HttpPost]
         [Route("addVendor")]
-        public async Task<ActionResult<Vendor>> PostVendor(Vendor Vendor)
+        public async Task<ActionResult<Vendor>> addVendor([FromBody] JObject input)
         {
-            _context.Vendor.Add(Vendor);
+            JToken checkCategories = input.SelectToken("categories");
+            List<int> theCheckCategories = new List<int>();
+
+            foreach (var item in checkCategories)
+            {
+                theCheckCategories.Add((int)item);
+            }
+
+            Vendor v = new Vendor
+            {
+                Name = input.SelectToken("vendorName").ToString()
+            };
+
+            //find checkCategory
+            for (int i = 0; i < theCheckCategories.Count; i++)
+            {
+                var checkCategory = await _context.CheckCategory.FindAsync(theCheckCategories[i]);
+
+                if (checkCategory == null)
+                {
+                    return NotFound("The check category " + checkCategory.Category + " does not exist");
+                }
+                //add recruiter to job profile
+                v.Vendor_Category.Add(new Vendor_Category { Vendor = v, CheckCategory = checkCategory });
+            }
+
+            _context.Vendor.Add(v);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVendor", new { id = Vendor.ID }, Vendor);
+            return await _context.Vendor.LastAsync();
         }
-
-        // POST: api/available
+        // POST: api/available/runChecks/{jsonObject}
         [HttpPost]
-        [Route("sendRequest")]
-        public HttpWebResponse sendRequest([FromBody]Object obj)
+        [Route("runChecks/{jsonObject}")]
+        public async Task<Object> runChecks(int candidateId, [FromRoute]JObject jsonObject)
         {
-            int type = obj.ToString().ToLower().Contains("xml")? 0 : 1; // get from the form
-            string message = type == 1 ? ((JObject) obj).ToString() : obj.ToString(); // get from the form
-            string url = obj.ToString(); // get from the form
-
-            obje = new ConnectToAPI(type, url, message);
+            Candidate candidate = await _context.Candidate.FindAsync(candidateId);
+            CheckerRunner checkRunner = new CheckerRunner(_context, candidate, jsonObject);
             
-            return obje.run();
+            return await checkRunner.startChecks();
         }
 
-        // PUT api/available/{id}
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // POST: api/available/runCheck/{id}
+        [HttpPost]
+        [Route("runCheck/{serviceId}")]
+        public async Task<Object> runCheck(int serviceId, [FromBody]int candidateId)
         {
-            //Add new service for vendor with id = {id}
+            var service = await _context.Services.FindAsync(serviceId);
+            var candidate = await _context.Candidate.FindAsync(candidateId);
+            Task<JObject> res = null;
+
+            if (service == null)
+            {
+                return NotFound("Service ID not found!");
+            }
+            //var Service = vendor.Services.
+            if (service.isAvailable)
+            {
+                switch (service.CheckCategoryID)
+                {
+                    case 0:
+                        //Credit check category
+                        List<int> creditVendorServiceID = new List<int> { serviceId };
+                        Credit creditcheck = new Credit(_context, candidate);
+                        res = creditcheck.runAllSelectedCreditChecks(creditVendorServiceID);
+                        break;
+                    case 1:
+                        //Criminal check category
+
+                        break;
+                    case 2:
+                        //Identity check category
+                        break;
+                    case 3:
+                        //Drivers check category
+                        break;
+                    case 4:
+                        //Employment check category
+                        break;
+                    case 5:
+                        //Associations check category
+                        break;
+                    case 6:
+                        //Academic check category
+                        break;
+                    case 7:
+                        //Residency check category
+                        break;
+                    case 8:
+                        //Personal check category
+                        break;
+                    default:break;
+                }
+
+                string results = ConnectToAPI.extractCompuscanRetValue(res.ToString());
+                if (results != null)
+                {
+                    string storagePath = $"C:/vault/{candidate.Organisation.Name}/{candidate.Name}/{DateTime.Now}";
+                    //find out how to access and use Blob storage not local storage
+                    if (ConnectToAPI.makeZipFile($@"{storagePath}.zip", results))
+                    {
+                        if (ConnectToAPI.extractTheZip($@"{storagePath}.zip", $@"{storagePath}"))
+                        {
+                            return Ok($"Results extracted to {storagePath}");
+                        }
+                    }
+                }
+
+                return results;
+            }
+            else
+            {
+                //run check stub
+            }
+
+            return NotFound("Service currently unavailable");
         }
 
         // DELETE api/available/{id}
