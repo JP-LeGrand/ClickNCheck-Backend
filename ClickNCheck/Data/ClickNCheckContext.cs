@@ -166,7 +166,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<AddressType>().HasData(
                new AddressType() { ID = 2, Type = "Billing" });
 
-            modelBuilder.Entity<Models.Services>().HasData(new
+         /*   modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 1,
                 Cost = 100,
@@ -451,7 +451,7 @@ namespace ClickNCheck.Data
                 isTemplate = false,
                 checksNeedVerification = false,
                 OrganisationID = 1
-            });
+            });*/
         }
 
   
