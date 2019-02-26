@@ -14,6 +14,10 @@ namespace ClickNCheck.Data
         }
 
         public DbSet<User> User { get; set; }
+        public DbSet<Candidate_Verification> Candidate_Verification { get; set; }
+        public DbSet<Candidate_Verification_Check> Candidate_Verification_Check { get; set; }
+        public DbSet<CheckStatusType> CheckStatusType { get; set; }
+        public DbSet<Verification> Verification { get; set; }
         public DbSet<Organisation> Organisation { get; set; }
         public DbSet<Recruiter_JobProfile> Recruiter_JobProfile { get; set; }
         public DbSet<JobProfile> JobProfile { get; set; }
