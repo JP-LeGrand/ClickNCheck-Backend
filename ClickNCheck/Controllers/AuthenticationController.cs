@@ -96,16 +96,17 @@ namespace ClickNCheck.Controllers
                 // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
                 var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
                 // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
+                string user_name = user.Name + " " + user.Surname;
 
                 if (admins.Contains(user.ID))
                 {
-                    string []token_role = { BuildToken(user), "admin" };
-                    return Ok(token_role);
+                    string []token_role_user = { BuildToken(user), "admin", user_name };
+                    return Ok(token_role_user);
                 }
                 else if (recruiters.Contains(user.ID))
                 {
-                    string[] token_role = { BuildToken(user), "recruiter" };
-                    return Ok(token_role);
+                    string[] token_role_user = { BuildToken(user), "recruiter", user_name };
+                    return Ok(token_role_user);
                 }
 
             }
