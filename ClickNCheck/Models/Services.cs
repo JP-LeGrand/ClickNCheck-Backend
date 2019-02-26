@@ -20,5 +20,6 @@ namespace ClickNCheck.Models
         public string APIPassword { get; set; }
         public int CheckCategoryID { get; set; }
         public CheckCategory CheckCategory { get; set; }
+        public ICollection<JobProfile_Checks> JobProfile_Check { get; set; } = new List<JobProfile_Checks>();
     }
 }
