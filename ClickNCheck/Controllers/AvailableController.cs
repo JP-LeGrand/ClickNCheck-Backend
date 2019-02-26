@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+﻿using checkStub;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ClickNCheck.Controllers
 {
@@ -79,42 +79,91 @@ namespace ClickNCheck.Controllers
 
             return await _context.Vendor.LastAsync();
         }
-
-        // POST: api/available/{id}/sendrequest
+        // POST: api/available/runChecks/{jsonObject}
         [HttpPost]
-        [Route("{id}/sendRequest/{serviceId}")]
-        public async Task<Object> sendRequest(int id, [FromBody]Candidate candidate, int serviceId)
+        [Route("runChecks/{jsonObject}")]
+        public async Task<Object> runChecks(int candidateId, [FromRoute]JObject jsonObject)
         {
-            //TODO
-            //fetch vendor services of id in the database
-            //find his url and his webservice type (0 = soap, 1 =  rest)
-            var vendor = await _context.Vendor.FindAsync(id);
+            Candidate candidate = await _context.Candidate.FindAsync(candidateId);
+            CheckerRunner checkRunner = new CheckerRunner(_context, candidate, jsonObject);
+            
+            return await checkRunner.startChecks();
+        }
 
-            if (vendor == null)
+        // POST: api/available/runCheck/{id}
+        [HttpPost]
+        [Route("runCheck/{serviceId}")]
+        public async Task<Object> runCheck(int serviceId, [FromBody]int candidateId)
+        {
+            var service = await _context.Services.FindAsync(serviceId);
+            var candidate = await _context.Candidate.FindAsync(candidateId);
+            Task<JObject> res = null;
+
+            if (service == null)
             {
-                return NotFound("Vendor ID not found!");
+                return NotFound("Service ID not found!");
             }
-            
-            var Service = vendor.Services.(serviceId);
-            
-            ConnectToAPI connect = new ConnectToAPI();// 0, "https://webservices-uat.compuscan.co.za/NormalSearchService?wsdl");
-            string res = await connect.runCheck((Candidate)candidate);
-
-            res = ConnectToAPI.extractCompuscanRetValue(res);
-            if (res != null)
+            //var Service = vendor.Services.
+            if (service.isAvailable)
             {
-                string storagePath = $"C:/vault/{candidate.Organisation.Name}/{candidate.Name}/{DateTime.Now}";
-                //find out how to access and use Blob storage not local storage
-                if (ConnectToAPI.makeZipFile($@"{storagePath}.zip", res))
+                switch (service.CheckCategoryID)
                 {
-                    if (ConnectToAPI.extractTheZip($@"{storagePath}.zip", $@"{storagePath}"))
+                    case 0:
+                        //Credit check category
+                        List<int> creditVendorServiceID = new List<int> { serviceId };
+                        Credit creditcheck = new Credit(_context, candidate);
+                        res = creditcheck.runAllSelectedCreditChecks(creditVendorServiceID);
+                        break;
+                    case 1:
+                        //Criminal check category
+
+                        break;
+                    case 2:
+                        //Identity check category
+                        break;
+                    case 3:
+                        //Drivers check category
+                        break;
+                    case 4:
+                        //Employment check category
+                        break;
+                    case 5:
+                        //Associations check category
+                        break;
+                    case 6:
+                        //Academic check category
+                        break;
+                    case 7:
+                        //Residency check category
+                        break;
+                    case 8:
+                        //Personal check category
+                        break;
+                    default:break;
+                }
+
+                string results = ConnectToAPI.extractCompuscanRetValue(res.ToString());
+                if (results != null)
+                {
+                    string storagePath = $"C:/vault/{candidate.Organisation.Name}/{candidate.Name}/{DateTime.Now}";
+                    //find out how to access and use Blob storage not local storage
+                    if (ConnectToAPI.makeZipFile($@"{storagePath}.zip", results))
                     {
-                        return Ok($"Results extracted to {storagePath}");
+                        if (ConnectToAPI.extractTheZip($@"{storagePath}.zip", $@"{storagePath}"))
+                        {
+                            return Ok($"Results extracted to {storagePath}");
+                        }
                     }
                 }
+
+                return results;
+            }
+            else
+            {
+                //run check stub
             }
 
-            return res;
+            return NotFound("Service currently unavailable");
         }
 
         // DELETE api/available/{id}

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using ClickNCheck.Data;
+//using checkStub;
 using ClickNCheck.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 //using ClinkNCheck.Models;
-namespace checkStubClasses
+namespace checkStub
 {
     public class CheckerRunner
     {
@@ -22,8 +25,10 @@ namespace checkStubClasses
 
         private JObject results;
         private Candidate candidate;
+        // database instance
+        private ClickNCheckContext _context;
 
-        public CheckerRunner(Candidate candidate, JObject requestedChecks)
+        public CheckerRunner(ClickNCheckContext context, Candidate candidate, JObject requestedChecks)
         {
             //expected input (json) requestedChecks = {'credentials':{'name':jabu}, {'surname':'mahlangu'} ...},'academic': {'required': true, 'params': {'highSchool': true, 'tatiary': true }, 'associations'... }
 
@@ -44,9 +49,11 @@ namespace checkStubClasses
             
             results = new JObject { };
 
+            _context = context;
+
         }
 
-        public async void startChecks()
+        public async Task<Object> startChecks()
         {
             if (checkAcademics)
             {
@@ -84,7 +91,7 @@ namespace checkStubClasses
                 //first find out which ones under credit are true
                 
                 var selectedCreditCheck = requestedChecks["credit"]["subChecks"] as JArray;
-                if (selectedCreditCheck == null) return;
+                if (selectedCreditCheck == null) return null;
 
                 List<int> selectedCreditCheckIDs = new List<int>();
                 foreach(int id in selectedCreditCheck)
@@ -92,14 +99,12 @@ namespace checkStubClasses
                     selectedCreditCheckIDs.Add(id);
                 }
 
-                Credit creditCheck = new Credit(candidate, selectedCreditCheckIDs);
+                Credit creditCheck = new Credit(_context, candidate);
                 
                 //you might have to wait for some days for the results
                 //request the results in JSON format
-                JObject creditCheckResults = await creditCheck.runCreditCheck();
+                JObject creditCheckResults = await creditCheck.runAllSelectedCreditChecks(selectedCreditCheckIDs);
 
-                //send results back indepedently soon as they are available
-                //TODO
                 results.Add("credit", creditCheckResults);
             }
             if (checkCriminal)
@@ -184,6 +189,7 @@ namespace checkStubClasses
                 //TODO
                 results.Add("residency", residencyCheckResults);
             }
+            return getResults();
         }
         
         public JObject getResults()

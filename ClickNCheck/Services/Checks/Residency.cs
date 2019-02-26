@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json.Linq;
 
-namespace checkStubClasses
+namespace checkStub
 {
     public class Residency
     {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 
-namespace checkStubClasses
+namespace checkStub
 {
     public class Employment
     {

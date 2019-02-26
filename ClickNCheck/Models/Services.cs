@@ -18,5 +18,7 @@ namespace ClickNCheck.Models
         public int VendorID { get; set; }
         public Vendor Vendor { get; set; }
         public string APIPassword { get; set; }
+        public int CheckCategoryID { get; set; }
+        public CheckCategory CheckCategory { get; set; }
     }
 }

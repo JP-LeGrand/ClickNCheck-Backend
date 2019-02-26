@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace checkStubClasses
+namespace checkStub
 {
     public class Associations
     {

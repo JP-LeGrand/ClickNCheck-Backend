@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ClickNCheck.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
-namespace checkStubClasses
+namespace checkStub
 {
-    class Program
+    class Programm
     {
-        static void Main(string[] args)
+        static void mMain()
         {
             JObject obj = new JObject
             {
@@ -91,11 +92,12 @@ namespace checkStubClasses
                 }
                 
             };
+            /*Candidate c = new Candidate();
        
-            CheckerRunner runIt = new CheckerRunner(obj);
+            CheckerRunner runIt = new CheckerRunner(c, obj);
             runIt.startChecks();
             runIt.logAllResults();
-            
+            */
             //_____________________
 
             List<string>  sercices = new List<string>();

@@ -6,48 +6,33 @@ using ClickNCheck.Models;
 using ClickNCheck.Services;
 using Newtonsoft.Json.Linq;
 
-namespace checkStubClasses
+namespace checkStub
 {
     public class Credit
     {
         // candidate to be checked credit report against.
         private Candidate candidate;
         // list of selected credit vendor checks to run
-        private List<int> selectedCreditVendorID;
+        ClickNCheckContext _context;
 
         // results from the apis
         private JObject results;
 
-        // if all offered by 1 api, then use only one connection
-        // instantiate it in the constructor
-        // Connection connection;
-
-        public Credit(Candidate candidate, List<int> creditVendorID)
+        public Credit( ClickNCheckContext context, Candidate candidate )
         {
+            _context = context;
             this.candidate = candidate;
-            selectedCreditVendorID = creditVendorID;
-
+       
             results = new JObject();
         }
-
-        public async Task<JObject> runCreditCheck()
+        public async Task<JObject> runAllSelectedCreditChecks(List<int> selectedCreditVendorServiceID)
         {
-            try
+            foreach (int id in selectedCreditVendorServiceID)
             {
-                foreach (int id in selectedCreditVendorID)
-                {
-                    //fetch vendor name with the id
-                    //string name = creditVendorID.get
-                    //vendor credit-services, thats where you will find the url
-                    int apiType; string vendorName; string url;
-
-                    ConnectToAPI apiConnection = new ConnectToAPI();
-                    string res = await apiConnection.runCheck(apiType, url, candidate);
-                    results.Add(vendorName, res);
-                }
-                return getResults();
+                var serv = await _context.Services.FindAsync(id);
+                runCreditCheck(serv.APIType, serv.URL, serv.Name);
             }
-            catch(Exception e) { return new JObject { { "Failed", $"Connection problems. {e.Source}" } };/*connection problems*/ }
+            return getResults();
         }
 
         private JObject getResults()
@@ -57,6 +42,17 @@ namespace checkStubClasses
                 return results;
             }
             else throw new Exception("Credit check either still in progress or never ran!");
+        }
+
+        private async void runCreditCheck(int apiType, string url, string supplierName)
+        {
+            try
+            {
+                ConnectToAPI apiConnection = new ConnectToAPI();
+                string res = await apiConnection.runCheck(apiType, url, candidate);
+                results.Add(supplierName, res);
+            }
+            catch(Exception) { /*connection problems*/ }
         }
         
     }

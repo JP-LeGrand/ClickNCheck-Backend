@@ -2,7 +2,7 @@
 using System;
 
 
-namespace checkStubClasses
+namespace checkStub
 {
     public class Drivers
     {
