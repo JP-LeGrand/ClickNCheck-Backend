@@ -12,8 +12,8 @@ namespace ClickNCheck.Models
     {
         public int ID { get; set; }
         public string Category { get; set; }
-        [JsonIgnore]
+        /*[JsonIgnore]
         [IgnoreDataMember]
-        public ICollection<Vendor_Category> Vendor_Category { get; } = new List<Vendor_Category>();
+        public ICollection<Vendor_Category> Vendor_Category { get; set; } = new List<Vendor_Category>();*/
     }
 }

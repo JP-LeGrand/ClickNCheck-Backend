@@ -130,7 +130,7 @@ namespace ClickNCheck.Controllers
 
             for (int i = 0; i < categories.Capacity; i++)
             {
-                vendor.Vendor_Category.Add(new Vendor_Category { Vendor = vendor, CheckCategory = categories[i] });
+                //vendor.Vendor_Category.Add(new Vendor_Category { Vendor = vendor, CheckCategory = categories[i] });
             }
 
             _context.Checks.Add(vendor);

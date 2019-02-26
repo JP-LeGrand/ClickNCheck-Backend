@@ -81,23 +81,9 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Vendor_Category>()
                 .HasKey(t => new { t.CheckCategoryId, t.VendorId });
 
-            modelBuilder.Entity<Vendor_Category>()
-            .HasOne(pt => pt.Vendor)
-            .WithMany(p => p.Vendor_Category)
-            .HasForeignKey(pt => pt.VendorId);
-
-            modelBuilder.Entity<Vendor_Category>()
-            .HasOne(pt => pt.CheckCategory)
-            .WithMany(p => p.Vendor_Category)
-            .HasForeignKey(pt => pt.CheckCategoryId);
-
             modelBuilder.Entity<JobProfile_Vendor>()
                 .HasKey(t => new { t.JobProfileID, t.VendorId });
 
-            modelBuilder.Entity<JobProfile_Vendor>()
-            .HasOne(pt => pt.Vendor)
-            .WithMany(p => p.JobProfile_Vendor)
-            .HasForeignKey(pt => pt.VendorId);
 
             modelBuilder.Entity<JobProfile_Vendor>()
             .HasOne(pt => pt.JobProfile)

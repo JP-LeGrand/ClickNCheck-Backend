@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
@@ -21,6 +20,62 @@ namespace ClickNCheck.Controllers
         public AvailableController(ClickNCheckContext context)
         {
             _context = context;
+        }
+
+        // POST: api/available/addService
+        [HttpPost]
+        [Route("addService")]
+        public async Task<ActionResult<Object>> addService([FromBody] Models.Services input)
+        {
+            /*
+            JObject serviceToAdd = (JObject)input.SelectToken("Services");
+
+            Models.Services serv = new Models.Services
+            {
+                Name = (string)serviceToAdd.SelectToken("Name"),
+                Cost = (double)serviceToAdd.SelectToken("Cost"),
+                TurnaroundTime = (string)serviceToAdd.SelectToken("TurnaroundTime"),
+                URL = (string)serviceToAdd.SelectToken("URL"),
+                isAvailable = (bool)serviceToAdd.SelectToken("isAvailable"),
+                APIType = (int)serviceToAdd.SelectToken("APIType"),
+                APIUserName = (string)serviceToAdd.SelectToken("APIUserName"),
+                APIPassword = (string)serviceToAdd.SelectToken("APIPassword"),
+                //TODO
+                //add the vendor below
+                //add the category below
+            };
+
+            JObject vendorToAdd = (JObject)input.SelectToken("Vendor");
+
+            Vendor vendor = new Vendor
+            {
+                Name = (string)vendorToAdd.SelectToken("Name"),
+                Services.se;
+                //Services above
+            };
+
+            CheckCategory ceckCat = new CheckCategory
+            {
+                Category = ((JObject)input.SelectToken("CheckCategory")).SelectToken("Category").ToString()
+            };
+            /*
+            //find checkCategory
+            for (int i = 0; i < theCheckCategories.Count; i++)
+            {
+                var checkCategory = await _context.CheckCategory.FindAsync(theCheckCategories[i]);
+
+                if (checkCategory == null)
+                {
+                    return NotFound("The check category " + checkCategory.Category + " does not exist");
+                }
+                //add recruiter to job profile
+                v.Vendor_Category.Add(new Vendor_Category { Vendor = v, CheckCategory = checkCategory });
+            }
+            */
+            //_context.Services.Add(serv);
+            await _context.SaveChangesAsync();
+
+            return await _context.Services.LastAsync();
         }
 
         // GET api/available
@@ -43,42 +98,7 @@ namespace ClickNCheck.Controllers
 
             return Vendor;
         }
-        // POST: api/available
-        [HttpPost]
-        [Route("addVendor")]
-        public async Task<ActionResult<Vendor>> addVendor([FromBody] JObject input)
-        {
-            JToken checkCategories = input.SelectToken("categories");
-            List<int> theCheckCategories = new List<int>();
 
-            foreach (var item in checkCategories)
-            {
-                theCheckCategories.Add((int)item);
-            }
-
-            Vendor v = new Vendor
-            {
-                Name = input.SelectToken("vendorName").ToString()
-            };
-
-            //find checkCategory
-            for (int i = 0; i < theCheckCategories.Count; i++)
-            {
-                var checkCategory = await _context.CheckCategory.FindAsync(theCheckCategories[i]);
-
-                if (checkCategory == null)
-                {
-                    return NotFound("The check category " + checkCategory.Category + " does not exist");
-                }
-                //add recruiter to job profile
-                v.Vendor_Category.Add(new Vendor_Category { Vendor = v, CheckCategory = checkCategory });
-            }
-
-            _context.Vendor.Add(v);
-            await _context.SaveChangesAsync();
-
-            return await _context.Vendor.LastAsync();
-        }
         // POST: api/available/runChecks/{jsonObject}
         [HttpPost]
         [Route("runChecks/{jsonObject}")]
