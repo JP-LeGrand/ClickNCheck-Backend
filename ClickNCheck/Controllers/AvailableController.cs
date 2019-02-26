@@ -44,41 +44,7 @@ namespace ClickNCheck.Controllers
             return Vendor;
         }
         // POST: api/available
-        [HttpPost]
-        [Route("addVendor")]
-        public async Task<ActionResult<Vendor>> addVendor([FromBody] JObject input)
-        {
-            JToken checkCategories = input.SelectToken("categories");
-            List<int> theCheckCategories = new List<int>();
-
-            foreach (var item in checkCategories)
-            {
-                theCheckCategories.Add((int)item);
-            }
-
-            Vendor v = new Vendor
-            {
-                Name = input.SelectToken("vendorName").ToString()
-            };
-
-            //find checkCategory
-            for (int i = 0; i < theCheckCategories.Count; i++)
-            {
-                var checkCategory = await _context.CheckCategory.FindAsync(theCheckCategories[i]);
-
-                if (checkCategory == null)
-                {
-                    return NotFound("The check category " + checkCategory.Category + " does not exist");
-                }
-                //add recruiter to job profile
-                v.Vendor_Category.Add(new Vendor_Category { Vendor = v, CheckCategory = checkCategory });
-            }
-
-            _context.Vendor.Add(v);
-            await _context.SaveChangesAsync();
-
-            return await _context.Vendor.LastAsync();
-        }
+       
         // POST: api/available/runChecks/{jsonObject}
         [HttpPost]
         [Route("runChecks/{jsonObject}")]
