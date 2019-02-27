@@ -185,6 +185,7 @@ namespace ClickNCheck.Controllers
             return Ok(jobProfile);
         }
 
+
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);

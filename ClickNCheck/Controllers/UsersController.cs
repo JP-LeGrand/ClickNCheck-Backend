@@ -156,9 +156,7 @@ namespace ClickNCheck.Controllers
             {
                 User user = _context.User.FirstOrDefault(u => u.LinkCodeID == _userCode.ID);
                 var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
-                // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
                 var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
-                // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
 
                 if (recruiters.Contains(user.ID))
                 {
@@ -216,17 +214,12 @@ namespace ClickNCheck.Controllers
             }
             
 
-           // var codeEntry = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
-            //var codeID = codeEntry.ID;
-
             User user = _context.User.FirstOrDefault(d => d.ID == recruiter_id);
 
             
             
             var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
-            // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
             var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
-            // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
 
             if (recruiters.Contains(user.ID))
             {
