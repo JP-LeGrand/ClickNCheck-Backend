@@ -25,54 +25,10 @@ namespace ClickNCheck.Controllers
         // POST: api/available/addService
         [HttpPost]
         [Route("addService")]
-        public async Task<ActionResult<Object>> addService([FromBody] Models.Services input)
+        public async Task<Object> addService([FromBody] Models.Services serv)
         {
-            /*
-            JObject serviceToAdd = (JObject)input.SelectToken("Services");
-
-            Models.Services serv = new Models.Services
-            {
-                Name = (string)serviceToAdd.SelectToken("Name"),
-                Cost = (double)serviceToAdd.SelectToken("Cost"),
-                TurnaroundTime = (string)serviceToAdd.SelectToken("TurnaroundTime"),
-                URL = (string)serviceToAdd.SelectToken("URL"),
-                isAvailable = (bool)serviceToAdd.SelectToken("isAvailable"),
-                APIType = (int)serviceToAdd.SelectToken("APIType"),
-                APIUserName = (string)serviceToAdd.SelectToken("APIUserName"),
-                APIPassword = (string)serviceToAdd.SelectToken("APIPassword"),
-                //TODO
-                //add the vendor below
-                //add the category below
-            };
-
-            JObject vendorToAdd = (JObject)input.SelectToken("Vendor");
-
-            Vendor vendor = new Vendor
-            {
-                Name = (string)vendorToAdd.SelectToken("Name"),
-                Services.se;
-                //Services above
-            };
-
-            CheckCategory ceckCat = new CheckCategory
-            {
-                Category = ((JObject)input.SelectToken("CheckCategory")).SelectToken("Category").ToString()
-            };
-            /*
-            //find checkCategory
-            for (int i = 0; i < theCheckCategories.Count; i++)
-            {
-                var checkCategory = await _context.CheckCategory.FindAsync(theCheckCategories[i]);
-
-                if (checkCategory == null)
-                {
-                    return NotFound("The check category " + checkCategory.Category + " does not exist");
-                }
-                //add recruiter to job profile
-                v.Vendor_Category.Add(new Vendor_Category { Vendor = v, CheckCategory = checkCategory });
-            }
-            */
-            //_context.Services.Add(serv);
+            
+            _context.Services.Add(serv);
             await _context.SaveChangesAsync();
 
             return await _context.Services.LastAsync();
@@ -83,6 +39,13 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<IEnumerable<Vendor>>> GetVendor()
         {
             return await _context.Vendor.ToListAsync();
+        }
+        // GET api/available/services
+        [HttpGet]
+        [Route("services")]
+        public async Task<ActionResult<IEnumerable<Models.Services>>> GetChecks()
+        {
+            return await _context.Services.ToListAsync();
         }
 
         // GET: api/available/{id}
@@ -165,7 +128,8 @@ namespace ClickNCheck.Controllers
                 string results = ConnectToAPI.extractCompuscanRetValue(res.ToString());
                 if (results != null)
                 {
-                    string storagePath = $"C:/vault/{candidate.Organisation.Name}/{candidate.Name}/{DateTime.Now}";
+                    //candidate name might not be unique so use the id/passport number
+                    string storagePath = $"C:/vault/{candidate.Organisation.Name}/Candidates/{candidate.ID_Passport}/{service.Name}{DateTime.Now}";
                     //find out how to access and use Blob storage not local storage
                     if (ConnectToAPI.makeZipFile($@"{storagePath}.zip", results))
                     {
