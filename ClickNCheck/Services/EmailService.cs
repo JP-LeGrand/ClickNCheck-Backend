@@ -27,9 +27,8 @@ namespace ClickNCheck
             {
                 using (MailMessage mail = new MailMessage())
                 {
-
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);
-          SmtpSend(mail);
+                    SmtpSend(mail);
                 }
             }
             catch (Exception e)
@@ -40,7 +39,7 @@ namespace ClickNCheck
             return true;
         }
 
-        public void MailAssignment(MailMessage mailMessage, string From, string To, string Subject, string Body)
+        private void MailAssignment(MailMessage mailMessage, string From, string To, string Subject, string Body)
         {
             mailMessage.From = new MailAddress(From);
             mailMessage.To.Add(To);
@@ -49,7 +48,7 @@ namespace ClickNCheck
             mailMessage.Body = Body;
         }
 
-        public void SmtpSend(MailMessage mail)
+        private void SmtpSend(MailMessage mail)
         {
             SmtpClient smtp = new SmtpClient(smtpAddress, portNumber)
             {
@@ -69,6 +68,12 @@ namespace ClickNCheck
         {
             string emailBody = File.ReadAllText(@"..\ClickNCheck\Files\CandidateEmail.html");
             return emailBody;
+        }
+
+        public string CandidateConsentedMail()
+        {
+            string emailbody  = File.ReadAllText(@"..\ClickNCheck\Files\CandidateConsentedMail.html");
+            return emailbody;
         }
     }
 }
