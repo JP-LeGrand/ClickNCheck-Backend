@@ -64,7 +64,7 @@ namespace ClickNCheck.Controllers
         {
             string otp = randomNumberGenerator();
             User user = _context.User.Find(user_id);
-            user.Otp = Convert.ToInt32(otp);
+            user.Otp = otp;
             _context.Update(user);
             _context.SaveChanges();
             mailS.SendMail(user.Email, "OTP", "<p>" + otp + "</p>");
@@ -87,7 +87,7 @@ namespace ClickNCheck.Controllers
         {
 
             User user = _context.User.Find(Convert.ToInt32(user_otp[0]));
-            if (user.Otp.ToString() == user_otp[1])
+            if (user.Otp == user_otp[1])
             {
                 /* user.Otp = 0;
                  _context.Update(user);

@@ -18,9 +18,9 @@ namespace ClickNCheck.Models
         public string ID_Passport { get; set; }
         
         public string ID_Type { get; set; }
-        
+        public string PictureUrl { get; set; }
         public string Surname { get; set; }
-        
+        public bool isVerified { get; set; }
         public string Maiden_Surname { get; set; }
         public bool passwordChanged { get; set; }
         public string Email { get; set; }

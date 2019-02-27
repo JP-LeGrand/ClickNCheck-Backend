@@ -15,7 +15,7 @@ namespace ClickNCheck.Models
         public string Title { get; set; }
         public string JobCode { get; set; }
         public bool isCompleted { get; set; }
-        public bool checksNeedVerification { get; set; }
+        public bool authorisationRequired { get; set; }
         [ForeignKey("OrganisationID")]
         public Organisation Organisation  { get; set; }
         
