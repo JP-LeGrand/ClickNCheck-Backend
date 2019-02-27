@@ -14,5 +14,7 @@ namespace ClickNCheck.Models
 
         public int VerificationID { get; set; }
         public Verification Verification { get; set; }
+
+        public string IndemnityUrl { get; set; }
     }
 }
