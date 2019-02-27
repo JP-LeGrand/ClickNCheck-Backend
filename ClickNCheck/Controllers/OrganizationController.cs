@@ -28,6 +28,14 @@ namespace ClickNCheck.Controllers
 
         }
 
+        // GET: api/Organisations
+        //The method below will display a list of organisations
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Organisation>>> GetOrganisations()
+        {
+            return await _context.Organisation.ToListAsync();
+        }
+
         // GET: api/Organisations/5
         //The method below will display an organisation
         [HttpGet]
@@ -70,7 +78,25 @@ namespace ClickNCheck.Controllers
             var user = await _context.Organisation.LastAsync();
             int id  = user.ID;
            
-            return Ok(id);
+            return Ok(user);
+        }
+
+        //The method below will add a contact person into an organisation
+        // POST: api/ContactPersons
+        [HttpPut]
+        [Route("AddContactPerson/{OrgID}")]
+        public async Task<ActionResult<ContactPerson>> PostContactPerson(ContactPerson contactPerson, int OrgID)
+        {
+
+            var admins = from org in _context.Organisation.Where(o => o.ID == OrgID)
+                         select new
+                         {
+                             Name = contactPerson.Name,
+                             Phone = contactPerson.Phone,
+                             Email = contactPerson.Email
+                         };
+
+            return CreatedAtAction("GetAdmins/{id}", new { id = contactPerson.ID }, contactPerson);
         }
 
         [HttpPost]
