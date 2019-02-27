@@ -46,6 +46,50 @@ namespace ClickNCheck.Controllers
             return Ok("yes");
         }
 
+        [HttpPost()]
+        [Route("signUpRec")]
+        public ActionResult<User> regRec(User[] users)
+        {
+            var _entryType = _context.UserType.FirstOrDefault(x => x.ID == 3);
+
+
+            for (int x = 0; x < users.Length; x++)
+            {
+                CodeGenerator _codeGenerator = new CodeGenerator();
+                EmailService _emailService = new EmailService();
+                LinkCode _linkCode = new LinkCode();
+                string code = _codeGenerator.generateCode();
+                _linkCode.Code = code;
+                _linkCode.Used = false;
+                users[x].LinkCode = _linkCode;
+
+                users[x].Roles.Add(new Roles { User = users[x], UserType = _entryType });
+                if (_entryType.Type == "Recruiter")
+                {
+                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+
+                    _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
+                }
+               /* else if (_entryType.Type == "Manager")
+
+                {
+                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+
+                    _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
+
+                }*/
+
+
+
+            }
+            _context.User.AddRange(users);
+            _context.SaveChanges();
+
+            return Ok("success");
+        }
+
 
         // GET: api/Users
         [HttpGet]
@@ -75,7 +119,7 @@ namespace ClickNCheck.Controllers
                 users[x].Roles.Add(new Roles { User = users[x], UserType = _entryType });
                 if (_entryType.Type == "Recruiter")
                 {
-                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
                     emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
                     _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
@@ -112,9 +156,7 @@ namespace ClickNCheck.Controllers
             {
                 User user = _context.User.FirstOrDefault(u => u.LinkCodeID == _userCode.ID);
                 var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
-                // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
                 var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
-                // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
 
                 if (recruiters.Contains(user.ID))
                 {
@@ -172,17 +214,12 @@ namespace ClickNCheck.Controllers
             }
             
 
-           // var codeEntry = _context.LinkCodes.FirstOrDefault(x => x.Code == code);
-            //var codeID = codeEntry.ID;
-
             User user = _context.User.FirstOrDefault(d => d.ID == recruiter_id);
 
             
             
             var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
-            // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
             var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
-            // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
 
             if (recruiters.Contains(user.ID))
             {

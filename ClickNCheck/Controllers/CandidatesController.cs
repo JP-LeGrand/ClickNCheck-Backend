@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
+using System.IO;
 
 namespace ClickNCheck.Controllers
 {
@@ -18,6 +19,7 @@ namespace ClickNCheck.Controllers
         private readonly ClickNCheckContext _context;
         CodeGenerator codeGenerator = new CodeGenerator();
         EmailService service = new EmailService();
+        ContractUpload uploadService = new ContractUpload();
 
         public CandidatesController(ClickNCheckContext context)
         {
@@ -87,9 +89,9 @@ namespace ClickNCheck.Controllers
             var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
             var mailBody = service.CandidateMail();
             //reformat email content
-            mailBody.Replace("{CandidateName}",candidate.Name);
-            mailBody.Replace("{OrganisationName}", org.Name);
-            mailBody.Replace("{referenceNumber}", candidate.Password);
+            mailBody.Replace("CandidateName",candidate.Name);
+            mailBody.Replace("OrganisationName", org.Name);
+            mailBody.Replace("referenceNumber", candidate.Password);
             try
             {
                 service.SendMail(candidate.Email, "New Verificaiton Request", mailBody);
@@ -143,6 +145,9 @@ namespace ClickNCheck.Controllers
         {
             int jobId = id;
 
+            VerificationRequest v = new VerificationRequest();
+            v.DateStarted = DateTime.Now;
+            
             //find job profile
             var jobProfile = await _context.JobProfile.FindAsync(jobId);
 
@@ -151,19 +156,22 @@ namespace ClickNCheck.Controllers
                 return NotFound("This Job Profile does not exist");
             }
 
-            //find recruiters
+            //find Candidates
             for (int i = 0; i < ids.Length; i++)
             {
                 var candidate = await _context.Candidate.FindAsync(ids[i]);
 
                 if (candidate == null)
                 {
-                    return NotFound("The recruiter " + candidate.Name + candidate.Surname + " does not exist");
+                    return NotFound($"The recruiter {candidate.Name} {candidate.Surname} does not exist");
                 }
-                //add recruiter to job profile
-                jobProfile.Candidate_JobProfile.Add(new Candidate_JobProfile { JobProfile = jobProfile, Candidate = candidate });
+                //add Candidates to verification request
+                v.Candidate_VerificationRequest.Add(new Candidate_VerificationRequest { VerificationRequest = v, Candidate = candidate });
 
             }
+
+            //add verification request to job profile
+            jobProfile.VerificationRequest.Add(v);
             //save changes to job profile
             _context.Entry(jobProfile).State = EntityState.Modified;
 
@@ -185,6 +193,55 @@ namespace ClickNCheck.Controllers
             }
 
             return Ok(jobProfile);
+        }
+
+        [HttpPost]
+        [Route("changePassword/{id}")]
+        public async Task<ActionResult<Candidate>> changePassword(int id, [FromBody]string password)
+        {
+            var candidate = await _context.Candidate.SingleOrDefaultAsync(c => c.ID == id);
+
+            if (candidate != null)
+            {
+                candidate.Password = password;
+                candidate.passwordChanged = true;
+                return Ok(candidate);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Route("ConsentCandidate/{id}")]
+        public async Task<ActionResult<Candidate>> ConsentCandidate(int id, [FromForm]IFormCollection indemnityFile)
+        {
+            var candidate = await _context.Candidate.FindAsync(id);
+            candidate.HasConsented = true;
+            _context.SaveChanges();
+
+            var uploadSuccess = false;
+            foreach (var formFile in indemnityFile.Files.ToList())
+            {
+                if (formFile.Length <= 0)
+                {
+                    continue;
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    formFile.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    uploadSuccess = await uploadService.UploadToBlob(formFile.FileName, fileBytes, null);
+
+                }
+            }
+
+            if (uploadSuccess)
+                return Ok("Upload Success");
+            else
+                return NotFound("Upload Error");
         }
 
         private bool JobProfileExists(int id)

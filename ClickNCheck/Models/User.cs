@@ -22,7 +22,8 @@ namespace ClickNCheck.Models
         public int EmployeeNumber { get; set; }
         public string Password { get; set; }
         public string Salt { get; set; }
-        public int Otp { get; set; }
+        public string Otp { get; set; }
+        public string PictureUrl { get; set; }
         public int ManagerID { get; set; }
         public int OrganisationID { get; set; }
         public Organisation Organisation { get; set; }

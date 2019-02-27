@@ -13,5 +13,13 @@ namespace ClickNCheck.Models
         public string TurnaroundTime { get; set; }
         public string URL { get; set; }
         public bool isAvailable { get; set; }
+        public int APIType { get; set; }
+        public string APIUserName { get; set; }
+        public int VendorID { get; set; }
+        public Vendor Vendor { get; set; }
+        public string APIPassword { get; set; }
+        public int CheckCategoryID { get; set; }
+        public CheckCategory CheckCategory { get; set; }
+        public ICollection<JobProfile_Checks> JobProfile_Check { get; set; } = new List<JobProfile_Checks>();
     }
 }

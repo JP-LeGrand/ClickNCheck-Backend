@@ -18,11 +18,11 @@ namespace ClickNCheck.Models
         public string ID_Passport { get; set; }
         
         public string ID_Type { get; set; }
-        
+        public string PictureUrl { get; set; }
         public string Surname { get; set; }
-        
+        public bool isVerified { get; set; }
         public string Maiden_Surname { get; set; }
-        
+        public bool passwordChanged { get; set; }
         public string Email { get; set; }
         public bool HasConsented { get; set; }
         public string Phone { get; set; }
@@ -33,6 +33,6 @@ namespace ClickNCheck.Models
         
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();
         
-        public ICollection<Candidate_JobProfile> Candidate_JobProfile { get; } = new List<Candidate_JobProfile>();
+        public ICollection<Candidate_VerificationRequest> Candidate_JobProfile { get; } = new List<Candidate_VerificationRequest>();
     }
 }
