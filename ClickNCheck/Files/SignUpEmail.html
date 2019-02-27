@@ -1,160 +1,209 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
-        <!--<link rel="stylesheet" href="email.css" />-->
-        <style>
-                        body {
-            font-family: HelveticaNeue;
-            position: relative;
-            margin: 0;
-            padding-bottom: 6rem;
-            min-height: 100%;
-            }
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Admin Registration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
 
-            label {
-            float: left;
-            }
+    <style>
+        body {
+            background-color: #02529c;
+        }
 
-
-            .headSection {
-            margin-bottom: 0px;
-            height: 137px;
-            background-color: white;
-            text-align: center;
-            }
-
-
-            .headSection img{
-            height: 29px;
-            width: 177px;
-            margin-top: 72px;
-            object-fit: contain;
-            }
-
-            h1{
-           /* margin-top: 72px;*/
-            color: #02529c;
-            }
-
-            .mainSection {
-            width: 622px;
-            height: fit-content;
+        .mainSection {
+            width: 653px;
             margin: auto;
-            border-radius: 8px;
+            display: block;
+            overflow: auto;
+            border-radius: 7px;
             box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.14);
             background-color: #ffffff;
-            }
+        }
 
-            .registrationHeading {
-            text-align: center;
-            height: 45px;
-            font-family: HelveticaNeue;
+        .logo {
+            padding-top: 30px;
+            margin: 0px 190px 0px 190px;
+        }
+
+        .Hi-User {
+            width: 372px;
+            height: 27px;
+            font-family: Roboto;
             font-size: 24px;
-            font-weight: 300;
+            font-weight: bold;
             font-style: normal;
             font-stretch: normal;
-            line-height: 1.88;
+            line-height: 1.13;
             letter-spacing: 0.6px;
             color: #2b3844;
-            /*padding-top: 28px;*/
-            }
+            margin: 0px 30px 0px 30px;
+        }
 
-            .registrationHeading .text-style-1 {
+        .Company-name-has-s {
+            width: 592px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .text-style-1 {
             font-weight: bold;
-            }
+        }
 
-            p,button {
-            width: 471px;
-            display: block;
-            margin: auto;
-            margin-bottom:33px;
-            }
-
-
-            button {
-            border:0;
-            width: 471px;
-            height: 50px;
-            margin-top: 25px;
-            border-radius: 7px;
-            background-color: #0091d1;
-            font-family: HelveticaNeue;
-            font-size: 12px;
+        .--xXXX---XXXX {
+            width: 442px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 14px;
             font-weight: bold;
             font-style: normal;
             font-stretch: normal;
-            line-height: 2.17;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .If-you-are-aware-of {
+            width: 592px;
+            height: 110px;
+            font-family: Roboto;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .Fingerprints-can-be {
+            width: 592px;
+            height: 22px;
+            font-family: Roboto;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.57;
+            letter-spacing: 0.9px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .Please-Note-You-hav {
+            width: 411px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 12px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.83;
+            letter-spacing: 0.8px;
+            text-align: center;
+            color: #2b3844;
+            margin: 0px 92px 0px 92px;
+        }
+
+        .Regards-X-Team {
+            width: 411px;
+            height: 44px;
+            font-family: Roboto;
+            font-size: 12px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.83;
+            letter-spacing: 0.8px;
+            color: #2b3844;
+            margin: 0px 30px 0px 30px;
+        }
+
+        .Rectangle-Copy-14 {
+            width: 270px;
+            height: 40px;
+            border-radius: 7px;
+            background-color: #0091d1;
+            border-color: #0091d1;
+            border-style: solid;
+            margin: 29px 191px 72px 191px;
+        }
+
+        .submit-via-online {
+            width: 192px;
+            height: 12px;
+            font-family: HelveticaNeue;
+            font-size: 10px;
+            font-weight: bold;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: normal;
             letter-spacing: 0.8px;
             text-align: center;
             color: #ffffff;
-            }
+        }
+    </style>
+</head>
 
-            button:hover{
-            cursor: pointer;
-            }
+<body>
 
-            a {
-            text-decoration: none;
-            }
+    <div class="mainSection">
 
-            .footSection {
-            background-color: #02529c;
-            position: absolute;
-            height: 50px;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            color: #ffffff;
-            text-align: center;
-            
-            }
 
-            footer a{
-            display: inline;
-            color: white;
-            } 
-        </style>  
-        <title>Administrator Registration</title>
-    </head>
-<!--
-               <img src="data:image/png;base64,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"/> 
-            <img src="main.png"/>
-            -->
-    <body>
-        <header class="headSection"> 
-            
-            <h1>clickncheck</h1>
-        </header>
-        
-        <div class="mainSection">
-            <div class="registrationHeading">Administrator <b>Registration</b></div> 
-            
-            <p>
-                Hi,
-                <br/>
-                <br/>
-                Your organisation's administrator has invited you to register as an administrator.
-                Please click on the button below to proceed with your ClicknCheck Administrator Registration.
-                <br/>
-                <br/>
-                Please note that the link will expire once you have registered.
-            </p>
-
-            <div class="form-group">
-               <a href="#" ><button>Go to registration &rarr; </button></a> 
-            </div> 
+        <div class="logo">
+            <img src="https://clicknchecksite.blob.core.windows.net/clickncheck-administrative-documents/main.svg"
+                 alt="clicknchck" height="80px" width="200px">
         </div>
 
-        <footer class="footSection">
-            <a id="ClicknCheck">ClicknCheck 2018</a>&nbsp;
-            <a id="T&Cs">T’s & C’s</a>&nbsp;
-            <a id="ContactUs">Contact Us</a>
-        </footer>
-    </body>
+        <div class="Hi-User">
+            <span>Hello, </span>
+        </div>
+
+        <div class="Company-name-has-s">
+            <p>
+                Your organisation's administrator has invited you to register as an administrator. Please click on the
+                button below to proceed with your ClicknCheck Administrator Registration.
+            </p>
+        </div>
+        <br>
+        <div class="Please-Note-You-hav">
+            <p>
+                <span class="text-style-1">Please Note:</span> The link will expire once you have registered.
+            </p>
+        </div>
+
+        <div class="Regards-X-Team">
+            <p>
+                Regards
+                <br>
+                Click N Check Team
+            </p>
+        </div>
+
+        <div class="form-group">
+            <a href="#">
+                <button class="Rectangle-Copy-14">
+                    <span class="submit-via-online">
+                        GO TO REGISTRATION
+                        &rarr;
+                    </span>
+                </button>
+            </a>
+        </div>
+    </div>
+</body>
+
 </html>
