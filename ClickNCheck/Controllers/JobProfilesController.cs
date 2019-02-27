@@ -90,7 +90,7 @@ namespace ClickNCheck.Controllers
             j.Title = jobProfile["title"].ToString();
             j.JobCode = jobProfile["code"].ToString();
             j.isCompleted = (bool)jobProfile["isCompleted"];
-            j.checksNeedVerification = (bool)jobProfile["checksNeedVerification"];
+            j.authorisationRequired = (bool)jobProfile["checksNeedVerification"];
             JArray array = (JArray)jobProfile["checks"];
             int[] checks = array.Select(jv => (int)jv).ToArray();
             // find related organisation
