@@ -30,6 +30,7 @@ namespace ClickNCheck.Controllers
         LinkCode _model = new LinkCode();
         User _userModel = new User();
         Roles _role = new Roles();
+        UploadService uploadService = new UploadService();
 
         public UsersController(ClickNCheckContext context)
         {
@@ -158,10 +159,10 @@ namespace ClickNCheck.Controllers
                     {
                         string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
                         emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
-
                         emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                     }
                     else if (_entryType[y].Type == "Manager")
+
 
                     {
                         string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
@@ -238,7 +239,7 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("register")]
-        public ActionResult<string> registerRecruiter([FromBody] string[] id_pass_manager)
+        public async Task<IActionResult> registerRecruiter([FromBody] string[] id_pass_manager)
         {
             //  var code = Response.
 
@@ -264,14 +265,14 @@ namespace ClickNCheck.Controllers
                 user.Password = pass;
                 user.ManagerID = manager_id;
                 _context.User.Update(user);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return Ok("recruiter");
             }
             else if (admins.Contains(user.ID))
             {
                 user.Password = pass;
                 _context.User.Update(user);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return Ok("admin");
             }
 
@@ -472,12 +473,44 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpGet]
-        [Route("userTypes")]
-        public async Task<IEnumerable<UserType>> userTypesAsync()
+        [Route("UploadImage")]
+        public async Task<IEnumerable<UserType>> UploadImage()
         {
             var  userTypes = await _context.UserType.Where(u => u.Type != "Administrator" && u.Type != "SuperAdmin").ToListAsync();
             return userTypes;
         }
+
+        [HttpPost("{id}/UploadFile")]
+        public async Task<IActionResult> UploadFile(int id, [FromForm]IFormCollection contractFiles)
+        {
+            var user = _context.User.Find(id);
+            var org = _context.Organisation.Find(user.OrganisationID);
+            
+            string bloburl = "";
+            foreach (var formFile in contractFiles.Files.ToList())
+            {
+                if (formFile.Length <= 0)
+                {
+                    continue;
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    formFile.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    //uploadSuccess = await uploadService.UploadImage(formFile.FileName, fileBytes, null);
+                    bloburl = await uploadService.UploadImage(user.Guid, org.Guid, formFile.FileName, fileBytes, null);
+                    user.PictureUrl = bloburl;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            if (bloburl != "")
+                return Ok("Upload Success");
+            else
+                return NotFound("Upload Error");
+        }
+
     }
 
     
