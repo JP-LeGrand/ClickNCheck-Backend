@@ -28,13 +28,14 @@ namespace checkStub
         // database instance
         private ClickNCheckContext _context;
 
-        public CheckerRunner(ClickNCheckContext context, Candidate candidate, JObject requestedChecks)
+        public CheckerRunner(ClickNCheckContext context, JObject requestedChecks)
         {
             //expected input (json) requestedChecks = {'credentials':{'name':jabu}, {'surname':'mahlangu'} ...},'academic': {'required': true, 'params': {'highSchool': true, 'tatiary': true }, 'associations'... }
+            _context = context;
 
-            candidateCridentials = new JObject{ { "candidateCridentials", requestedChecks["candidateCridentials"] } };
-            this.candidate = candidate;
-
+            int id = (int) requestedChecks["candiateID"];
+            this.candidate = _context.Candidate.Find(id);
+            
             checkAcademics = (bool)requestedChecks["academic"]["required"];
             checkAssociations = (bool)requestedChecks["association"]["required"];
             checkCredit = (bool)requestedChecks["credit"]["required"]; ;
@@ -48,9 +49,6 @@ namespace checkStub
             this.requestedChecks = requestedChecks;
             
             results = new JObject { };
-
-            _context = context;
-
         }
 
         public async Task<Object> startChecks()

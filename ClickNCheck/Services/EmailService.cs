@@ -72,7 +72,7 @@ namespace ClickNCheck
 
         public string CandidateConsentedMail()
         {
-            string emailbody  = File.ReadAllText(@"..\ClickNCheck\Files\CandidateConsentedMail.html");
+            string emailbody  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
             return emailbody;
         }
     }

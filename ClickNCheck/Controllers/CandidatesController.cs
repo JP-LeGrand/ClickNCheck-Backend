@@ -265,7 +265,10 @@ namespace ClickNCheck.Controllers
                 if (cnd == null)
                     throw new Exception("failed to find candidate it in database");
 
-                Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == cnd.Organisation.ID);
+                int orgID = 1;
+
+                //orgID = cnd.Organisation.ID;
+                var org = _context.Organisation.Find(orgID);
                 var mailBody = service.CandidateConsentedMail();
                 //reformat email content
                 mailBody.Replace("CandidateName", cnd.Name);
