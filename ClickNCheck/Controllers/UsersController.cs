@@ -71,7 +71,7 @@ namespace ClickNCheck.Controllers
 
                     _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                 }
-                /* else if (_entryType.Type == "Manager")
+                 else if (_entryType.Type == "Manager")
 
                  {
                      string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
@@ -79,7 +79,7 @@ namespace ClickNCheck.Controllers
 
                      _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
 
-                 }*/
+                 }
 
 
 
@@ -133,12 +133,7 @@ namespace ClickNCheck.Controllers
             {
                 var user = _context.User.First(y => y.Email == users[x].Email);
 
-                //for (int y = 0; y < _entryType.Count(); y++)
                 
-                    //users[x].Roles.Add(new Roles { UserId = user.ID, UserTypeId = _entryType.ElementAt(y).ID });
-
-                  //  for (int i = 0; i < arr_usertype_id.Count; i++)
-                   // {
                         string[] usertype_id = arr_usertype_id.ElementAt(x).Split(",");
 
                         for (int j = 0; j < usertype_id.Length; j++)
@@ -147,9 +142,7 @@ namespace ClickNCheck.Controllers
 
                             _context.Roles.Add(role);
                         }
-
-
-                //   }
+                        
 
 
                 for (int y = 0; y < _entryType.Count(); y++)
@@ -173,7 +166,6 @@ namespace ClickNCheck.Controllers
                 }
                     
                 }
-         //   }
 
             _context.SaveChanges();
 
@@ -240,8 +232,7 @@ namespace ClickNCheck.Controllers
         [Route("register")]
         public ActionResult<string> registerRecruiter([FromBody] string[] id_pass_manager)
         {
-            //  var code = Response.
-
+           
             int recruiter_id = Convert.ToInt32(id_pass_manager[0]);
             string pass = id_pass_manager[1];
             int manager_id = -1;
