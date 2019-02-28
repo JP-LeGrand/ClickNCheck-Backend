@@ -30,7 +30,7 @@ namespace ClickNCheck.Controllers
         LinkCode _model = new LinkCode();
         User _userModel = new User();
         Roles _role = new Roles();
-        ContractUpload uploadService = new ContractUpload();
+        UploadService uploadService = new UploadService();
 
         public UsersController(ClickNCheckContext context)
         {
@@ -201,7 +201,7 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("register")]
-        public ActionResult<string> registerRecruiter([FromBody] string[] id_pass_manager)
+        public async Task<IActionResult> registerRecruiter([FromBody] string[] id_pass_manager)
         {
             //  var code = Response.
 
@@ -227,14 +227,14 @@ namespace ClickNCheck.Controllers
                 user.Password = pass;
                 user.ManagerID = manager_id;
                 _context.User.Update(user);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return Ok("recruiter");
             }
             else if (admins.Contains(user.ID))
             {
                 user.Password = pass;
                 _context.User.Update(user);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return Ok("admin");
             }
 
@@ -442,13 +442,12 @@ namespace ClickNCheck.Controllers
             return userTypes;
         }
 
-        [HttpPost("{id}/UploadFiles")]
-        public async Task<IActionResult> PostContract(int id, [FromForm]IFormCollection contractFiles)
+        [HttpPost("{id}/UploadFile")]
+        public async Task<IActionResult> UploadFile(int id, [FromForm]IFormCollection contractFiles)
         {
             var user = _context.User.Find(id);
             var org = _context.Organisation.Find(user.OrganisationID);
-
-            var uploadSuccess = false;
+            
             string bloburl = "";
             foreach (var formFile in contractFiles.Files.ToList())
             {
@@ -461,14 +460,14 @@ namespace ClickNCheck.Controllers
                 {
                     formFile.CopyTo(ms);
                     var fileBytes = ms.ToArray();
-                    uploadSuccess = await uploadService.UploadImage(formFile.FileName, fileBytes, null);
+                    //uploadSuccess = await uploadService.UploadImage(formFile.FileName, fileBytes, null);
                     bloburl = await uploadService.UploadImage(user.Guid, org.Guid, formFile.FileName, fileBytes, null);
                     user.PictureUrl = bloburl;
                     await _context.SaveChangesAsync();
                 }
             }
 
-            if (uploadSuccess)
+            if (bloburl != "")
                 return Ok("Upload Success");
             else
                 return NotFound("Upload Error");
