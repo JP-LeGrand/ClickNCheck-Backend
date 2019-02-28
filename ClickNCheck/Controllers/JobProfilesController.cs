@@ -206,7 +206,7 @@ namespace ClickNCheck.Controllers
         [Route("recruiterJobs/{id}")]
         public async Task<IEnumerable<object>> getRecJobs(int id)
         {
-            //   var jp_entry = _context.Recruiter_JobProfile.Where(e => e.RecruiterId == id);
+          
             var entry = await (from i in _context.Recruiter_JobProfile
                                join u in _context.JobProfile on i.JobProfileId equals u.ID into joinTable
                                from p in joinTable.DefaultIfEmpty()
