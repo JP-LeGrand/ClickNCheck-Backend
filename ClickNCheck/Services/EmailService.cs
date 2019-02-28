@@ -27,29 +27,28 @@ namespace ClickNCheck
             {
                 using (MailMessage mail = new MailMessage())
                 {
-
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);
-          SmtpSend(mail);
+                    SmtpSend(mail);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
                 return false;
             }
             return true;
         }
 
-        public void MailAssignment(MailMessage mailMessage, string From, string To, string Subject, string Body)
+        private void MailAssignment(MailMessage mailMessage, string From, string To, string Subject, string Body)
         {
             mailMessage.From = new MailAddress(From);
             mailMessage.To.Add(To);
             mailMessage.Subject = Subject;
             mailMessage.IsBodyHtml = true;
             mailMessage.Body = Body;
+            
         }
 
-        public void SmtpSend(MailMessage mail)
+        private void SmtpSend(MailMessage mail)
         {
             SmtpClient smtp = new SmtpClient(smtpAddress, portNumber)
             {
@@ -61,14 +60,23 @@ namespace ClickNCheck
 
         public string RecruiterMail()
         {
-            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
+            string emailBody = File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
             return emailBody;
         }
 
        public string CandidateMail()
         {
-            string emailBody = File.ReadAllText(@"..\ClickNCheck\Files\CandidateEmail.html");
+            string emailBody = File.ReadAllText(@"C:\repos\Clink-N-Check-Backend\ClickNCheck\Files\CandidateEmail.html");
+            //use relative paths from now on. not the absolute
             return emailBody;
+        }
+
+        public string CandidateConsentedMail()
+        {
+            string htmlstring  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
+            /*string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
+            string htmlstring = System.IO.File.ReadAllText(path);*/
+            return htmlstring;
         }
     }
 }

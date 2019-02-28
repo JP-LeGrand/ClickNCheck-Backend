@@ -21,20 +21,20 @@ namespace checkStub
         private bool checkPersonal;
         private bool checkResidency;
         private JObject requestedChecks;
-        private JObject someCredentials;
 
         private JObject results;
-        private Candidate candidate;
+        private readonly Candidate candidate;
         // database instance
         private ClickNCheckContext _context;
 
-        public CheckerRunner(ClickNCheckContext context, Candidate candidate, JObject requestedChecks)
+        public CheckerRunner(ClickNCheckContext context, JObject requestedChecks)
         {
             //expected input (json) requestedChecks = {'credentials':{'name':jabu}, {'surname':'mahlangu'} ...},'academic': {'required': true, 'params': {'highSchool': true, 'tatiary': true }, 'associations'... }
+            _context = context;
 
-            someCredentials = new JObject{ { "credentials", requestedChecks["credentials"] } };
-            this.candidate = candidate;
-
+            int id = (int) requestedChecks["candiateID"];
+            this.candidate = _context.Candidate.Find(id);
+            
             checkAcademics = (bool)requestedChecks["academic"]["required"];
             checkAssociations = (bool)requestedChecks["association"]["required"];
             checkCredit = (bool)requestedChecks["credit"]["required"]; ;
@@ -48,12 +48,9 @@ namespace checkStub
             this.requestedChecks = requestedChecks;
             
             results = new JObject { };
-
-            _context = context;
-
         }
 
-        public async Task<Object> startChecks()
+        public async void StartChecks()
         {
             if (checkAcademics)
             {
@@ -84,14 +81,14 @@ namespace checkStub
 
                 //send results back indepedently soon as they are available
                 //TODO
-                results.Add(associationsCheckResults);
+                results.Add("associations", associationsCheckResults);
             }
             if (checkCredit)
             {
                 //first find out which ones under credit are true
                 
                 var selectedCreditCheck = requestedChecks["credit"]["subChecks"] as JArray;
-                if (selectedCreditCheck == null) return null;
+                if (selectedCreditCheck == null) throw new Exception("selectedCreditCheck IS EMPTY!");
 
                 List<int> selectedCreditCheckIDs = new List<int>();
                 foreach(int id in selectedCreditCheck)
@@ -189,12 +186,11 @@ namespace checkStub
                 //TODO
                 results.Add("residency", residencyCheckResults);
             }
-            return getResults();
         }
         
         public JObject getResults()
         {
-            return results;
+            return this.results;
         }
 
         public void logAllResults()

@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
@@ -16,11 +15,22 @@ namespace ClickNCheck.Controllers
     public class AvailableController : ControllerBase
     {
         private ClickNCheckContext _context;
-        ////private ConnectToAPI obje;
 
         public AvailableController(ClickNCheckContext context)
         {
             _context = context;
+        }
+
+        // POST: api/available/addService
+        [HttpPost]
+        [Route("addService")]
+        public async Task<Object> addService([FromBody] Models.Services serv)
+        {
+            
+            _context.Services.Add(serv);
+            await _context.SaveChangesAsync();
+
+            return await _context.Services.LastAsync();
         }
 
         // GET api/available
@@ -28,6 +38,13 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<IEnumerable<Vendor>>> GetVendor()
         {
             return await _context.Vendor.ToListAsync();
+        }
+        // GET api/available/services
+        [HttpGet]
+        [Route("services")]
+        public async Task<ActionResult<IEnumerable<Models.Services>>> GetChecks()
+        {
+            return await _context.Services.ToListAsync();
         }
 
         // GET: api/available/{id}
@@ -43,17 +60,16 @@ namespace ClickNCheck.Controllers
 
             return Vendor;
         }
-        // POST: api/available
-       
-        // POST: api/available/runChecks/{jsonObject}
+
+        // POST: api/available/runChecks/
         [HttpPost]
-        [Route("runChecks/{jsonObject}")]
-        public async Task<Object> runChecks(int candidateId, [FromRoute]JObject jsonObject)
+        [Route("runChecks")]
+        public async Task<Object> runChecks([FromBody]JObject requiredChecks)
         {
-            Candidate candidate = await _context.Candidate.FindAsync(candidateId);
-            CheckerRunner checkRunner = new CheckerRunner(_context, candidate, jsonObject);
-            
-            return await checkRunner.startChecks();
+            CheckerRunner checkRunner = new CheckerRunner(_context, requiredChecks);
+            checkRunner.StartChecks();
+
+            return checkRunner.getResults();
         }
 
         // POST: api/available/runCheck/{id}
@@ -111,7 +127,8 @@ namespace ClickNCheck.Controllers
                 string results = ConnectToAPI.extractCompuscanRetValue(res.ToString());
                 if (results != null)
                 {
-                    string storagePath = $"C:/vault/{candidate.Organisation.Name}/{candidate.Name}/{DateTime.Now}";
+                    //candidate name might not be unique so use the id/passport number
+                    string storagePath = $"C:/vault/{candidate.Organisation.Name}/Candidates/{candidate.ID_Passport}/{service.Name}{DateTime.Now}";
                     //find out how to access and use Blob storage not local storage
                     if (ConnectToAPI.makeZipFile($@"{storagePath}.zip", results))
                     {

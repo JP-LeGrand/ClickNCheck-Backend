@@ -72,7 +72,7 @@ namespace ClickNCheck.Controllers
         [HttpPost]
         [Route("createOrganisation")] // create organization
         public async Task<ActionResult<Organisation>> PostOrganisation([FromBody]Organisation organisation)        {
-            _context.Organisation.Add(organisation);
+            await _context.Organisation.AddAsync(organisation);
             var result = await _context.SaveChangesAsync();
 
             var user = await _context.Organisation.LastAsync();
