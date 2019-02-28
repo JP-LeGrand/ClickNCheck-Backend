@@ -67,15 +67,12 @@ namespace ClickNCheck
        public string CandidateMail()
         {
             string emailBody = File.ReadAllText(@"C:\repos\Clink-N-Check-Backend\ClickNCheck\Files\CandidateEmail.html");
-            //use relative paths from now on. not the absolute
             return emailBody;
         }
 
         public string CandidateConsentedMail()
         {
             string htmlstring  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
-            /*string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
-            string htmlstring = System.IO.File.ReadAllText(path);*/
             return htmlstring;
         }
     }
