@@ -454,6 +454,33 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 authorisationRequired = true
             });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 1,
+                ServicesID = 1,
+                Order = 1
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 1,
+                ServicesID = 2,
+                Order = 2
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 2,
+                ServicesID = 2,
+                Order = 1
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 2,
+                ServicesID = 1,
+                Order = 2
+            });
         }
 
   
