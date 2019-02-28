@@ -22,11 +22,9 @@ namespace ClickNCheck.Models
         public string Surname { get; set; }
         public bool isVerified { get; set; }
         public string Maiden_Surname { get; set; }
-        public bool passwordChanged { get; set; }
         public string Email { get; set; }
         public bool HasConsented { get; set; }
         public string Phone { get; set; }
-        public string Password { get; set; }
         
         [ForeignKey("OrganisationID")]
         public Organisation Organisation { get; set; }
