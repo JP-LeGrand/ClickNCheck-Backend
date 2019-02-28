@@ -24,39 +24,28 @@ namespace ClickNCheck.Controllers
         }
 
 
-        //// GET: api/Vendors
-        //[HttpGet]
-        //[Route("GetAllVendors")]
-        //public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
-        //{
-        //    var vendor_cats = _context.Vendor_Category;
-        //    var categories = _context.CheckCategory;
+        // GET: api/Vendors
+        [HttpGet]
+        [Route("GetAllVendors")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
+        {
+            var services =  _context.Services.GroupBy(p => p.CheckCategoryID);
 
-        //    var allVendors = await _context.Vendor.Join(vendor_cats,
-        //                                                vendor => vendor.ID,
-        //                                                vendor_cat => vendor_cat.VendorId,
-        //                                                (vendor, vendor_cat) => new
-        //                                                {
-        //                                                    ID = vendor.ID, 
-        //                                                    Name = vendor.Name,
-        //                                                    CategoryID = vendor_cat.CheckCategoryId
-        //                                                }
-        //                                            ).Join(categories,
-        //                                                vendor_cat => vendor_cat.CategoryID,
-        //                                                category => category.ID,
-        //                                                (vendor, category) => new
-        //                                                {
-        //                                                    ID = vendor.ID,
-        //                                                    Name = vendor.Name,
-        //                                                    Category = category.Category
-        //                                                }
-        //                                            ).GroupBy(vendor => vendor.ID).ToListAsync();
 
-        //    //var checks = await _context.CheckCategory.ToListAsync();
-        //    //var services = await _context.Services.ToListAsync();
-            
-        //    return Ok(allVendors);
-        //}
+            return Ok(services);
+        }
+
+        // GET: api/Vendors
+        [HttpGet]
+        [Route("GetCheckCategories")]
+        public async Task<ActionResult<IEnumerable<object>>> GetCheckCategories()
+        {
+
+            var categories = await _context.CheckCategory.ToListAsync();
+
+
+            return Ok(categories);
+        }
 
         // GET: api/Vendors/5
         [HttpGet]
