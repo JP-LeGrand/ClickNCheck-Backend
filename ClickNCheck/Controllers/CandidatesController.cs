@@ -85,13 +85,13 @@ namespace ClickNCheck.Controllers
         [Route("CreateCandidate")]
         public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
         {
-            candidate.Password = codeGenerator.ReferenceNumber();
+            //candidate.Password = codeGenerator.ReferenceNumber();
             Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
             var mailBody = service.CandidateMail();
             //reformat email content
             mailBody.Replace("CandidateName",candidate.Name);
             mailBody.Replace("OrganisationName", org.Name);
-            mailBody.Replace("referenceNumber", candidate.Password);
+            //mailBody.Replace("referenceNumber", candidate.Password);
             try
             {
                 service.SendMail(candidate.Email, "New Verificaiton Request", mailBody);
@@ -203,8 +203,8 @@ namespace ClickNCheck.Controllers
 
             if (candidate != null)
             {
-                candidate.Password = password;
-                candidate.passwordChanged = true;
+                //candidate.Password = password;
+                //candidate.passwordChanged = true;
                 return Ok(candidate);
             }
             else
@@ -247,6 +247,33 @@ namespace ClickNCheck.Controllers
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
+        }
+
+        // POST: api/Candidates/CandidateConsentedEmail
+        [HttpPost]
+        [Route("CandidateConsentedEmail")]
+        public async Task<ActionResult<Candidate>> CandidateConsentedEmail([FromBody]int candidateId)
+        {
+            var cnd = _context.Candidate.Find(candidateId);
+
+            if (cnd == null)
+                throw new Exception("failed to find candidate it in database");
+
+            Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == cnd.Organisation.ID);
+            var mailBody = service.CandidateConsentedMail();
+            //reformat email content
+            mailBody.Replace("CandidateName", cnd.Name);
+            mailBody.Replace("OrganisationName", org.Name);
+            try
+            {
+                service.SendMail(cnd.Email, "You have just consented a verification check", mailBody);
+
+            }
+            catch(Exception e)
+            {
+
+            }
+            return CreatedAtAction("GetCandidate", new { id = cnd.ID }, cnd);
         }
     }
 }

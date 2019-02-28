@@ -21,7 +21,7 @@ namespace checkStub
         private bool checkPersonal;
         private bool checkResidency;
         private JObject requestedChecks;
-        private JObject someCredentials;
+        private JObject candidateCridentials;
 
         private JObject results;
         private Candidate candidate;
@@ -32,7 +32,7 @@ namespace checkStub
         {
             //expected input (json) requestedChecks = {'credentials':{'name':jabu}, {'surname':'mahlangu'} ...},'academic': {'required': true, 'params': {'highSchool': true, 'tatiary': true }, 'associations'... }
 
-            someCredentials = new JObject{ { "credentials", requestedChecks["credentials"] } };
+            candidateCridentials = new JObject{ { "candidateCridentials", requestedChecks["candidateCridentials"] } };
             this.candidate = candidate;
 
             checkAcademics = (bool)requestedChecks["academic"]["required"];
