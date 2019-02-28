@@ -60,13 +60,14 @@ namespace ClickNCheck
 
         public string RecruiterMail()
         {
-            string emailBody = System.IO.File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
+            string emailBody = File.ReadAllText(@"..\ClickNCheck\Files\RecruiterEmail.html");
             return emailBody;
         }
 
        public string CandidateMail()
         {
-            string emailBody = File.ReadAllText(@"..\ClickNCheck\Files\CandidateEmail.html");
+            string emailBody = File.ReadAllText(@"C:\repos\Clink-N-Check-Backend\ClickNCheck\Files\CandidateEmail.html");
+            //use relative paths from now on. not the absolute
             return emailBody;
         }
 

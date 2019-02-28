@@ -26,7 +26,7 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        // GET: api/Candidates
+        // GET: api/Candidates/GetAllCandidates
         [HttpGet]
         [Route("GetAllCandidates")]
         public async Task<ActionResult<IEnumerable<Candidate>>> GetAllCandidates()
@@ -86,7 +86,7 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
         {
             candidate.Password = codeGenerator.ReferenceNumber();
-            var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
+            Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
             var mailBody = service.CandidateMail();
             //reformat email content
             mailBody.Replace("CandidateName",candidate.Name);

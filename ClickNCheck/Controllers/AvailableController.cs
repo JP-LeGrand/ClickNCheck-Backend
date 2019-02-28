@@ -62,13 +62,13 @@ namespace ClickNCheck.Controllers
             return Vendor;
         }
 
-        // POST: api/available/runChecks/{jsonObject}
+        // POST: api/available/{candidateId}/runChecks/{requiredChecksjsonObject}
         [HttpPost]
-        [Route("runChecks/{jsonObject}")]
-        public async Task<Object> runChecks(int candidateId, [FromRoute]JObject jsonObject)
+        [Route("{candidateId}/runChecks/{requiredChecks}")]
+        public async Task<Object> runChecks(int candidateId, [FromRoute]JObject requiredChecks)
         {
             Candidate candidate = await _context.Candidate.FindAsync(candidateId);
-            CheckerRunner checkRunner = new CheckerRunner(_context, candidate, jsonObject);
+            CheckerRunner checkRunner = new CheckerRunner(_context, candidate, requiredChecks);
             
             return await checkRunner.startChecks();
         }
