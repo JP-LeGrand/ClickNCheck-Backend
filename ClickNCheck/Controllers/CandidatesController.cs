@@ -20,7 +20,7 @@ namespace ClickNCheck.Controllers
         private readonly ClickNCheckContext _context;
         CodeGenerator codeGenerator = new CodeGenerator();
         EmailService service = new EmailService();
-        ContractUpload uploadService = new ContractUpload();
+        UploadService uploadService = new UploadService();
 
         public CandidatesController(ClickNCheckContext context)
         {
@@ -139,62 +139,63 @@ namespace ClickNCheck.Controllers
             return _context.Candidate.Any(e => e.ID == id);
         }
 
-        // POST: api/Candidates/5/AssignCandidates
-        [HttpPost]
-        [Route("{id}/AssignCandidates")]
-        public async Task<IActionResult> AssignCandidates(int id, [FromBody]int[] ids)
-        {
-            int jobId = id;
+        //TODO:
+        //// POST: api/Candidates/5/AssignCandidates
+        //[HttpPost]
+        //[Route("{id}/AssignCandidates")]
+        //public async Task<IActionResult> AssignCandidates(int id, [FromBody]int[] ids)
+        //{
+        //    int jobId = id;
 
-            VerificationRequest v = new VerificationRequest();
-            v.DateStarted = DateTime.Now;
+        //    VerificationRequest v = new VerificationRequest();
+        //    v.DateStarted = DateTime.Now;
             
-            //find job profile
-            var jobProfile = await _context.JobProfile.FindAsync(jobId);
+        //    //find job profile
+        //    var jobProfile = await _context.JobProfile.FindAsync(jobId);
 
-            if (jobProfile == null)
-            {
-                return NotFound("This Job Profile does not exist");
-            }
+        //    if (jobProfile == null)
+        //    {
+        //        return NotFound("This Job Profile does not exist");
+        //    }
 
-            //find Candidates
-            for (int i = 0; i < ids.Length; i++)
-            {
-                var candidate = await _context.Candidate.FindAsync(ids[i]);
+        //    //find Candidates
+        //    for (int i = 0; i < ids.Length; i++)
+        //    {
+        //        var candidate = await _context.Candidate.FindAsync(ids[i]);
 
-                if (candidate == null)
-                {
-                    return NotFound($"The recruiter {candidate.Name} {candidate.Surname} does not exist");
-                }
-                //add Candidates to verification request
-                v.Candidate_VerificationRequest.Add(new Candidate_VerificationRequest { VerificationRequest = v, Candidate = candidate });
+        //        if (candidate == null)
+        //        {
+        //            return NotFound($"The recruiter {candidate.Name} {candidate.Surname} does not exist");
+        //        }
+        //        //add Candidates to verification request
+        //        v.Candidate_VerificationRequest.Add(new Candidate_VerificationRequest { VerificationRequest = v, Candidate = candidate });
 
-            }
+        //    }
 
-            //add verification request to job profile
-            jobProfile.VerificationRequest.Add(v);
-            //save changes to job profile
-            _context.Entry(jobProfile).State = EntityState.Modified;
+        //    //add verification request to job profile
+        //    jobProfile.VerificationRequest.Add(v);
+        //    //save changes to job profile
+        //    _context.Entry(jobProfile).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var exists = _context.User.Any(e => e.ID == jobId);
-                if (!JobProfileExists(jobId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        var exists = _context.User.Any(e => e.ID == jobId);
+        //        if (!JobProfileExists(jobId))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return Ok(jobProfile);
-        }
+        //    return Ok(jobProfile);
+        //}
 
         [HttpPost]
         [Route("changePassword/{id}")]
