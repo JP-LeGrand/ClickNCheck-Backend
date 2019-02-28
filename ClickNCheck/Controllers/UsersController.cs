@@ -124,7 +124,7 @@ namespace ClickNCheck.Controllers
 
                     _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                 }
-                else if (_entryType.Type == "Manager")
+                else if (_entryType.Type == "Administrator")
 
                 {
                     string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
