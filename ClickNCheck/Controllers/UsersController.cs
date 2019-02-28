@@ -146,22 +146,22 @@ namespace ClickNCheck.Controllers
                         
 
 
-                for (int y = 0; y < _entryType.Count(); y++)
+                for (int y = 0; y < usertype_id.Length; y++)
                 {
-                    if (_entryType[x].Type == "Recruiter")
+                    if (usertype_id[y] == "3")//recruiter
                     {
                         string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
                         emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
                         emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                     }
-                    else if (_entryType[y].Type == "Manager")
+                    else if (usertype_id[y] == "1")//admin
 
 
                     {
                         string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
                         emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
-                        emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
+                        emailService.SendMail(users[x].Email, "Admin Signup", emailBody);
 
                     }
                 }
