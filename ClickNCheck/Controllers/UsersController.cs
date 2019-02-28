@@ -30,6 +30,7 @@ namespace ClickNCheck.Controllers
         LinkCode _model = new LinkCode();
         User _userModel = new User();
         Roles _role = new Roles();
+        ContractUpload uploadService = new ContractUpload();
 
         public UsersController(ClickNCheckContext context)
         {
@@ -434,12 +435,45 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpGet]
-        [Route("userTypes")]
-        public async Task<IEnumerable<UserType>> userTypesAsync()
+        [Route("UploadImage")]
+        public async Task<IEnumerable<UserType>> UploadImage()
         {
             var  userTypes = await _context.UserType.Where(u => u.Type != "Administrator" && u.Type != "SuperAdmin").ToListAsync();
             return userTypes;
         }
+
+        [HttpPost("{id}/UploadFiles")]
+        public async Task<IActionResult> PostContract(int id, [FromForm]IFormCollection contractFiles)
+        {
+            var user = _context.User.Find(id);
+            var org = _context.Organisation.Find(user.OrganisationID);
+
+            var uploadSuccess = false;
+            string bloburl = "";
+            foreach (var formFile in contractFiles.Files.ToList())
+            {
+                if (formFile.Length <= 0)
+                {
+                    continue;
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    formFile.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    uploadSuccess = await uploadService.UploadImage(formFile.FileName, fileBytes, null);
+                    bloburl = await uploadService.UploadImage(user.Guid, org.Guid, formFile.FileName, fileBytes, null);
+                    user.PictureUrl = bloburl;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            if (uploadSuccess)
+                return Ok("Upload Success");
+            else
+                return NotFound("Upload Error");
+        }
+
     }
 
     
