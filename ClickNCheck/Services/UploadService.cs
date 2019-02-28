@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ClickNCheck.Services
 {
-    public class ContractUpload
+    public class UploadService
     {
         //The method below uploads a file onto azure blob storage
         public async Task<bool> UploadToBlob(string filename, byte[] docBuffer = null, Stream stream = null)
