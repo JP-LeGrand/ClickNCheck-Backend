@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ClickNCheck.Services
 {
-    public class ContractUpload
+    public class UploadService
     {
         //The method below uploads a file onto azure blob storage
         public async Task<bool> UploadToBlob(string filename, byte[] docBuffer = null, Stream stream = null)
@@ -111,6 +111,56 @@ namespace ClickNCheck.Services
             catch (StorageException ex)
             {
 
+            }
+        }
+
+        public async Task<string> UploadImage(Guid userGuid, Guid orgGuid, string filename, byte[] docBuffer = null, Stream stream = null)
+        {
+            CloudStorageAccount storageAccount = new CloudStorageAccount(
+            new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(
+            "clicknchecksite",
+            "khXgiAz2xr1NeLQj6MzrHDPiW4wKGFMC02jGdUYfzsa47jjL2qpBXMOvT0dXmMwiwPguypyxmT2qGoUUM5ZwQA=="), true);
+            CloudBlobContainer container = null;
+            string blobUri = "";
+            try
+            {
+                // Create the CloudBlobClient that represents the Blob storage endpoint for the storage account.
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+                // Create a container called 'organisation-contracts' and append a GUID value to it to make the name unique. 
+                container = blobClient.GetContainerReference($"{orgGuid.ToString()}");
+
+                // Set the permissions so the blobs are public. 
+                BlobContainerPermissions permissions = new BlobContainerPermissions
+                {
+                    PublicAccess = BlobContainerPublicAccessType.Blob
+                };
+                await container.SetPermissionsAsync(permissions);
+                await container.CreateIfNotExistsAsync();
+                // Get a reference to the blob address, then upload the file to the blob.
+                CloudBlockBlob blockBlob = container.GetBlockBlobReference($"Images/{userGuid.ToString() + filename}");
+
+                if (docBuffer != null)
+                {
+                    // OPTION A: use imageBuffer (converted from memory stream)
+                    await blockBlob.UploadFromByteArrayAsync(docBuffer, 0, docBuffer.Length);
+                    blobUri = blockBlob.Uri.AbsoluteUri;
+                }
+                else if (stream != null)
+                {
+                    // OPTION B: pass in memory stream directly
+                    await blockBlob.UploadFromStreamAsync(stream);
+                }
+                else
+                {
+                    return blobUri;
+                }
+
+                return blobUri;
+            }
+            catch (StorageException ex)
+            {
+                return blobUri;
             }
         }
     }

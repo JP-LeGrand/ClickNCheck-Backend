@@ -19,7 +19,7 @@ namespace ClickNCheck.Controllers
         private readonly ClickNCheckContext _context;
         CodeGenerator codeGenerator = new CodeGenerator();
         EmailService service = new EmailService();
-        ContractUpload uploadService = new ContractUpload();
+        UploadService uploadService = new UploadService();
 
         public CandidatesController(ClickNCheckContext context)
         {
