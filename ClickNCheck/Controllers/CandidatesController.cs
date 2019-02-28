@@ -87,23 +87,34 @@ namespace ClickNCheck.Controllers
         {
             for (int x = 0; x < candidate.Length; x++)
             {
-                candidate[x].Password = codeGenerator.ReferenceNumber();
-                var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
-                var mailBody = service.CandidateMail();
-                //reformat email content
-                mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
-                mailBody = mailBody.Replace("{OrganisationName}", org.Name);
-                mailBody = mailBody.Replace("{referenceNumber}", candidate[x].Password);
-                try
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidate[x].Email);
+                if (entry != null)
                 {
-                    service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
-                    _context.Candidate.Add(candidate[x]);
-                    await _context.SaveChangesAsync();
+                    return Ok("user exists");
                 }
-                catch (Exception e)
+                else
                 {
-                    return BadRequest("some emails have not sent");
+                    candidate[x].Password = codeGenerator.ReferenceNumber();
+                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
+                    var mailBody = service.CandidateMail();
+                    //reformat email content
+                    mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
+                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    mailBody = mailBody.Replace("{referenceNumber}", candidate[x].Password);
+                    var candidateID = candidate[x].ID;
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    try
+                    {
+                        service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
+                        _context.Candidate.Add(candidate[x]);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest("some emails have not sent");
+                    }
                 }
+               
 
             }
             return Ok();
