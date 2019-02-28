@@ -51,7 +51,7 @@ namespace checkStub
             results = new JObject { };
         }
 
-        public async Task<Object> startChecks()
+        public async void StartChecks()
         {
             if (checkAcademics)
             {
@@ -89,7 +89,7 @@ namespace checkStub
                 //first find out which ones under credit are true
                 
                 var selectedCreditCheck = requestedChecks["credit"]["subChecks"] as JArray;
-                if (selectedCreditCheck == null) return null;
+                if (selectedCreditCheck == null) throw new Exception("selectedCreditCheck IS EMPTY!");
 
                 List<int> selectedCreditCheckIDs = new List<int>();
                 foreach(int id in selectedCreditCheck)
@@ -187,7 +187,6 @@ namespace checkStub
                 //TODO
                 results.Add("residency", residencyCheckResults);
             }
-            return getResults();
         }
         
         public JObject getResults()
