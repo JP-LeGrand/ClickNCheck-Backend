@@ -83,39 +83,33 @@ namespace ClickNCheck.Controllers
         // POST: api/Candidates
         [HttpPost]
         [Route("CreateCandidate")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
+        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate)
         {
-            candidate.Password = codeGenerator.ReferenceNumber();
-            var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
-            var mailBody = service.CandidateMail();
-            //reformat email content
-            mailBody.Replace("CandidateName",candidate.Name);
-            mailBody.Replace("OrganisationName", org.Name);
-            mailBody.Replace("referenceNumber", candidate.Password);
-            try
+            for (int x = 0; x < candidate.Length; x++)
             {
-                service.SendMail(candidate.Email, "New Verificaiton Request", mailBody);
-                _context.Candidate.Add(candidate);
-                await _context.SaveChangesAsync();
-            }
-            catch(Exception e)
-            {
+                candidate[x].Password = codeGenerator.ReferenceNumber();
+                var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
+                var mailBody = service.CandidateMail();
+                //reformat email content
+                mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
+                mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                mailBody = mailBody.Replace("{referenceNumber}", candidate[x].Password);
+                try
+                {
+                    service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
+                    _context.Candidate.Add(candidate[x]);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception e)
+                {
+                    return BadRequest("some emails have not sent");
+                }
 
             }
-            return CreatedAtAction("GetCandidate", new { id = candidate.ID }, candidate);
-        }
-
-        [HttpPost]
-        [Route("CreateBulkCandidate")]
-        public async Task<ActionResult<Candidate>> CreateBulkCandidate([FromBody] List<Candidate> candidates)
-        {
-
-            await _context.Candidate.AddRangeAsync(candidates);
-            await _context.SaveChangesAsync();
-
             return Ok();
         }
 
+     
         // DELETE: api/Candidates/5
         [HttpDelete]
         [Route("DeleteCandidate/{id}")]

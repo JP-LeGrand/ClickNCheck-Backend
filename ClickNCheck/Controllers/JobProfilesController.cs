@@ -107,7 +107,7 @@ namespace ClickNCheck.Controllers
                     return NotFound("The vendor " + services.Name + " does not exist");
                 }
                 //add vendor to job profile
-                j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i+1 });
+                j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
             }
             // save job profile
             _context.JobProfile.Add(j);
@@ -190,6 +190,54 @@ namespace ClickNCheck.Controllers
         {
             return _context.JobProfile.Any(e => e.ID == id);
         }
+
+
+        [HttpGet]
+        [Route("recruiterJobs/{id}")]
+        public async Task<IEnumerable<object>> getRecJobs(int id)
+        {
+            //   var jp_entry = _context.Recruiter_JobProfile.Where(e => e.RecruiterId == id);
+            var entry = await (from i in _context.Recruiter_JobProfile
+                               join u in _context.JobProfile on i.JobProfileId equals u.ID into joinTable
+                               from p in joinTable.DefaultIfEmpty()
+                               where i.RecruiterId == id
+                               select new
+                               {
+                                   p.ID,
+                                   p.Title
+                               }).ToListAsync();
+
+            return entry;
+
+        }
+
+        [HttpGet]
+        [Route("getAllChecks")]
+        public async Task<IEnumerable<object>> getAllChecks(int id)
+        {
+            var allChecks = await _context.CheckCategory.ToListAsync();
+
+            return allChecks;
+        }
+
+        [HttpGet]
+        [Route("jobChecks/{id}")]
+        public async Task<IEnumerable<object>> getChecks(int id)
+        {
+            var checks = await (from i in _context.JobProfile_Check
+                                join x in _context.Services on i.ServicesID equals x.ID
+                                join y in _context.CheckCategory on x.CheckCategoryID equals y.ID into joinTable
+                                from z in joinTable.DefaultIfEmpty()
+                                where i.JobProfileID == id
+                                select new {
+                                    z.ID,
+                                    z.Category
+                                }).ToListAsync();
+
+            return checks;
+        }
+
+
 
 
     }
