@@ -22,6 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\CandidateEmail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\SignUpEmail.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -7,7 +7,7 @@ using System.Linq;
 using ClickNCheck.Models;
 using System.Net.Mime;
 using System.IO;
-
+using System.Reflection;
 
 namespace ClickNCheck
 {
@@ -66,8 +66,9 @@ namespace ClickNCheck
 
        public string CandidateMail()
         {
-            string emailBody = File.ReadAllText(@"C:\repos\Clink-N-Check-Backend\ClickNCheck\Files\CandidateEmail.html");
-            //use relative paths from now on. not the absolute
+
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\CandidateEmail.html"));
+
             return emailBody;
         }
 
