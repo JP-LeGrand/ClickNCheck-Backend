@@ -9,6 +9,7 @@ using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace ClickNCheck.Controllers
 {
@@ -252,28 +253,34 @@ namespace ClickNCheck.Controllers
         // POST: api/Candidates/CandidateConsentedEmail
         [HttpPost]
         [Route("CandidateConsentedEmail")]
-        public async Task<ActionResult<Candidate>> CandidateConsentedEmail([FromBody]int candidateId)
+        public async Task<ActionResult<JObject>> CandidateConsentedEmail([FromBody]int[] candidateIDs)
         {
-            var cnd = _context.Candidate.Find(candidateId);
+            JObject results = new JObject();
 
-            if (cnd == null)
-                throw new Exception("failed to find candidate it in database");
-
-            Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == cnd.Organisation.ID);
-            var mailBody = service.CandidateConsentedMail();
-            //reformat email content
-            mailBody.Replace("CandidateName", cnd.Name);
-            mailBody.Replace("OrganisationName", org.Name);
-            try
+            foreach (int id in candidateIDs)
             {
-                service.SendMail(cnd.Email, "You have just consented a verification check", mailBody);
+                var cnd = _context.Candidate.Find(id);
 
-            }
-            catch(Exception e)
-            {
+                if (cnd == null)
+                    throw new Exception("failed to find candidate it in database");
 
+                Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == cnd.Organisation.ID);
+                var mailBody = service.CandidateConsentedMail();
+                //reformat email content
+                mailBody.Replace("CandidateName", cnd.Name);
+                mailBody.Replace("OrganisationName", org.Name);
+                try
+                {
+                    bool serv = service.SendMail(cnd.Email, "You have just consented a verification check", mailBody);
+                    results.Add(id.ToString(), serv);
+                }
+                catch (Exception e)
+                {
+
+                }
             }
-            return CreatedAtAction("GetCandidate", new { id = cnd.ID }, cnd);
+
+            return results;
         }
     }
 }
