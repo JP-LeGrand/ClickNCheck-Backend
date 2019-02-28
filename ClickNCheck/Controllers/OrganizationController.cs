@@ -19,7 +19,7 @@ namespace ClickNCheck.Controllers
         private ClickNCheckContext _context;
        
         EmailService mailS = new EmailService();
-        ContractUpload uploadService = new ContractUpload();
+        UploadService uploadService = new UploadService();
 
         public OrganizationController(ClickNCheckContext context)
         {
