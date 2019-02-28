@@ -79,6 +79,20 @@ namespace ClickNCheck.Data
             .WithMany(p => p.JobProfile_Check)
             .HasForeignKey(pt => pt.JobProfileID);
 
+
+            modelBuilder.Entity<Candidate_JobProfile>()
+                .HasKey(t => new { t.JobProfileID, t.CandidateID });
+
+            modelBuilder.Entity<Candidate_JobProfile>()
+            .HasOne(pt => pt.Candidate)
+            .WithMany(p => p.Candidate_JobProfile)
+            .HasForeignKey(pt => pt.CandidateID);
+
+            modelBuilder.Entity<Candidate_JobProfile>()
+            .HasOne(pt => pt.JobProfile)
+            .WithMany(p => p.Candidate_JobProfile)
+            .HasForeignKey(pt => pt.JobProfileID);
+
             modelBuilder.Entity<Roles>()
                .HasKey(t => new { t.UserId, t.UserTypeId });
 
@@ -149,250 +163,347 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<AddressType>().HasData(
                new AddressType() { ID = 2, Type = "Billing" });
 
-            //TODO:
-            //modelBuilder.Entity<Models.Services>().HasData(new
-            //{
-            //    ID = 1,
-            //    Cost = 100,
-            //    isAvailable = true,
-            //    Name = "A service",
-            //    TurnaroundTime = "2 days",
-            //    URL = "www.google.com",
-            //    VendorID = 1,
-            //    CheckCategoryID = 1
-            //});
+        TODO:
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 1,
+                Cost = 100,
+                isAvailable = true,
+                Name = "A service",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 1,
+                CheckCategoryID = 1,
+                APIType = 0
+            });
 
-            //modelBuilder.Entity<Models.Services>().HasData(new
-            //{
-            //    ID = 2,
-            //    Cost = 100,
-            //    isAvailable = true,
-            //    Name = "Another service",
-            //    TurnaroundTime = "2 days",
-            //    URL = "www.google.com",
-            //    VendorID = 1,
-            //    CheckCategoryID = 5
-            //});
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 2,
+                Cost = 100,
+                isAvailable = true,
+                Name = "Another service",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 1,
+                CheckCategoryID = 5,
+                APIType = 0
+            });
 
-            //modelBuilder.Entity<Vendor>().HasData(new
-            //{
-            //    ID = 1,
-            //    ServicesID = 1,
-            //    Name = "Compuscan"
-            //});
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 1,
+                ServicesID = 1,
+                Name = "Compuscan"
+            });
 
-            //modelBuilder.Entity<Vendor>().HasData(new
-            //{
-            //    ID = 2,
-            //    ServicesID = 2,
-            //    Name = "Experian"
-            //});
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 2,
+                ServicesID = 2,
+                Name = "Experian"
+            });
 
 
-            //modelBuilder.Entity<AccountsPerson>().HasData(new
-            //{
-            //    ID = 1,
-            //    Name = "ContactPerson1",
-            //    Phone = "1324654978",
-            //    Email = "mail@mail.com"
-            //});
-            //modelBuilder.Entity<ContactPerson>().HasData(new
-            //{
-            //    ID = 1,
-            //    Name = "ContactPerson1",
-            //    Phone = "1324654978",
-            //    Email = "mail@mail.com"
-            //});
+            modelBuilder.Entity<AccountsPerson>().HasData(new
+            {
+                ID = 1,
+                Name = "ContactPerson1",
+                Phone = "1324654978",
+                Email = "mail@mail.com"
+            });
+            modelBuilder.Entity<ContactPerson>().HasData(new
+            {
+                ID = 1,
+                Name = "ContactPerson1",
+                Phone = "1324654978",
+                Email = "mail@mail.com"
+            });
 
-            //modelBuilder.Entity<Address>().HasData(new
-            //{
-            //    ID = 1,
-            //    Building = "Rabbitania",
-            //    Street = "3 Diep in Die Berg",
-            //    Suburb = "Wapadrand",
-            //    City = "Pretoria",
-            //    PostalCode = "0028",
-            //    Province = "Gauteng",
-            //    AddressTypeID = 1
-            //});
-            //modelBuilder.Entity<Address>().HasData(new
-            //{
-            //    ID = 2,
-            //    Building = "Rabbitania",
-            //    Street = "3 Diep in Die Berg",
-            //    Suburb = "Wapadrand",
-            //    City = "Pretoria",
-            //    PostalCode = "0028",
-            //    Province = "Gauteng",
-            //    AddressTypeID = 2
-            //});
-            //modelBuilder.Entity<Organisation>().HasData(new
-            //{
-            //    ID = 1,
-            //    Name = "Retro Rabbit",
-            //    RegistrationNumber = "7522",
-            //    ContractUrl = "www.contract.url",
-            //    TaxNumber = "42757",
-            //    AccountsPersonID = 1,
-            //    ContactPersonID = 1,
-            //    PhysicalAddressID = 1,
-            //    BillingAddressID = 2
-            //});
+            modelBuilder.Entity<Address>().HasData(new
+            {
+                ID = 1,
+                Building = "Rabbitania",
+                Street = "3 Diep in Die Berg",
+                Suburb = "Wapadrand",
+                City = "Pretoria",
+                PostalCode = "0028",
+                Province = "Gauteng",
+                AddressTypeID = 1
+            });
+            modelBuilder.Entity<Address>().HasData(new
+            {
+                ID = 2,
+                Building = "Rabbitania",
+                Street = "3 Diep in Die Berg",
+                Suburb = "Wapadrand",
+                City = "Pretoria",
+                PostalCode = "0028",
+                Province = "Gauteng",
+                AddressTypeID = 2
+            });
+            modelBuilder.Entity<Organisation>().HasData(new
+            {
+                ID = 1,
+                Name = "Retro Rabbit",
+                RegistrationNumber = "7522",
+                ContractUrl = "www.contract.url",
+                TaxNumber = "42757",
+                AccountsPersonID = 1,
+                ContactPersonID = 1,
+                PhysicalAddressID = 1,
+                BillingAddressID = 2,
+                Guid = System.Guid.NewGuid()
+            });
 
-            //modelBuilder.Entity<LinkCode>().HasData(new
-            //{
-            //    ID = 5,
-            //    Code = "codecodecode",
-            //    Used = false,
-            //    Admin_ID = 1
-            //});
-            //modelBuilder.Entity<LinkCode>().HasData(new
-            //{
-            //    ID = 1,
-            //    Code = "codecodecode",
-            //    Used = false,
-            //    Admin_ID = 1
-            //});
-            //modelBuilder.Entity<LinkCode>().HasData(new
-            //{
-            //    ID = 2,
-            //    Code = "codecodecode",
-            //    Used = false,
-            //    Admin_ID = 1
-            //});
-            //modelBuilder.Entity<LinkCode>().HasData(new
-            //{
-            //    ID = 3,
-            //    Code = "codecodecode",
-            //    Used = false,
-            //    Admin_ID = 1
-            //});
-            //modelBuilder.Entity<LinkCode>().HasData(new
-            //{
-            //    ID = 4,
-            //    Code = "codecodecode",
-            //    Used = false,
-            //    Admin_ID = 1
-            //});
+            modelBuilder.Entity<LinkCode>().HasData(new
+            {
+                ID = 5,
+                Code = "codecodecode",
+                Used = false,
+                Admin_ID = 1
+            });
+            modelBuilder.Entity<LinkCode>().HasData(new
+            {
+                ID = 1,
+                Code = "codecodecode",
+                Used = false,
+                Admin_ID = 1
+            });
+            modelBuilder.Entity<LinkCode>().HasData(new
+            {
+                ID = 2,
+                Code = "codecodecode",
+                Used = false,
+                Admin_ID = 1
+            });
+            modelBuilder.Entity<LinkCode>().HasData(new
+            {
+                ID = 3,
+                Code = "codecodecode",
+                Used = false,
+                Admin_ID = 1
+            });
+            modelBuilder.Entity<LinkCode>().HasData(new
+            {
+                ID = 4,
+                Code = "codecodecode",
+                Used = false,
+                Admin_ID = 1
+            });
 
-            //modelBuilder.Entity<User>().HasData(new
-            //{
-            //    ID = 1,
-            //    Name = "manager",
-            //    Surname = "man",
-            //    Email = "me@mail.com",
-            //    Phone = "08334419512",
-            //    EmployeeNumber = 65465,
-            //    Otp = 1231,
-            //    OrganisationID = 1,
-            //    LinkCodeID = 1,
-            //    ManagerID = 1,
-            //    UserTypeID = 4
-            //});
-            //modelBuilder.Entity<User>().HasData(new
-            //{
-            //    ID = 2,
-            //    Name = "administrator",
-            //    Surname = "man",
-            //    Email = "me@mail.com",
-            //    Phone = "08334419512",
-            //    EmployeeNumber = 54646,
-            //    Otp = 0x2_056a,
-            //    OrganisationID = 1,
-            //    LinkCodeID = 2,
-            //    ManagerID = 1,
-            //    UserTypeID = 1
-            //});
-            //modelBuilder.Entity<User>().HasData(new
-            //{
-            //    ID = 3,
-            //    Name = "Super",
-            //    Surname = "administrator",
-            //    Email = "me@mail.com",
-            //    Phone = "08334419512",
-            //    EmployeeNumber = 54646,
-            //    Otp = 52345,
-            //    OrganisationID = 1,
-            //    LinkCodeID = 3,
-            //    ManagerID = 1,
-            //    UserTypeID = 2
-            //});
-            //modelBuilder.Entity<User>().HasData(new
-            //{
-            //    ID = 4,
-            //    Name = "Recruiter",
-            //    Surname = "man",
-            //    Email = "me@mail.com",
-            //    Phone = "08334419512",
-            //    EmployeeNumber = 542435,
-            //    Otp = 542223,
-            //    OrganisationID = 1,
-            //    LinkCodeID = 4,
-            //    ManagerID = 1,
-            //    UserTypeID = 3
-            //});
-            //modelBuilder.Entity<User>().HasData(new
-            //{
-            //    ID = 5,
-            //    Name = "Operator",
-            //    Surname = "man",
-            //    Email = "me@mail.com",
-            //    Phone = "08334419512",
-            //    EmployeeNumber = 2345,
-            //    Otp = 3452,
-            //    OrganisationID = 1,
-            //    LinkCodeID = 5,
-            //    ManagerID = 1,
-            //    UserTypeID = 5
-            //});
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 1,
+                Name = "manager",
+                Surname = "man",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 65465,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 1,
+                ManagerID = 1,
+                UserTypeID = 4,
+                Guid = System.Guid.NewGuid()
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 2,
+                Name = "administrator",
+                Surname = "man",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 54646,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 2,
+                ManagerID = 1,
+                UserTypeID = 1,
+                Guid = System.Guid.NewGuid()
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 3,
+                Name = "Super",
+                Surname = "administrator",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 54646,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 3,
+                ManagerID = 1,
+                UserTypeID = 2,
+                Guid = System.Guid.NewGuid()
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 4,
+                Name = "Recruiter1",
+                Surname = "man",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 542435,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 4,
+                ManagerID = 1,
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 6,
+                Name = "Recruiter2",
+                Surname = "man",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 542435,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 4,
+                ManagerID = 1,
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 7,
+                Name = "Recruiter3",
+                Surname = "man",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 542435,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 4,
+                ManagerID = 1,
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 8,
+                Name = "Recruiter4",
+                Surname = "man",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 542435,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 4,
+                ManagerID = 1,
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 5,
+                Name = "Operator",
+                Surname = "man",
+                Email = "me@mail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 2345,
+                Otp = "54346546",
+                OrganisationID = 1,
+                LinkCodeID = 5,
+                ManagerID = 1,
+                UserTypeID = 5,
+                Guid = System.Guid.NewGuid()
+            });
 
-            //modelBuilder.Entity<Roles>().HasData(new
-            //{
-            //    UserTypeId = 1,
-            //    UserId = 2
-            //});
-            //modelBuilder.Entity<Roles>().HasData(new
-            //{
-            //    UserTypeId = 2,
-            //    UserId = 3
-            //});
-            //modelBuilder.Entity<Roles>().HasData(new
-            //{
-            //    UserTypeId = 3,
-            //    UserId = 4
-            //});
-            //modelBuilder.Entity<Roles>().HasData(new
-            //{
-            //    UserTypeId = 4,
-            //    UserId = 1
-            //});
-            //modelBuilder.Entity<Roles>().HasData(new
-            //{
-            //    UserTypeId = 5,
-            //    UserId = 5
-            //});
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 1,
+                UserId = 2
+            });
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 2,
+                UserId = 3
+            });
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 3,
+                UserId = 4
+            });
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 3,
+                UserId = 6
+            });
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 3,
+                UserId = 7
+            });
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 3,
+                UserId = 8
+            });
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 4,
+                UserId = 1
+            });
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 5,
+                UserId = 5
+            });
 
-            //modelBuilder.Entity<JobProfile>().HasData(new
-            //{
-            //    ID = 1,
-            //    Title = "Sofwtare Developer",
-            //    JobCode = "555",
-            //    isCompleted = true,
-            //    isTemplate = true,
-            //    checksNeedVerification = false,
-            //    OrganisationID = 1
-            //});
+            modelBuilder.Entity<JobProfile>().HasData(new
+            {
+                ID = 1,
+                Title = "Sofwtare Developer",
+                JobCode = "555",
+                isCompleted = true,
+                isTemplate = true,
+                checksNeedVerification = false,
+                OrganisationID = 1,
+                authorisationRequired = true
+            });
 
-            //modelBuilder.Entity<JobProfile>().HasData(new
-            //{
-            //    ID = 2,
-            //    Title = "Sofwtare Developer",
-            //    JobCode = "555",
-            //    isCompleted = true,
-            //    isTemplate = false,
-            //    checksNeedVerification = false,
-            //    OrganisationID = 1
-            //});
+            modelBuilder.Entity<JobProfile>().HasData(new
+            {
+                ID = 2,
+                Title = "Sofwtare Developer",
+                JobCode = "555",
+                isCompleted = true,
+                isTemplate = false,
+                checksNeedVerification = false,
+                OrganisationID = 1,
+                authorisationRequired = true
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 1,
+                ServicesID = 1,
+                Order = 1
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 1,
+                ServicesID = 2,
+                Order = 2
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 2,
+                ServicesID = 2,
+                Order = 1
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 2,
+                ServicesID = 1,
+                Order = 2
+            });
         }
 
   
