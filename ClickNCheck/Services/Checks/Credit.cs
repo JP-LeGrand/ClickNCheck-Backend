@@ -29,8 +29,10 @@ namespace checkStub
         {
             foreach (int id in selectedCreditVendorServiceID)
             {
-                var serv = await _context.Services.FindAsync(id);
-                runCreditCheck(serv.APIType, serv.URL, serv.Name);
+                Services serv = null;
+                serv = await _context.Services.FindAsync(id);
+                if (serv != null)
+                    runCreditCheck(serv.APIType, serv.URL, serv.Name);
             }
             return getResults();
         }
@@ -41,7 +43,7 @@ namespace checkStub
             {
                 return results;
             }
-            else throw new Exception("Credit check either still in progress or never ran!");
+            else return results;
         }
 
         private async void runCreditCheck(int apiType, string url, string supplierName)

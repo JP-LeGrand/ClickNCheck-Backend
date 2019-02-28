@@ -9,6 +9,7 @@ using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace ClickNCheck.Controllers
 {
@@ -26,7 +27,7 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        // GET: api/Candidates
+        // GET: api/Candidates/GetAllCandidates
         [HttpGet]
         [Route("GetAllCandidates")]
         public async Task<ActionResult<IEnumerable<Candidate>>> GetAllCandidates()
@@ -85,7 +86,9 @@ namespace ClickNCheck.Controllers
         [Route("CreateCandidate")]
         public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate)
         {
+
             for (int x = 0; x < candidate.Length; x++)
+
             {
                 var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidate[x].Email);
                 if (entry != null)
@@ -209,8 +212,6 @@ namespace ClickNCheck.Controllers
 
             if (candidate != null)
             {
-                candidate.Password = password;
-                candidate.passwordChanged = true;
                 return Ok(candidate);
             }
             else
@@ -288,6 +289,41 @@ namespace ClickNCheck.Controllers
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
+        }
+
+        // POST: api/Candidates/CandidateConsentedEmail
+        [HttpPost]
+        [Route("CandidateConsentedEmail")]
+        public async Task<ActionResult<JObject>> CandidateConsentedEmail([FromBody]int[] candidateIDs)
+        {
+            JObject results = new JObject();
+
+            foreach (int id in candidateIDs)
+            {
+                var cnd = _context.Candidate.Find(id);
+
+                if (cnd == null)
+                    throw new Exception("failed to find candidate it in database");
+
+                int orgID = 1;
+                //orgID = cnd.Organisation.ID;
+
+                var org = _context.Organisation.Find(orgID);
+                string mailBody = service.CandidateConsentedMail();
+                //reformat email content
+                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
+                try
+                {
+                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
+                    results.Add(id.ToString(), serv);
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return results;
         }
     }
 }
