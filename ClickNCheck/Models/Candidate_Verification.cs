@@ -16,5 +16,7 @@ namespace ClickNCheck.Models
         public Verification Verification { get; set; }
 
         public string IndemnityUrl { get; set; }
+        public DateTime DateStarted { get; set; }
+        public DateTime DateEnded { get; set; }
     }
 }

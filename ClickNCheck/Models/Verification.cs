@@ -10,5 +10,6 @@ namespace ClickNCheck.Models
         public int ID { get; set; }
         public int JobProfileID { get; set; }
         public JobProfile JobProfile { get; set; }
+        public ICollection<Candidate_Verification> Candidate_Verification { get; set; } = new List<Candidate_Verification>();
     }
 }
