@@ -9,6 +9,7 @@ using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace ClickNCheck.Controllers
 {
@@ -26,7 +27,7 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        // GET: api/Candidates
+        // GET: api/Candidates/GetAllCandidates
         [HttpGet]
         [Route("GetAllCandidates")]
         public async Task<ActionResult<IEnumerable<Candidate>>> GetAllCandidates()
@@ -83,39 +84,46 @@ namespace ClickNCheck.Controllers
         // POST: api/Candidates
         [HttpPost]
         [Route("CreateCandidate")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
-        {
-            candidate.Password = codeGenerator.ReferenceNumber();
-            var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
-            var mailBody = service.CandidateMail();
-            //reformat email content
-            mailBody.Replace("CandidateName",candidate.Name);
-            mailBody.Replace("OrganisationName", org.Name);
-            mailBody.Replace("referenceNumber", candidate.Password);
-            try
-            {
-                service.SendMail(candidate.Email, "New Verificaiton Request", mailBody);
-                _context.Candidate.Add(candidate);
-                await _context.SaveChangesAsync();
-            }
-            catch(Exception e)
-            {
-
-            }
-            return CreatedAtAction("GetCandidate", new { id = candidate.ID }, candidate);
-        }
-
-        [HttpPost]
-        [Route("CreateBulkCandidate")]
-        public async Task<ActionResult<Candidate>> CreateBulkCandidate([FromBody] List<Candidate> candidates)
+        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate)
         {
 
-            await _context.Candidate.AddRangeAsync(candidates);
-            await _context.SaveChangesAsync();
+            for (int x = 0; x < candidate.Length; x++)
 
+            {
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidate[x].Email);
+                if (entry != null)
+                {
+                    return Ok("user exists");
+                }
+                else
+                {
+                    candidate[x].Password = codeGenerator.ReferenceNumber();
+                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
+                    var mailBody = service.CandidateMail();
+                    //reformat email content
+                    mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
+                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    mailBody = mailBody.Replace("{referenceNumber}", candidate[x].Password);
+                    var candidateID = candidate[x].ID;
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    try
+                    {
+                        service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
+                        _context.Candidate.Add(candidate[x]);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest("some emails have not sent");
+                    }
+                }
+               
+
+            }
             return Ok();
         }
 
+     
         // DELETE: api/Candidates/5
         [HttpDelete]
         [Route("DeleteCandidate/{id}")]
@@ -204,8 +212,6 @@ namespace ClickNCheck.Controllers
 
             if (candidate != null)
             {
-                candidate.Password = password;
-                candidate.passwordChanged = true;
                 return Ok(candidate);
             }
             else
@@ -283,6 +289,41 @@ namespace ClickNCheck.Controllers
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
+        }
+
+        // POST: api/Candidates/CandidateConsentedEmail
+        [HttpPost]
+        [Route("CandidateConsentedEmail")]
+        public async Task<ActionResult<JObject>> CandidateConsentedEmail([FromBody]int[] candidateIDs)
+        {
+            JObject results = new JObject();
+
+            foreach (int id in candidateIDs)
+            {
+                var cnd = _context.Candidate.Find(id);
+
+                if (cnd == null)
+                    throw new Exception("failed to find candidate it in database");
+
+                int orgID = 1;
+                //orgID = cnd.Organisation.ID;
+
+                var org = _context.Organisation.Find(orgID);
+                string mailBody = service.CandidateConsentedMail();
+                //reformat email content
+                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
+                try
+                {
+                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
+                    results.Add(id.ToString(), serv);
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return results;
         }
     }
 }
