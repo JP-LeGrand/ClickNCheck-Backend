@@ -45,6 +45,7 @@ namespace ClickNCheck
             mailMessage.Subject = Subject;
             mailMessage.IsBodyHtml = true;
             mailMessage.Body = Body;
+            
         }
 
         private void SmtpSend(MailMessage mail)
@@ -72,8 +73,10 @@ namespace ClickNCheck
 
         public string CandidateConsentedMail()
         {
-            string emailbody  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
-            return emailbody;
+            string htmlstring  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
+            /*string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
+            string htmlstring = System.IO.File.ReadAllText(path);*/
+            return htmlstring;
         }
     }
 }

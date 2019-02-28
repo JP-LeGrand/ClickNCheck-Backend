@@ -21,10 +21,9 @@ namespace checkStub
         private bool checkPersonal;
         private bool checkResidency;
         private JObject requestedChecks;
-        private JObject candidateCridentials;
 
         private JObject results;
-        private Candidate candidate;
+        private readonly Candidate candidate;
         // database instance
         private ClickNCheckContext _context;
 
@@ -82,7 +81,7 @@ namespace checkStub
 
                 //send results back indepedently soon as they are available
                 //TODO
-                results.Add(associationsCheckResults);
+                results.Add("associations", associationsCheckResults);
             }
             if (checkCredit)
             {
@@ -191,7 +190,7 @@ namespace checkStub
         
         public JObject getResults()
         {
-            return results;
+            return this.results;
         }
 
         public void logAllResults()

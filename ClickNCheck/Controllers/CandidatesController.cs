@@ -266,16 +266,15 @@ namespace ClickNCheck.Controllers
                     throw new Exception("failed to find candidate it in database");
 
                 int orgID = 1;
-
                 //orgID = cnd.Organisation.ID;
+
                 var org = _context.Organisation.Find(orgID);
-                var mailBody = service.CandidateConsentedMail();
+                string mailBody = service.CandidateConsentedMail();
                 //reformat email content
-                mailBody.Replace("CandidateName", cnd.Name);
-                mailBody.Replace("OrganisationName", org.Name);
+                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
                 try
                 {
-                    bool serv = service.SendMail(cnd.Email, "You have just consented a verification check", mailBody);
+                    bool serv = service.SendMail(cnd.Email, "We have just recieved consented to verification", mailBody);
                     results.Add(id.ToString(), serv);
                 }
                 catch (Exception e)

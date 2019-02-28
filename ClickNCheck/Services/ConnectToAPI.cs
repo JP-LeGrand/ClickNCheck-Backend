@@ -72,7 +72,7 @@ namespace ClickNCheck.Services
         {
             if(true)
             {
-                var webWebServiceUrl = "https://webservices-uat.compuscan.co.za/NormalSearchService?wsdl";
+                var webWebServiceUrl = @url;
                 var req = (HttpWebRequest)WebRequest.Create(webWebServiceUrl);
                 req.ContentType = "text/xml"; //"application/soap+xml;";
                 req.Method = "POST";
