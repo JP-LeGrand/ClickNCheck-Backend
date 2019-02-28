@@ -214,6 +214,41 @@ namespace ClickNCheck.Controllers
             }
         }
 
+        //The method below updates the consent to true when candidate approves 
+        [HttpPut]
+        [Route("PutConsent/{id}")]
+        public async Task<IActionResult> PutConsent(int id )
+        {
+            var candidate = _context.Candidate.Where(c => c.ID == id).FirstOrDefault();
+            if (id != candidate.ID)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(candidate).State = EntityState.Modified;
+
+            try
+            {
+                candidate.HasConsented = true;
+                _context.Candidate.Update(candidate);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CandidateExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok(candidate);
+        }
+
+
         [HttpGet]
         [Route("ConsentCandidate/{id}")]
         public async Task<ActionResult<Candidate>> ConsentCandidate(int id, [FromForm]IFormCollection indemnityFile)
