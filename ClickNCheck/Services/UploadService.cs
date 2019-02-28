@@ -130,13 +130,13 @@ namespace ClickNCheck.Services
                 // Create a container called 'organisation-contracts' and append a GUID value to it to make the name unique. 
                 container = blobClient.GetContainerReference($"{orgGuid.ToString()}");
 
+                await container.CreateIfNotExistsAsync();
                 // Set the permissions so the blobs are public. 
                 BlobContainerPermissions permissions = new BlobContainerPermissions
                 {
                     PublicAccess = BlobContainerPublicAccessType.Blob
                 };
                 await container.SetPermissionsAsync(permissions);
-                await container.CreateIfNotExistsAsync();
                 // Get a reference to the blob address, then upload the file to the blob.
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference($"Images/{userGuid.ToString() + filename}");
 

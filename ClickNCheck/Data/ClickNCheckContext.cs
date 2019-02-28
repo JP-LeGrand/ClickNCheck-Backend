@@ -79,6 +79,20 @@ namespace ClickNCheck.Data
             .WithMany(p => p.JobProfile_Check)
             .HasForeignKey(pt => pt.JobProfileID);
 
+
+            modelBuilder.Entity<Candidate_JobProfile>()
+                .HasKey(t => new { t.JobProfileID, t.CandidateID });
+
+            modelBuilder.Entity<Candidate_JobProfile>()
+            .HasOne(pt => pt.Candidate)
+            .WithMany(p => p.Candidate_JobProfile)
+            .HasForeignKey(pt => pt.CandidateID);
+
+            modelBuilder.Entity<Candidate_JobProfile>()
+            .HasOne(pt => pt.JobProfile)
+            .WithMany(p => p.Candidate_JobProfile)
+            .HasForeignKey(pt => pt.JobProfileID);
+
             modelBuilder.Entity<Roles>()
                .HasKey(t => new { t.UserId, t.UserTypeId });
 
@@ -238,7 +252,8 @@ namespace ClickNCheck.Data
                 AccountsPersonID = 1,
                 ContactPersonID = 1,
                 PhysicalAddressID = 1,
-                BillingAddressID = 2
+                BillingAddressID = 2,
+                Guid = System.Guid.NewGuid()
             });
 
             modelBuilder.Entity<LinkCode>().HasData(new
@@ -289,7 +304,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 1,
                 ManagerID = 1,
-                UserTypeID = 4
+                UserTypeID = 4,
+                Guid = System.Guid.NewGuid()
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -303,7 +319,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 2,
                 ManagerID = 1,
-                UserTypeID = 1
+                UserTypeID = 1,
+                Guid = System.Guid.NewGuid()
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -317,7 +334,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 3,
                 ManagerID = 1,
-                UserTypeID = 2
+                UserTypeID = 2,
+                Guid = System.Guid.NewGuid()
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -331,7 +349,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 4,
                 ManagerID = 1,
-                UserTypeID = 3
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -345,7 +364,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 4,
                 ManagerID = 1,
-                UserTypeID = 3
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -359,7 +379,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 4,
                 ManagerID = 1,
-                UserTypeID = 3
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -373,7 +394,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 4,
                 ManagerID = 1,
-                UserTypeID = 3
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid()
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -387,7 +409,8 @@ namespace ClickNCheck.Data
                 OrganisationID = 1,
                 LinkCodeID = 5,
                 ManagerID = 1,
-                UserTypeID = 5
+                UserTypeID = 5,
+                Guid = System.Guid.NewGuid()
             });
 
             modelBuilder.Entity<Roles>().HasData(new

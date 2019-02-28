@@ -84,31 +84,41 @@ namespace ClickNCheck.Controllers
         [Route("CreateJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] JObject jobProfile)
         {
-            // convert JSON to JobProfile object
-            JobProfile j = new JobProfile();
+           // check if job profile already exists
+            JobProfile j = _context.JobProfile.FirstOrDefault(x => x.Title == jobProfile["title"].ToString());
 
-            j.Title = jobProfile["title"].ToString();
-            j.JobCode = jobProfile["code"].ToString();
-            j.isCompleted = (bool)jobProfile["isCompleted"];
-            j.authorisationRequired = (bool)jobProfile["checksNeedVerification"];
-            JArray array = (JArray)jobProfile["checks"];
-            int[] checks = array.Select(jv => (int)jv).ToArray();
-            // find related organisation
-            var org = await _context.Organisation.FindAsync(id);
-            j.Organisation = org;
 
-            //find vendors
-            for (int i = 0; i < checks.Length; i++)
+            if(j == null)
             {
-                var services = await _context.Services.FindAsync(checks[i]);
+                j = new JobProfile();
+                j.Title = jobProfile["title"].ToString();
+                j.JobCode = jobProfile["code"].ToString();
+                j.isCompleted = (bool)jobProfile["isCompleted"];
+                j.authorisationRequired = (bool)jobProfile["checksNeedVerification"];
+                JArray array = (JArray)jobProfile["checks"];
+                int[] checks = array.Select(jv => (int)jv).ToArray();
+                // find related organisation
+                var org = await _context.Organisation.FindAsync(id);
+                j.Organisation = org;
 
-                if (services == null)
+                //find vendors
+                for (int i = 0; i < checks.Length; i++)
                 {
-                    return NotFound("The vendor " + services.Name + " does not exist");
+                    var services = await _context.Services.FindAsync(checks[i]);
+
+                    if (services == null)
+                    {
+                        return NotFound("The vendor " + services.Name + " does not exist");
+                    }
+                    //add vendor to job profile
+                    j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
                 }
-                //add vendor to job profile
-                j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
             }
+            else
+            {
+                j.JobCode = jobProfile["code"].ToString();
+            }
+            
             // save job profile
             _context.JobProfile.Add(j);
 
