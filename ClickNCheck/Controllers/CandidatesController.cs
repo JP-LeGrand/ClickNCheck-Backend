@@ -274,7 +274,7 @@ namespace ClickNCheck.Controllers
                 mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
                 try
                 {
-                    bool serv = service.SendMail(cnd.Email, "We have just recieved consented to verification", mailBody);
+                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
                     results.Add(id.ToString(), serv);
                 }
                 catch (Exception e)
