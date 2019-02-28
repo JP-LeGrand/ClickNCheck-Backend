@@ -86,13 +86,11 @@ namespace ClickNCheck.Controllers
         [Route("CreateCandidate")]
         public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
         {
-            //candidate.Password = codeGenerator.ReferenceNumber();
             Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
             var mailBody = service.CandidateMail();
             //reformat email content
-            mailBody.Replace("CandidateName",candidate.Name);
-            mailBody.Replace("OrganisationName", org.Name);
-            //mailBody.Replace("referenceNumber", candidate.Password);
+            mailBody = mailBody.Replace("CandidateName",candidate.Name).Replace("OrganisationName", org.Name);
+            
             try
             {
                 service.SendMail(candidate.Email, "New Verificaiton Request", mailBody);
@@ -205,8 +203,6 @@ namespace ClickNCheck.Controllers
 
             if (candidate != null)
             {
-                //candidate.Password = password;
-                //candidate.passwordChanged = true;
                 return Ok(candidate);
             }
             else

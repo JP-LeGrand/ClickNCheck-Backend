@@ -15,7 +15,6 @@ namespace ClickNCheck.Controllers
     public class AvailableController : ControllerBase
     {
         private ClickNCheckContext _context;
-        ////private ConnectToAPI obje;
 
         public AvailableController(ClickNCheckContext context)
         {
