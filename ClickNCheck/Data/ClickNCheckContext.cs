@@ -163,13 +163,13 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<AddressType>().HasData(
                new AddressType() { ID = 2, Type = "Billing" });
 
-        TODO:
+        
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 1,
                 Cost = 100,
                 isAvailable = true,
-                Name = "A service",
+                Name = "Compuscan credit report",
                 TurnaroundTime = "2 days",
                 URL = "www.google.com",
                 VendorID = 1,
@@ -182,26 +182,253 @@ namespace ClickNCheck.Data
                 ID = 2,
                 Cost = 100,
                 isAvailable = true,
-                Name = "Another service",
+                Name = "Experian employment report",
                 TurnaroundTime = "2 days",
                 URL = "www.google.com",
-                VendorID = 1,
+                VendorID = 2,
                 CheckCategoryID = 5,
                 APIType = 0
             });
 
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 3,
+                Cost = 100,
+                isAvailable = true,
+                Name = "Lexis Nexis criminal report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 3,
+                CheckCategoryID = 2,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 4,
+                Cost = 100,
+                isAvailable = true,
+                Name = "MIE identity report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 4,
+                CheckCategoryID = 3,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 5,
+                Cost = 100,
+                isAvailable = true,
+                Name = "PNet driver's report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 5,
+                CheckCategoryID = 4,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 6,
+                Cost = 100,
+                isAvailable = true,
+                Name = "Umalusi academic report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 6,
+                CheckCategoryID = 6,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 7,
+                Cost = 100,
+                isAvailable = true,
+                Name = "Transunion residency report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 7,
+                CheckCategoryID = 7,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 8,
+                Cost = 100,
+                isAvailable = true,
+                Name = "XDS personal report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 8,
+                CheckCategoryID = 8,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 9,
+                Cost = 100,
+                isAvailable = true,
+                Name = "SAPS criminal report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 9,
+                CheckCategoryID = 2,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 10,
+                Cost = 100,
+                isAvailable = true,
+                Name = "FSCA credit report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 10,
+                CheckCategoryID = 1,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 11,
+                Cost = 100,
+                isAvailable = true,
+                Name = "INSETA employment report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 11,
+                CheckCategoryID = 5,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 12,
+                Cost = 100,
+                isAvailable = true,
+                Name = "SAQA academic report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 12,
+                CheckCategoryID = 6,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 13,
+                Cost = 100,
+                isAvailable = true,
+                Name = "Traffic Department driver's report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 13,
+                CheckCategoryID = 4,
+                APIType = 0
+            });
+
+            modelBuilder.Entity<Models.Services>().HasData(new
+            {
+                ID = 14,
+                Cost = 100,
+                isAvailable = true,
+                Name = "Home Affairs identity report",
+                TurnaroundTime = "2 days",
+                URL = "www.google.com",
+                VendorID = 14,
+                CheckCategoryID = 5,
+                APIType = 0
+            });
+
+
             modelBuilder.Entity<Vendor>().HasData(new
             {
                 ID = 1,
-                ServicesID = 1,
                 Name = "Compuscan"
             });
 
             modelBuilder.Entity<Vendor>().HasData(new
             {
                 ID = 2,
-                ServicesID = 2,
                 Name = "Experian"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 3,
+                Name = "Lexis Nexis"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 4,
+                Name = "MIE"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 5,
+                Name = "PNet"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 6,
+                Name = "Umalusi"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 7,
+                Name = "Transunion"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 8,
+                Name = "XDS"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 9,
+                Name = "SAPS"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 10,
+                Name = "FSCA"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 11,
+                Name = "INSETA"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 12,
+                Name = "SAQA "
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 13,
+                Name = "Traffic Department"
+            });
+
+            modelBuilder.Entity<Vendor>().HasData(new
+            {
+                ID = 14,
+                Name = "Home Affairs"
             });
 
 
@@ -503,6 +730,109 @@ namespace ClickNCheck.Data
                 JobProfileID = 2,
                 ServicesID = 1,
                 Order = 2
+            });
+
+            modelBuilder.Entity<Candidate>().HasData(new
+            {
+                ID = 1,
+                Name = "kudzai",
+                Surname = "mur",
+                ID_Passport = "fd54545",
+                ID_Type = "passport",
+                PictureUrl = "www.pic.com",
+                isVerified = true,
+                Maiden_Surname = "asdddd",
+                passwordChanged = true,
+                Email = "me@mail.com",
+                HasConsented = true,
+                Phone = "2342423423",
+                Password = "dgsfhsf",
+                OrganisationID = 1
+            });
+            modelBuilder.Entity<Candidate>().HasData(new
+            {
+                ID = 6,
+                Name = "kudzai6",
+                Surname = "mur",
+                ID_Passport = "fd54545",
+                ID_Type = "passport",
+                PictureUrl = "www.pic.com",
+                isVerified = true,
+                Maiden_Surname = "asdddd",
+                passwordChanged = true,
+                Email = "me@mail.com",
+                HasConsented = true,
+                Phone = "2342423423",
+                Password = "dgsfhsf",
+                OrganisationID = 1
+            });
+            modelBuilder.Entity<Candidate>().HasData(new
+            {
+                ID = 2,
+                Name = "kudzai2",
+                Surname = "mur",
+                ID_Passport = "fd54545",
+                ID_Type = "passport",
+                PictureUrl = "www.pic.com",
+                isVerified = true,
+                Maiden_Surname = "asdddd",
+                passwordChanged = true,
+                Email = "me@mail.com",
+                HasConsented = true,
+                Phone = "2342423423",
+                Password = "dgsfhsf",
+                OrganisationID = 1
+            });
+            modelBuilder.Entity<Candidate>().HasData(new
+            {
+                ID = 3,
+                Name = "kudzai3",
+                Surname = "mur",
+                ID_Passport = "fd54545",
+                ID_Type = "passport",
+                PictureUrl = "www.pic.com",
+                isVerified = true,
+                Maiden_Surname = "asdddd",
+                passwordChanged = true,
+                Email = "me@mail.com",
+                HasConsented = true,
+                Phone = "2342423423",
+                Password = "dgsfhsf",
+                OrganisationID = 1
+            });
+            modelBuilder.Entity<Candidate>().HasData(new
+            {
+                ID = 4,
+                Name = "kudzai4",
+                Surname = "mur",
+                ID_Passport = "fd54545",
+                ID_Type = "passport",
+                PictureUrl = "www.pic.com",
+                isVerified = true,
+                Maiden_Surname = "asdddd",
+                passwordChanged = true,
+                Email = "me@mail.com",
+                HasConsented = true,
+                Phone = "2342423423",
+                Password = "dgsfhsf",
+                OrganisationID = 1
+            });
+            modelBuilder.Entity<Candidate>().HasData(new
+            {
+                ID = 5,
+                Name = "kudzai5",
+                Surname = "mur",
+                ID_Passport = "fd54545",
+                ID_Type = "passport",
+                PictureUrl = "www.pic.com",
+                isVerified = true,
+                Maiden_Surname = "asdddd",
+                passwordChanged = true,
+                Email = "me@mail.com",
+                HasConsented = true,
+                Phone = "2342423423",
+                Password = "dgsfhsf",
+                OrganisationID = 1
             });
         }
 
