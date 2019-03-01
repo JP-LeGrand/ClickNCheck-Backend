@@ -11,6 +11,7 @@ namespace ClickNCheck.Models
     public class CheckCategory
     {
         public int ID { get; set; }
+        [Required]
         public string Category { get; set; }
     }
 }
