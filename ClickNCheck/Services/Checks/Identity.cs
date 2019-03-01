@@ -1,16 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using ClickNCheck.Data;
-using ClickNCheck.Models;
-using ClickNCheck.Services;
+﻿﻿using System;
+
 using Newtonsoft.Json.Linq;
 
 namespace checkStub
 {
     public class Identity
     {
-        private readonly int candidateID;
-        ClickNCheckContext _context;
         // members of the criminal class to be checked
         private bool names;
         private bool idNumber;
@@ -27,84 +22,163 @@ namespace checkStub
         private JObject results;
         
 
-        public Identity(ClickNCheckContext context, int candidateId)
+        public Identity(bool names, bool idNumber, bool maritalStatus, bool deceaseStatus)
         {
-            _context = context;
-            candidateID = candidateId;
+            this.names = names;
+            this.idNumber = idNumber;
+            this.maritalStatus = maritalStatus;
+            this.deceaseStatus = deceaseStatus;
+
+            // flags. probably wont need them if we async
+            this.inProgress = false;
+            this.checkRan = false;
 
             this.results = new JObject();
         }
 
-        public async Task<JObject> runAllSelectedIdentityChecks(JArray selectedServiceID)
+        public void runCheck()
         {
             try
             {
-                foreach (int id in selectedServiceID)
-                {
-                    Services serv = null;
-                    serv = await _context.Services.FindAsync(id);
-                    if (serv != null)
-                        RunIdentityCheck(serv.APIType, serv.URL, serv.Name);
-                    else { throw new Exception("Could not find that service in our database"); }
-                }
+                inProgress = true;
 
+                if (names)
+                    runNamesCheck();
+                if (idNumber)
+                    runIdNumberCheck();
+                if (maritalStatus)
+                    runMaritalStatusCheck();
+                if (deceaseStatus)
+                    runDeceaseStatusCheck();
+
+                // you might wanna have a promise handler for results
             }
-            catch (Exception)
-            {
-                stubIdentity();
-            }
-            return getResults();
+            catch { /*connection problems*/ }
         }
 
         public JObject getResults()
         {
-            if (results.Count > 0)
+            if (!inProgress && checkRan)
             {
                 return results;
             }
             // you might want to use promises
             else throw new Exception("Either still in progress or not ran!");
         }
-        private async void RunIdentityCheck(int apiType, string url, string supplierName)
-        {
-            
-            ConnectToAPI apiConnection = new ConnectToAPI();
-            Candidate candidate = await _context.Candidate.FindAsync(candidateID);
-            string res = await apiConnection.runCheck(apiType, url, candidate);
-            results.Add(supplierName, res);
-            
-        }
-
-        private void stubIdentity()
-        {
-            runNamesCheck();
-            runIdNumberCheck();
-            runMaritalStatusCheck();
-            runDeceaseStatusCheck();
-        }
-
         //this method should be asychronous
         private void runNamesCheck()
         {
-            results.Add("names", "Njabulo Peter Zuma");
+            // if not provided by 1 api, then instantiate connection;
+            // otherwise use the existing connection made by the constructor
+            if (true/*connection to API succeeded*/)
+            {
+                //then get results
+                //wait results.names = connection.getVerification();
+                //if done set inProgress = false && checkRan = true;
+                results.Add("names", "Njabulo Peter Zuma");
+
+                if ((names && maritalStatus && deceaseStatus && results.Count == 4) ||
+                    (!names && maritalStatus && deceaseStatus && results.Count == 3) ||
+                    (names && !maritalStatus && deceaseStatus && results.Count == 3) ||
+                    (names && maritalStatus && !deceaseStatus && results.Count == 3) ||
+                    (!names && !maritalStatus && deceaseStatus && results.Count == 2) ||
+                    (names && !maritalStatus && !deceaseStatus && results.Count == 2) ||
+                    (!names && maritalStatus && !deceaseStatus && results.Count == 2) ||
+                    (!names && !maritalStatus && !deceaseStatus && results.Count == 1))
+                {
+                    inProgress = false;
+                    checkRan = true;
+                }
+
+            }
+            else throw new Exception();
         }
 
         //this method should be asychronous
         private void runIdNumberCheck()
         {
-            results.Add("id","880201256321021504");
+            // if not provided by 1 api, then instantiate connection;
+            // otherwise use the existing connection made by the constructor
+            if (true/*connection to API succeeded*/)
+            {
+                //then get results
+                //wait results.idNumber = connection.getVerification();
+                //if done set inProgress = false && checkRan = true;
+                results.Add("id","880201256321021504");
+
+                if ((names && maritalStatus && deceaseStatus && results.Count == 4) ||
+                    (!names && maritalStatus && deceaseStatus && results.Count == 3) ||
+                    (names && !maritalStatus && deceaseStatus && results.Count == 3) ||
+                    (names && maritalStatus && !deceaseStatus && results.Count == 3) ||
+                    (!names && !maritalStatus && deceaseStatus && results.Count == 2) ||
+                    (names && !maritalStatus && !deceaseStatus && results.Count == 2) ||
+                    (!names && maritalStatus && !deceaseStatus && results.Count == 2) ||
+                    (!names && !maritalStatus && !deceaseStatus && results.Count == 1))
+                {
+                    inProgress = false;
+                    checkRan = true;
+                }
+
+            }
+            else throw new Exception();
         }
 
         //this method should be asychronous
         private void runMaritalStatusCheck()
         {
-            results.Add("maritalStatus","Single");
+            // if not provided by 1 api, then instantiate connection;
+            // otherwise use the existing connection made by the constructor
+            if (true/*connection to API succeeded*/)
+            {
+                //then get results
+                //wait results.maritalStatus = connection.getVerification();
+                //if done set inProgress = false && checkRan = true;
+                results.Add("maritalStatus","Single");
+
+                if ((names && idNumber && deceaseStatus && results.Count == 4) ||
+                    (!names && idNumber && deceaseStatus && results.Count == 3) ||
+                    (names && !idNumber && deceaseStatus && results.Count == 3) ||
+                    (names && idNumber && !deceaseStatus && results.Count == 3) ||
+                    (!names && !idNumber && deceaseStatus && results.Count == 2) ||
+                    (names && !idNumber && !deceaseStatus && results.Count == 2) ||
+                    (!names && idNumber && !deceaseStatus && results.Count == 2) ||
+                    (!names && !idNumber && !deceaseStatus && results.Count == 1))
+                {
+                    inProgress = false;
+                    checkRan = true;
+                }
+
+            }
+            else throw new Exception();
         }
 
         //this method should be asychronous
         private void runDeceaseStatusCheck()
         {
-            results.Add("deceaseStatus","Alive");
+            // if not provided by 1 api, then instantiate connection;
+            // otherwise use the existing connection made by the constructor
+            if (true/*connection to API succeeded*/)
+            {
+                /*then get results we dont wave ride, marry j blidge
+                //wait results.highSchool = connection.getVerification();
+                //turn ranCheck to true after, and inProgress to false*/
+                results.Add("deceaseStatus","Alive");
+
+                if ((names && idNumber && maritalStatus && results.Count == 4) || 
+                    (!names && idNumber && maritalStatus && results.Count == 3)||
+                    (names && !idNumber && maritalStatus && results.Count == 3)||
+                    (names && idNumber && !maritalStatus && results.Count == 3)||
+                    (!names && !idNumber && maritalStatus && results.Count == 2)||
+                    (names && !idNumber && !maritalStatus && results.Count == 2)||
+                    (!names && idNumber && !maritalStatus && results.Count == 2)||
+                    (!names && !idNumber && !maritalStatus && results.Count == 1))
+                {
+                    inProgress = false;
+                    checkRan = true;
+                }
+
+            }
+            else throw new Exception();
         }
     }
 }
