@@ -174,6 +174,8 @@ namespace ClickNCheck.Controllers
                 return NotFound("This Job Profile does not exist");
             }
 
+            var recruiterJobProfile = await _context.Recruiter_JobProfile.ToListAsync();
+
             //find recruiters
             for (int i = 0; i < ids.Length; i++)
             {
@@ -184,7 +186,13 @@ namespace ClickNCheck.Controllers
                     return NotFound("The recruiter " + recruiter.Name + recruiter.Surname + " does not exist");
                 }
                 //add recruiter to job profile
-                jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
+                Recruiter_JobProfile addition = new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter };
+                if(recruiterJobProfile.Contains(addition)
+                {
+                    return BadRequest("Some recruiters have alrdeady been assigned to this job");
+                }
+                else
+                    jobProfile.Recruiter_JobProfile.Add(addition);
 
             }
             //save changes to job profile
