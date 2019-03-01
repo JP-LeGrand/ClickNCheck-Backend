@@ -140,23 +140,15 @@ namespace checkStub
                 results.Add("employment", employmentCheckResults);
             }
             if (checkIdentity)
-            {/*
-                //first find out which ones under academic are true
-                bool names = (bool)requestedChecks["identity"]["subChecks"]["names"];
-                bool idNumber = (bool)requestedChecks["identity"]["subChecks"]["idNumber"];
-                bool maritalStatus = (bool)requestedChecks["identity"]["subChecks"]["maritalStatus"];
-                bool deceaseStatus = (bool)requestedChecks["identity"]["subChecks"]["deceaseStatus"];
+            {
+                JArray selectedIdentityCheck = requestedChecks["identity"]["subChecks"] as JArray;
+                if (selectedIdentityCheck == null) throw new Exception("Identity is selected but selectedIdentityCheck is EMPTY!");
+
+                Identity identityCheck = new Identity(_context, candidateID);
                 
-                ///Identity identityCheck = new Identity(names, idNumber, maritalStatus, deceaseStatus);
-                identityCheck.runCheck();
-
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject identityCheckResults = identityCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("identity",identityCheckResults);*/
+                JObject identityCheckResults = await identityCheck.runAllSelectedIdentityChecks(selectedIdentityCheck);
+                
+                results.Add("identity",identityCheckResults);
             }
             if (checkPersonal)
             {

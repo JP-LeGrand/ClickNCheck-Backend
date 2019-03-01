@@ -48,7 +48,6 @@ namespace checkStub
             }
             catch (Exception)
             {
-                /*connection problems*/
                 stubCredit();
             }
         }

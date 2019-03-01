@@ -46,7 +46,6 @@ namespace checkStub
             }
             catch (Exception)
             {
-                /*connection problems*/
                 stubAcademic();   
             }
         }
