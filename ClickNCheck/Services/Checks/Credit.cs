@@ -11,21 +11,21 @@ namespace checkStub
     public class Credit
     {
         // candidate to be checked credit report against.
-        private Candidate candidate;
+        private readonly int candidateID;
         // list of selected credit vendor checks to run
         ClickNCheckContext _context;
 
         // results from the apis
         private JObject results;
 
-        public Credit( ClickNCheckContext context, Candidate candidate )
+        public Credit( ClickNCheckContext context, int candidateID )
         {
             _context = context;
-            this.candidate = candidate;
+            this.candidateID = candidateID;
        
             results = new JObject();
         }
-        public async Task<JObject> runAllSelectedCreditChecks(List<int> selectedCreditVendorServiceID)
+        public async Task<JObject> runAllSelectedCreditChecks(JArray selectedCreditVendorServiceID)
         {
             foreach (int id in selectedCreditVendorServiceID)
             {
@@ -51,7 +51,8 @@ namespace checkStub
             try
             {
                 ConnectToAPI apiConnection = new ConnectToAPI();
-                string res = await apiConnection.runCheck(apiType, url, candidate);
+                Candidate cnd = await _context.Candidate.FindAsync(candidateID);
+                string res = await apiConnection.runCheck(apiType, url, cnd);
                 results.Add(supplierName, res);
             }
             catch(Exception) { /*connection problems*/ }
