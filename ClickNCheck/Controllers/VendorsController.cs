@@ -38,13 +38,16 @@ namespace ClickNCheck.Controllers
                                 CheckCategoryID = s.CheckCategoryID,
                             }
                                ).ToListAsync();
+
             var checkCategories = await _context.CheckCategory.ToListAsync();
 
-            var result = JsonConvert.SerializeObject(services);
+            JObject json = new JObject
+            {
+                ["services"] = JToken.FromObject(services),
+                ["checkCategories"] = JToken.FromObject(checkCategories)
+            };
 
-            result += JsonConvert.SerializeObject(checkCategories);
-
-            return Ok(result);
+            return Ok(json);
         }
 
         // GET: api/Vendors
