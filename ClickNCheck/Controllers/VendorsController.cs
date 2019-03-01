@@ -29,7 +29,7 @@ namespace ClickNCheck.Controllers
         [Route("GetAllVendors")]
         public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
         {
-            var services = (from s in _context.Services
+            var services = await (from s in _context.Services
                             select new
                             {
                                 ID = s.ID,
@@ -37,14 +37,13 @@ namespace ClickNCheck.Controllers
                                 TurnaroundTime = s.TurnaroundTime,
                                 CheckCategoryID = s.CheckCategoryID,
                             }
-                               ).ToList();
-            var checkCategories = _context.CheckCategory.ToList();
+                               ).ToListAsync();
+            var checkCategories = await _context.CheckCategory.ToListAsync();
 
             var result = JsonConvert.SerializeObject(services);
 
             result += JsonConvert.SerializeObject(checkCategories);
 
-           // JObject json = JObject.Parse(result);
             return Ok(result);
         }
 
