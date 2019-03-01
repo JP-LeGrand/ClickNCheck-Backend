@@ -29,10 +29,23 @@ namespace ClickNCheck.Controllers
         [Route("GetAllVendors")]
         public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
         {
-            var services =  _context.Services.GroupBy(p => p.CheckCategoryID);
+            var services = (from s in _context.Services
+                            select new
+                            {
+                                ID = s.ID,
+                                Name = s.Name,
+                                TurnaroundTime = s.TurnaroundTime,
+                                CheckCategoryID = s.CheckCategoryID,
+                            }
+                               ).ToList();
+            var checkCategories = _context.CheckCategory.ToList();
 
+            var result = JsonConvert.SerializeObject(services);
 
-            return Ok(services);
+            result += JsonConvert.SerializeObject(checkCategories);
+
+           // JObject json = JObject.Parse(result);
+            return Ok(result);
         }
 
         // GET: api/Vendors
