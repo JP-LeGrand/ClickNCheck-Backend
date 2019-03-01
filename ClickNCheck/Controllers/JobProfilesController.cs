@@ -116,7 +116,22 @@ namespace ClickNCheck.Controllers
             }
             else
             {
+                JArray array = (JArray)jobProfile["checks"];
+                int[] checks = array.Select(jv => (int)jv).ToArray();
                 j.JobCode = jobProfile["code"].ToString();
+
+                //find vendors
+                for (int i = 0; i < checks.Length; i++)
+                {
+                    var services = await _context.Services.FindAsync(checks[i]);
+
+                    if (services == null)
+                    {
+                        return NotFound("The vendor " + services.Name + " does not exist");
+                    }
+                    //add vendor to job profile
+                    j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
+                }
             }
             
             // save job profile
