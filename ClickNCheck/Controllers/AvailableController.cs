@@ -79,12 +79,15 @@ namespace ClickNCheck.Controllers
         // POST: api/available/runChecks/
         [HttpPost]
         [Route("runChecks")]
-        public async Task<Object> runChecks([FromBody]JObject requiredChecks)
+        public async Task<JObject> runChecks([FromBody]JObject requiredChecks)
         {
             CheckerRunner checkRunner = new CheckerRunner(_context, requiredChecks);
-            checkRunner.StartChecks();
-
-            return checkRunner.getResults();
+            if (await checkRunner.StartChecks())
+            {
+                return checkRunner.getResults();
+            }
+            return new JObject { { "message", "faield" } };
+            
         }
 
         // POST: api/available/runCheck/{id}

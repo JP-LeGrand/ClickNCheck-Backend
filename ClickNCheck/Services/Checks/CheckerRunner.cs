@@ -35,7 +35,7 @@ namespace checkStub
 
             checkAcademics = (bool)requestedChecks["academic"]["required"];
             checkAssociations = (bool)requestedChecks["association"]["required"];
-            checkCredit = (bool)requestedChecks["credit"]["required"]; ;
+            checkCredit = (bool)requestedChecks["credit"]["required"];
             checkCriminal = (bool)requestedChecks["criminal"]["required"];
             checkDrivers = (bool)requestedChecks["drivers"]["required"];
             checkEmployment = (bool)requestedChecks["employment"]["required"];
@@ -48,7 +48,7 @@ namespace checkStub
             results = new JObject { };
         }
 
-        public async void StartChecks()
+        public async Task<bool> StartChecks()
         {
             if (checkAcademics)
             {
@@ -140,14 +140,14 @@ namespace checkStub
                 results.Add("employment", employmentCheckResults);
             }
             if (checkIdentity)
-            {
+            {/*
                 //first find out which ones under academic are true
                 bool names = (bool)requestedChecks["identity"]["subChecks"]["names"];
                 bool idNumber = (bool)requestedChecks["identity"]["subChecks"]["idNumber"];
                 bool maritalStatus = (bool)requestedChecks["identity"]["subChecks"]["maritalStatus"];
                 bool deceaseStatus = (bool)requestedChecks["identity"]["subChecks"]["deceaseStatus"];
                 
-                Identity identityCheck = new Identity(names, idNumber, maritalStatus, deceaseStatus);
+                ///Identity identityCheck = new Identity(names, idNumber, maritalStatus, deceaseStatus);
                 identityCheck.runCheck();
 
                 //you might have to wait for some days for the results
@@ -156,7 +156,7 @@ namespace checkStub
 
                 //send results back indepedently soon as they are available
                 //TODO
-                results.Add("identity",identityCheckResults);
+                results.Add("identity",identityCheckResults);*/
             }
             if (checkPersonal)
             {
@@ -171,7 +171,7 @@ namespace checkStub
             }
             if (checkResidency)
             {
-                //first find out which ones under residency are true
+                //first find out which ones under residency are trues
                 Residency residencyCheck = new Residency();
                 residencyCheck.runCheck();
 
@@ -181,23 +181,14 @@ namespace checkStub
                 //TODO
                 results.Add("residency", residencyCheckResults);
             }
+
+            return true;
         }
         
         public JObject getResults()
         {
             return this.results;
         }
-
-        public void logAllResults()
-        {
-            foreach (var pair in results)
-            {
-                Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-            }
-
-        }
-        public void doWork() { }
-
-
+        
     }
 }

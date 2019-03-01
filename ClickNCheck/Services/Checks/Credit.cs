@@ -34,16 +34,7 @@ namespace checkStub
                 if (serv != null)
                     runCreditCheck(serv.APIType, serv.URL, serv.Name);
             }
-            return getResults();
-        }
-
-        private JObject getResults()
-        {
-            if (results.Count > 0)
-            {
-                return results;
-            }
-            else return results;
+            return results;
         }
 
         private async void runCreditCheck(int apiType, string url, string supplierName)
@@ -55,8 +46,35 @@ namespace checkStub
                 string res = await apiConnection.runCheck(apiType, url, cnd);
                 results.Add(supplierName, res);
             }
-            catch(Exception) { /*connection problems*/ }
+            catch (Exception)
+            {
+                /*connection problems*/
+                stubCredit();
+            }
         }
-        
-    }
+
+        private void stubCredit()
+        {
+            runCompuscanCheck();
+            runExperianCheck();
+        }
+
+        public JObject getResults()
+        {
+            if (results.Count > 0)
+            {
+                return results;
+            }
+            else throw new Exception("Acedemic check either still in progress or never ran!");
+        }
+
+        private void runCompuscanCheck()
+        {
+            results.Add("Compuscan", "This would be the response from copmuscan");
+        }
+        private void runExperianCheck()
+        {
+            results.Add("Experian", "This would be the response from Experian");
+        }
+    }     
 }

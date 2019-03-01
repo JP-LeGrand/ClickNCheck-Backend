@@ -1,11 +1,13 @@
 ﻿using System;
-
+using ClickNCheck.Data;
 using Newtonsoft.Json.Linq;
 
 namespace checkStub
 {
     public class Identity
     {
+        private readonly int candidateID;
+        ClickNCheckContext _context;
         // members of the criminal class to be checked
         private bool names;
         private bool idNumber;
@@ -22,13 +24,10 @@ namespace checkStub
         private JObject results;
         
 
-        public Identity(bool names, bool idNumber, bool maritalStatus, bool deceaseStatus)
+        public Identity(ClickNCheckContext context, int candidateId)
         {
-            this.names = names;
-            this.idNumber = idNumber;
-            this.maritalStatus = maritalStatus;
-            this.deceaseStatus = deceaseStatus;
-
+            _context = context;
+            candidateID = candidateId;
             // flags. probably wont need them if we async
             this.inProgress = false;
             this.checkRan = false;
