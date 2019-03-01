@@ -187,7 +187,7 @@ namespace ClickNCheck.Controllers
                 }
                 //add recruiter to job profile
                 Recruiter_JobProfile addition = new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter };
-                if(recruiterJobProfile.Contains(addition)
+                if(recruiterJobProfile.Contains(addition))
                 {
                     return BadRequest("Some recruiters have alrdeady been assigned to this job");
                 }
