@@ -162,10 +162,11 @@ namespace ClickNCheck.Controllers
         // POST: api/JobProfiles/5/AssignRecruiters
         [HttpPost]
         [Route("{id}/AssignRecruiters")]
-        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
+        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]JObject ids)
         {
             int jobId = id;
-
+            JArray arr = (JArray)ids["ids"];
+            int[] recruiters = arr.Select(jv => (int)jv).ToArray();
             //find job profile
             var jobProfile = await _context.JobProfile.FindAsync(jobId);
 
@@ -177,9 +178,9 @@ namespace ClickNCheck.Controllers
             var recruiterJobProfile = await _context.Recruiter_JobProfile.ToListAsync();
 
             //find recruiters
-            for (int i = 0; i < ids.Length; i++)
+            for (int i = 0; i < recruiters.Length; i++)
             {
-                var recruiter = await _context.User.FindAsync(ids[i]);
+                var recruiter = await _context.User.FindAsync(recruiters[i]);
 
                 if (recruiter == null)
                 {
@@ -187,7 +188,7 @@ namespace ClickNCheck.Controllers
                 }
                 //add recruiter to job profile
                 Recruiter_JobProfile addition = new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter };
-                if(recruiterJobProfile.Contains(addition))
+                if (recruiterJobProfile.Contains(addition))
                 {
                     return BadRequest("Some recruiters have alrdeady been assigned to this job");
                 }
