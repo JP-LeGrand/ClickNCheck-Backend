@@ -11,33 +11,31 @@ namespace checkStub
 {
     public class CheckerRunner
     {
-        private bool checkAcademics;
-        private bool checkAssociations;
-        private bool checkCredit;
-        private bool checkCriminal;
-        private bool checkDrivers;
-        private bool checkEmployment;
-        private bool checkIdentity;
-        private bool checkPersonal;
-        private bool checkResidency;
-        private JObject requestedChecks;
+        private readonly bool checkAcademics;
+        private readonly bool checkAssociations;
+        private readonly bool checkCredit;
+        private readonly bool checkCriminal;
+        private readonly bool checkDrivers;
+        private readonly bool checkEmployment;
+        private readonly bool checkIdentity;
+        private readonly bool checkPersonal;
+        private readonly bool checkResidency;
+        private readonly JObject requestedChecks;
 
         private JObject results;
-        private readonly Candidate candidate;
+        private readonly int candidateID;
         // database instance
         private ClickNCheckContext _context;
 
         public CheckerRunner(ClickNCheckContext context, JObject requestedChecks)
         {
-            //expected input (json) requestedChecks = {'credentials':{'name':jabu}, {'surname':'mahlangu'} ...},'academic': {'required': true, 'params': {'highSchool': true, 'tatiary': true }, 'associations'... }
             _context = context;
 
-            int id = (int) requestedChecks["candiateID"];
-            this.candidate = _context.Candidate.Find(id);
-            
+            this.candidateID = (int)requestedChecks["candiateID"];
+
             checkAcademics = (bool)requestedChecks["academic"]["required"];
             checkAssociations = (bool)requestedChecks["association"]["required"];
-            checkCredit = (bool)requestedChecks["credit"]["required"]; ;
+            checkCredit = (bool)requestedChecks["credit"]["required"];
             checkCriminal = (bool)requestedChecks["criminal"]["required"];
             checkDrivers = (bool)requestedChecks["drivers"]["required"];
             checkEmployment = (bool)requestedChecks["employment"]["required"];
@@ -50,24 +48,22 @@ namespace checkStub
             results = new JObject { };
         }
 
-        public async void StartChecks()
+        public async Task<bool> StartChecks()
         {
             if (checkAcademics)
             {
-                //find out which ones under academic are true
-                bool highSchool = (bool)requestedChecks["academic"]["subChecks"]["highSchool"];
-                bool tatiary= (bool)requestedChecks["academic"]["subChecks"]["tatiary"];
-                
-                Academic academicCheck = new Academic(highSchool, tatiary);
-                //run the check
-                academicCheck.runCheck();
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject academicCheckResults = academicCheck.getResults();
+                JArray selectedAcademicCheckIDs = requestedChecks["academic"]["subChecks"] as JArray;
+                if (selectedAcademicCheckIDs == null) throw new Exception("Academic it selected but selectedAcademicCheckIDs are EMPTY!");
 
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("academic", academicCheckResults);
+                Academic academicCheck = new Academic(_context, candidateID);
+
+                try
+                {
+                    JObject academicCheckResults = await academicCheck.runAllSelectedAcademicChecks(selectedAcademicCheckIDs);
+                    results.Add("academic", academicCheckResults);
+                }
+                catch (Exception) { }
+
 
             }
             if (checkAssociations)
@@ -87,22 +83,21 @@ namespace checkStub
             {
                 //first find out which ones under credit are true
                 
-                var selectedCreditCheck = requestedChecks["credit"]["subChecks"] as JArray;
-                if (selectedCreditCheck == null) throw new Exception("selectedCreditCheck IS EMPTY!");
-
-                List<int> selectedCreditCheckIDs = new List<int>();
-                foreach(int id in selectedCreditCheck)
-                {
-                    selectedCreditCheckIDs.Add(id);
-                }
-
-                Credit creditCheck = new Credit(_context, candidate);
+                JArray selectedCreditCheck = requestedChecks["credit"]["subChecks"] as JArray;
+                if (selectedCreditCheck == null) throw new Exception("Credit it selected but selectedCreditCheck is EMPTY!");
                 
+                Credit creditCheck = new Credit(_context, candidateID);
+
                 //you might have to wait for some days for the results
                 //request the results in JSON format
-                JObject creditCheckResults = await creditCheck.runAllSelectedCreditChecks(selectedCreditCheckIDs);
+                try
+                {
+                    JObject creditCheckResults = await creditCheck.runAllSelectedCreditChecks(selectedCreditCheck);
 
-                results.Add("credit", creditCheckResults);
+                    results.Add("credit", creditCheckResults);
+                }
+                catch (Exception) { }
+                
             }
             if (checkCriminal)
             {
@@ -146,21 +141,13 @@ namespace checkStub
             }
             if (checkIdentity)
             {
-                //first find out which ones under academic are true
-                bool names = (bool)requestedChecks["identity"]["subChecks"]["names"];
-                bool idNumber = (bool)requestedChecks["identity"]["subChecks"]["idNumber"];
-                bool maritalStatus = (bool)requestedChecks["identity"]["subChecks"]["maritalStatus"];
-                bool deceaseStatus = (bool)requestedChecks["identity"]["subChecks"]["deceaseStatus"];
+                JArray selectedIdentityCheck = requestedChecks["identity"]["subChecks"] as JArray;
+                if (selectedIdentityCheck == null) throw new Exception("Identity is selected but selectedIdentityCheck is EMPTY!");
+
+                Identity identityCheck = new Identity(_context, candidateID);
                 
-                Identity identityCheck = new Identity(names, idNumber, maritalStatus, deceaseStatus);
-                identityCheck.runCheck();
-
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject identityCheckResults = identityCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
+                JObject identityCheckResults = await identityCheck.runAllSelectedIdentityChecks(selectedIdentityCheck);
+                
                 results.Add("identity",identityCheckResults);
             }
             if (checkPersonal)
@@ -176,7 +163,7 @@ namespace checkStub
             }
             if (checkResidency)
             {
-                //first find out which ones under residency are true
+                //first find out which ones under residency are trues
                 Residency residencyCheck = new Residency();
                 residencyCheck.runCheck();
 
@@ -186,23 +173,14 @@ namespace checkStub
                 //TODO
                 results.Add("residency", residencyCheckResults);
             }
+
+            return true;
         }
         
         public JObject getResults()
         {
             return this.results;
         }
-
-        public void logAllResults()
-        {
-            foreach (var pair in results)
-            {
-                Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-            }
-
-        }
-        public void doWork() { }
-
-
+        
     }
 }
