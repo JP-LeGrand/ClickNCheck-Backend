@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +14,9 @@ using System.Reflection;
 using ClickNCheck.Services;
 
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Collections;
 
 namespace ClickNCheck.Controllers
 {
@@ -23,17 +26,17 @@ namespace ClickNCheck.Controllers
     public class UsersController : ControllerBase
     {
         private ClickNCheckContext _context;
-        EmailService mailS = new EmailService();
+        EmailService emailService = new EmailService();
         LinkCode _model = new LinkCode();
         User _userModel = new User();
         Roles _role = new Roles();
+        UploadService uploadService = new UploadService();
 
         public UsersController(ClickNCheckContext context)
         {
             _context = context;
         }
 
-       
         [HttpPost()]
         [Route("signUp")]
         public ActionResult<User> regAdmin(User[] administrators)
@@ -44,23 +47,12 @@ namespace ClickNCheck.Controllers
             return Ok("yes");
         }
 
-      
-
-      
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        [HttpPost()]
+        [Route("signUpRec")]
+        public ActionResult<User> regRec(User[] users)
         {
-            return await _context.User.ToListAsync();
-        }
-       
-        [HttpPost]
-        [Route("PostUsers/{id}")]
-        public ActionResult<User> PostUsers(User[] users, int id)
-        {
+            var _entryType = _context.UserType.FirstOrDefault(x => x.ID == 3);
 
-            var _entryType = _context.UserType.FirstOrDefault(x => x.ID == id);
-            
 
             for (int x = 0; x < users.Length; x++)
             {
@@ -80,16 +72,15 @@ namespace ClickNCheck.Controllers
 
                     _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                 }
-                else if (_entryType.Type == "Manager")
+                 else if (_entryType.Type == "Manager")
 
-                {
-                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                 {
+                     string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                     emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
-                    _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
+                     _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
 
-                }
-              
+                 }
 
 
 
@@ -97,12 +88,94 @@ namespace ClickNCheck.Controllers
             _context.User.AddRange(users);
             _context.SaveChanges();
 
-            
-
-            return Ok(_entryType.Type);
+            return Ok("success");
         }
 
-      
+
+        // GET: api/Users
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        {
+            return await _context.User.ToListAsync();
+        }
+
+        [HttpPost]
+        [Route("PostUsers")]
+        public ActionResult<User> PostUsers(JObject users_usertypes)
+        {
+            JArray jusers = (JArray)users_usertypes["users"];
+            JArray usertypes = (JArray)users_usertypes["usertypes"];
+
+            List<User> users = jusers.ToObject<List<User>>();
+
+            List<string> arr_usertype_id = usertypes.ToObject<List<string>>();
+
+            List<UserType> _entryType = new List<UserType>();
+         
+            
+
+            string code = "";
+            for (int x = 0; x < users.Count; x++)
+            {
+                CodeGenerator _codeGenerator = new CodeGenerator();
+                EmailService _emailService = new EmailService();
+                LinkCode _linkCode = new LinkCode();
+                code = _codeGenerator.generateCode();
+                _linkCode.Code = code;
+                _linkCode.Used = false;
+                 users[x].LinkCode = _linkCode;
+                 users[x].Guid = Guid.NewGuid();
+            }
+
+            _context.User.AddRange(users);
+            _context.SaveChanges();
+
+            for(int x = 0; x < users.Count; x++)
+            {
+                var user = _context.User.First(y => y.Email == users[x].Email);
+
+                
+                        string[] usertype_id = arr_usertype_id.ElementAt(x).Split(",");
+
+                        for (int j = 0; j < usertype_id.Length; j++)
+                        {
+                            var role = new Roles { UserId = user.ID, UserTypeId = Convert.ToInt32(usertype_id[j]) };
+
+                            _context.Roles.Add(role);
+                        }
+                        
+
+
+                for (int y = 0; y < usertype_id.Length; y++)
+                {
+                    if (usertype_id[y] == "3")//recruiter
+                    {
+                        string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
+                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                        emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
+                    }
+                    else if (usertype_id[y] == "1")//admin
+
+
+                    {
+                        string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+
+                        emailService.SendMail(users[x].Email, "Admin Signup", emailBody);
+
+                    }
+                }
+                    
+                } 
+
+            _context.SaveChanges();
+
+            return Ok("success");
+
+    }
+    
+
+
 
         [HttpGet]
         [Route("signup/{code}")]
@@ -112,20 +185,32 @@ namespace ClickNCheck.Controllers
 
             if (_userCode != null)
             {
-         
-              return Redirect("https://s3.amazonaws.com/clickncheck-frontend-tafara/Click-N-Check-Frontend/src/html/admin/admin_registration.html?code=" + code);
+                User user = _context.User.FirstOrDefault(u => u.LinkCodeID == _userCode.ID);
+                var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
+                var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
+
+                if (recruiters.Contains(user.ID))
+                {
+                    return Redirect("https://s3.amazonaws.com/clickncheck-frontend-tafara/components/recruiter/recruiterRegistration/recruter_registration.html?code=" + user.ID);
+                }
+                else if (admins.Contains(user.ID))
+                {
+                    return Redirect("https://s3.amazonaws.com/clickncheck-frontend-tafara/components/admin/adminRegistration/admin_registration.html");
+                }
+
+                return Unauthorized(code);
 
             }
             else
             {
-                return Ok(code);
+                return Unauthorized(code);
             }
-  
+
         }
 
         [HttpPost]
-        [Route("    ")]
-        public ActionResult<string> registerUser([FromBody] string [] Password)
+        [Route("registration")]
+        public ActionResult<string> registerUser([FromBody] string[] Password)
         {
             //  var code = Response.
 
@@ -141,6 +226,48 @@ namespace ClickNCheck.Controllers
             _context.User.Update(userEntry);
 
             return Ok();
+        }
+
+
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> registerRecruiter([FromBody] string[] id_pass_manager)
+        {
+           
+            int recruiter_id = Convert.ToInt32(id_pass_manager[0]);
+            string pass = id_pass_manager[1];
+            int manager_id = -1;
+
+            if (id_pass_manager.Length > 2)
+            {
+                manager_id = Convert.ToInt32(id_pass_manager[2]);
+            }
+            
+
+            User user = _context.User.FirstOrDefault(d => d.ID == recruiter_id);
+
+            
+            
+            var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
+            var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
+
+            if (recruiters.Contains(user.ID))
+            {
+                user.Password = pass;
+                user.ManagerID = manager_id;
+                _context.User.Update(user);
+                await _context.SaveChangesAsync();
+                return Ok("recruiter");
+            }
+            else if (admins.Contains(user.ID))
+            {
+                user.Password = pass;
+                _context.User.Update(user);
+                await _context.SaveChangesAsync();
+                return Ok("admin");
+            }
+
+            return BadRequest();
         }
 
         // GET: api/Users/5
@@ -278,23 +405,103 @@ namespace ClickNCheck.Controllers
             return Ok(jobProfile);
         }
 
+
+        // GET: api/Users/GetAllRecruiters/5
+        [HttpGet("recruiter/organisation/managers/{recruiter_id}")]
+        public IEnumerable GetRecruiterOrganisationManagers(int recruiter_id)
+        {
+            var all_managers = _context.Roles.Where(x => x.UserTypeId == 4).Select(x => x.UserId);
+            var organisation_id = _context.User.Find(recruiter_id).OrganisationID;
+
+            var org_users = _context.User.Where(x => x.OrganisationID == organisation_id).ToList();
+
+            List<User> managers = new List<User>();
+
+            for(int i = 0; i < org_users.Count; i++)
+            {
+                if(all_managers.Contains(org_users.ElementAt(i).ID))
+                {
+                    managers.Add(org_users.ElementAt(i));
+                }
+            }
+           // var managers = org_users.Intersect(all_managers).ToList();
+
+            return managers;
+        }
+
         // GET: api/Users/GetAllRecruiters/5
         [HttpGet("Organization/{id}/recruiters")]
-        public IEnumerable<User> GetAllRecruiters(int id)
+        public async Task<IEnumerable<object>> GetAllRecruitersAsync(int id)
         {
-            var roles = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.User).ToList();
-            //var recruiters = _contextUsers.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
-            var recruiters = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 3) AND OrganisationID = {id}").ToList();
+            var orgs = await _context.Organisation.Where(i => i.ID == id).ToListAsync();
+            var roles = _context.Roles;
+            var user_types = _context.UserType;
+
+            var recruiters = await _context.User.Join(orgs,
+                                                        u => u.OrganisationID,
+                                                        o => o.ID,
+                                                        (user, org) => new
+                                                        {
+                                                            user.ID,
+                                                            user.Name,
+                                                            user.Surname,
+                                                            user.Roles
+                                                        })
+                                                        .Join(roles,
+                                                        u => u.ID,
+                                                        r => r.UserId,
+                                                        (user, role) => new
+                                                        {
+                                                            user.ID,
+                                                            user.Name,
+                                                            user.Surname,
+                                                            role.UserTypeId
+                                                        })
+                                                        .Where(u => u.UserTypeId == 3)
+                                                        .ToListAsync();
+
             return recruiters;
         }
 
         [HttpGet]
-        [Route("userTypes")]
-        public async Task<IEnumerable<UserType>> userTypesAsync()
+        [Route("UploadImage")]
+        public async Task<IEnumerable<UserType>> UploadImage()
         {
             var  userTypes = await _context.UserType.Where(u => u.Type != "Administrator" && u.Type != "SuperAdmin").ToListAsync();
             return userTypes;
         }
+
+        [HttpPost("{id}/UploadFile")]
+        public async Task<IActionResult> UploadFile(int id, [FromForm]IFormCollection contractFiles)
+        {
+            var user = _context.User.Find(id);
+            var org = _context.Organisation.Find(user.OrganisationID);
+            
+            string bloburl = "";
+            foreach (var formFile in contractFiles.Files.ToList())
+            {
+                if (formFile.Length <= 0)
+                {
+                    continue;
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    formFile.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    //uploadSuccess = await uploadService.UploadImage(formFile.FileName, fileBytes, null);
+                    bloburl = await uploadService.UploadImage(user.Guid, org.Guid, formFile.FileName, fileBytes, null);
+                    user.PictureUrl = bloburl;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            if (bloburl != "")
+                return Ok("Upload Success");
+            else
+                return NotFound("Upload Error");
+        }
+
     }
 
     

@@ -1,4 +1,7 @@
-﻿namespace ClickNCheck.Models
+﻿using Newtonsoft.Json;
+using System.Runtime.Serialization;
+
+namespace ClickNCheck.Models
 {
     public class Address
     {
@@ -10,6 +13,7 @@
         public string PostalCode { get; set; }
         public string Province { get; set; }
         public int AddressTypeID { get; set; }
+        
         public AddressType AddressType { get; set; }
     }
 }

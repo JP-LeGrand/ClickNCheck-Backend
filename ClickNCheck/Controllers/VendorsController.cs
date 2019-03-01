@@ -27,15 +27,39 @@ namespace ClickNCheck.Controllers
         // GET: api/Vendors
         [HttpGet]
         [Route("GetAllVendors")]
-        public async Task<ActionResult<IEnumerable<Vendor>>> GetAllVendors()
+        public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
         {
+            var services = await (from s in _context.Services
+                            select new
+                            {
+                                ID = s.ID,
+                                Name = s.Name,
+                                TurnaroundTime = s.TurnaroundTime,
+                                CheckCategoryID = s.CheckCategoryID,
+                            }
+                               ).ToListAsync();
 
-            var vendors = await _context.Checks.ToListAsync();
-            var categories = await _context.CheckCategory.ToListAsync();
-            var json = JsonConvert.SerializeObject(vendors);
-            json += JsonConvert.SerializeObject(categories);
+            var checkCategories = await _context.CheckCategory.ToListAsync();
+
+            JObject json = new JObject
+            {
+                ["services"] = JToken.FromObject(services),
+                ["checkCategories"] = JToken.FromObject(checkCategories)
+            };
 
             return Ok(json);
+        }
+
+        // GET: api/Vendors
+        [HttpGet]
+        [Route("GetCheckCategories")]
+        public async Task<ActionResult<IEnumerable<object>>> GetCheckCategories()
+        {
+
+            var categories = await _context.CheckCategory.ToListAsync();
+
+
+            return Ok(categories);
         }
 
         // GET: api/Vendors/5
@@ -94,6 +118,30 @@ namespace ClickNCheck.Controllers
 
             return CreatedAtAction("GetVendor", new { id = vendor.ID }, vendor);
         }
+
+        //[HttpGet]
+        //[Route("CreateVendorTest")]
+        //public async Task<ActionResult<Vendor>> CreateVendorTest()
+        //{
+        //    Vendor vendor = new Vendor();
+        //    vendor.Name = "Lexis Nexis";
+
+        //    var services = await _context.Services.FindAsync(1);
+        //    var categories = await _context.CheckCategory.ToListAsync();
+
+        //    vendor.Services.Add(services);
+
+
+        //    for (int i = 0; i < categories.Capacity; i++)
+        //    {
+        //        vendor.Vendor_Category.Add(new Vendor_Category { Vendor = vendor, CheckCategory = categories[i] });
+        //    }
+
+        //    _context.Checks.Add(vendor);
+        //    await _context.SaveChangesAsync();
+
+        //    return Ok(vendor);
+        //}
 
 
         // DELETE: api/Vendors/5

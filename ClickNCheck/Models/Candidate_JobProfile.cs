@@ -7,12 +7,10 @@ namespace ClickNCheck.Models
 {
     public class Candidate_JobProfile
     {
-        public int JobProfileId { get; set; }
-        public JobProfile JobProfile { get; set; }
-
-        public int CandidateId { get; set; }
+        public int CandidateID { get; set; }
         public Candidate Candidate { get; set; }
 
-
+        public int JobProfileID { get; set; }
+        public JobProfile JobProfile { get; set; }
     }
 }

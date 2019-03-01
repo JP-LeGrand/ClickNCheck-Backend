@@ -82,36 +82,58 @@ namespace ClickNCheck.Controllers
         // POST: api/CreateJobProfile
         [HttpPost]
         [Route("CreateJobProfile/{id}")]
-        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] string jobProfile)
+        public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] JObject jobProfile)
         {
-            //convert result to JSON object
-            JObject json = JObject.Parse(jobProfile);
-            // convert JSON to JobProfile object
-            JobProfile j = new JobProfile
-            {
-                Title = json["title"].ToString(),
-                JobCode = json["code"].ToString(),
-                isCompleted = (bool)json["isCompleted"],
-                
-            };
-            string checksString = json["checks"].ToString();
-            int[] checks = Array.ConvertAll(checksString.Split(','), int.Parse);
-            // find related organisation
-            var org = await _context.Organisation.FindAsync(id);
-            j.Organisation = org;
+           // check if job profile already exists
+            JobProfile j = _context.JobProfile.FirstOrDefault(x => x.Title == jobProfile["title"].ToString());
 
-            //find vendors
-            for (int i = 0; i < checks.Length; i++)
-            {
-                var vendor = await _context.Vendor.FindAsync(checks[i]);
 
-                if (vendor == null)
+            if(j == null)
+            {
+                j = new JobProfile();
+                j.Title = jobProfile["title"].ToString();
+                j.JobCode = jobProfile["code"].ToString();
+                j.isCompleted = (bool)jobProfile["isCompleted"];
+                j.authorisationRequired = (bool)jobProfile["checksNeedVerification"];
+                JArray array = (JArray)jobProfile["checks"];
+                int[] checks = array.Select(jv => (int)jv).ToArray();
+                // find related organisation
+                var org = await _context.Organisation.FindAsync(id);
+                j.Organisation = org;
+
+                //find vendors
+                for (int i = 0; i < checks.Length; i++)
                 {
-                    return NotFound("The vendor " + vendor.Name + " does not exist");
+                    var services = await _context.Services.FindAsync(checks[i]);
+
+                    if (services == null)
+                    {
+                        return NotFound("The vendor " + services.Name + " does not exist");
+                    }
+                    //add vendor to job profile
+                    j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
                 }
-                //add vendor to job profile
-                j.JobProfile_Vendor.Add(new JobProfile_Vendor { JobProfile = j, Vendor = vendor, Order = i+1 });
             }
+            else
+            {
+                JArray array = (JArray)jobProfile["checks"];
+                int[] checks = array.Select(jv => (int)jv).ToArray();
+                j.JobCode = jobProfile["code"].ToString();
+
+                //find vendors
+                for (int i = 0; i < checks.Length; i++)
+                {
+                    var services = await _context.Services.FindAsync(checks[i]);
+
+                    if (services == null)
+                    {
+                        return NotFound("The vendor " + services.Name + " does not exist");
+                    }
+                    //add vendor to job profile
+                    j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
+                }
+            }
+            
             // save job profile
             _context.JobProfile.Add(j);
 
@@ -140,10 +162,11 @@ namespace ClickNCheck.Controllers
         // POST: api/JobProfiles/5/AssignRecruiters
         [HttpPost]
         [Route("{id}/AssignRecruiters")]
-        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
+        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]JObject ids)
         {
             int jobId = id;
-
+            JArray arr = (JArray)ids["ids"];
+            int[] recruiters = arr.Select(jv => (int)jv).ToArray();
             //find job profile
             var jobProfile = await _context.JobProfile.FindAsync(jobId);
 
@@ -152,17 +175,25 @@ namespace ClickNCheck.Controllers
                 return NotFound("This Job Profile does not exist");
             }
 
+            var recruiterJobProfile = await _context.Recruiter_JobProfile.ToListAsync();
+
             //find recruiters
-            for (int i = 0; i < ids.Length; i++)
+            for (int i = 0; i < recruiters.Length; i++)
             {
-                var recruiter = await _context.User.FindAsync(ids[i]);
+                var recruiter = await _context.User.FindAsync(recruiters[i]);
 
                 if (recruiter == null)
                 {
                     return NotFound("The recruiter " + recruiter.Name + recruiter.Surname + " does not exist");
                 }
                 //add recruiter to job profile
-                jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
+                Recruiter_JobProfile addition = new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter };
+                if (recruiterJobProfile.Contains(addition))
+                {
+                    return BadRequest("Some recruiters have alrdeady been assigned to this job");
+                }
+                else
+                    jobProfile.Recruiter_JobProfile.Add(addition);
 
             }
             //save changes to job profile
@@ -188,10 +219,59 @@ namespace ClickNCheck.Controllers
             return Ok(jobProfile);
         }
 
+
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
         }
+
+
+        [HttpGet]
+        [Route("recruiterJobs/{id}")]
+        public async Task<IEnumerable<object>> getRecJobs(int id)
+        {
+          
+            var entry = await (from i in _context.Recruiter_JobProfile
+                               join u in _context.JobProfile on i.JobProfileId equals u.ID into joinTable
+                               from p in joinTable.DefaultIfEmpty()
+                               where i.RecruiterId == id
+                               select new
+                               {
+                                   p.ID,
+                                   p.Title
+                               }).ToListAsync();
+
+            return entry;
+
+        }
+
+        [HttpGet]
+        [Route("getAllChecks")]
+        public async Task<IEnumerable<object>> getAllChecks(int id)
+        {
+            var allChecks = await _context.CheckCategory.ToListAsync();
+
+            return allChecks;
+        }
+
+        [HttpGet]
+        [Route("jobChecks/{id}")]
+        public async Task<IEnumerable<object>> getChecks(int id)
+        {
+            var checks = await (from i in _context.JobProfile_Check
+                                join x in _context.Services on i.ServicesID equals x.ID
+                                join y in _context.CheckCategory on x.CheckCategoryID equals y.ID into joinTable
+                                from z in joinTable.DefaultIfEmpty()
+                                where i.JobProfileID == id
+                                select new {
+                                    z.ID,
+                                    z.Category
+                                }).ToListAsync();
+
+            return checks;
+        }
+
+
 
 
     }

@@ -5,15 +5,11 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.Models
 {
-    public class JobProfile_Checks
+    public class Verification
     {
+        public int ID { get; set; }
         public int JobProfileID { get; set; }
         public JobProfile JobProfile { get; set; }
-        
-
-        public int ServicesID { get; set; }
-        public Services Services { get; set; }
-
-        public int Order { get; set; }
+        public ICollection<Candidate_Verification> Candidate_Verification { get; set; } = new List<Candidate_Verification>();
     }
 }

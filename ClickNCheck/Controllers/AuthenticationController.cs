@@ -31,7 +31,7 @@ namespace ClickNCheck.Controllers
             _config = config;
         }
 
-        [HttpPost()]
+        [HttpPost]
         [Route("login")]
         //, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] string[] credentials) //string email, string password)
@@ -64,7 +64,7 @@ namespace ClickNCheck.Controllers
         {
             string otp = randomNumberGenerator();
             User user = _context.User.Find(user_id);
-            user.Otp = Convert.ToInt32(otp);
+            user.Otp = otp;
             _context.Update(user);
             _context.SaveChanges();
             mailS.SendMail(user.Email, "OTP", "<p>" + otp + "</p>");
@@ -87,12 +87,27 @@ namespace ClickNCheck.Controllers
         {
 
             User user = _context.User.Find(Convert.ToInt32(user_otp[0]));
-            if (user.Otp.ToString() == user_otp[1])
+            if (user.Otp == user_otp[1])
             {
-                user.Otp = 0;
-                _context.Update(user);
-                _context.SaveChanges();
-                return Ok(BuildToken(user));
+                /* user.Otp = 0;
+                 _context.Update(user);
+                 _context.SaveChanges();*/
+                var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
+                // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
+                var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
+                // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
+                string user_name = user.Name + " " + user.Surname;
+
+                if (admins.Contains(user.ID))
+                {
+                    string []token_role_user = { BuildToken(user), "admin", user_name };
+                    return Ok(token_role_user);
+                }
+                else if (recruiters.Contains(user.ID))
+                {
+                    string[] token_role_user_img = { BuildToken(user), "recruiter", user_name, user.PictureUrl };
+                    return Ok(token_role_user_img);
+                }
 
             }
             return Unauthorized();
@@ -115,6 +130,35 @@ namespace ClickNCheck.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("isLoggedIn")]
+        public ActionResult isLoggedIn()
+        {
+            User user = _context.User.Find(Convert.ToInt32(User.Claims.First().Value));
+            var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
+                // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
+            var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
+                // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
+            string user_name = user.Name + " " + user.Surname;
+
+            if (admins.Contains(user.ID))
+            {
+                 return Ok("admin");
+            }
+            else if(admins.Contains(user.ID) && recruiters.Contains(user.ID))
+            {
+                return Ok("admin_recruiter");
+            }
+            else if (recruiters.Contains(user.ID))
+            {
+                 return Ok("recruiter");
+            }
+            return Unauthorized();
+        }
+        
+
+        [Authorize]
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {

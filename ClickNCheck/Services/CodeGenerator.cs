@@ -26,5 +26,12 @@ namespace ClickNCheck.Services
             return code;
         }
 
+        public string ReferenceNumber()
+        {
+            string code;
+            Random random = new Random();
+            code = random.Next(100000, 999999).ToString();
+            return code;
+        }
     }
 }

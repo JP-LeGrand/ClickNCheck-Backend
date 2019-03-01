@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
+using ClickNCheck.Services;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace ClickNCheck.Controllers
 {
@@ -15,13 +18,16 @@ namespace ClickNCheck.Controllers
     public class CandidatesController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
+        CodeGenerator codeGenerator = new CodeGenerator();
+        EmailService service = new EmailService();
+        UploadService uploadService = new UploadService();
 
         public CandidatesController(ClickNCheckContext context)
         {
             _context = context;
         }
 
-        // GET: api/Candidates
+        // GET: api/Candidates/GetAllCandidates
         [HttpGet]
         [Route("GetAllCandidates")]
         public async Task<ActionResult<IEnumerable<Candidate>>> GetAllCandidates()
@@ -77,15 +83,50 @@ namespace ClickNCheck.Controllers
 
         // POST: api/Candidates
         [HttpPost]
-        [Route("CreateCandidate")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
+        [Route("CreateCandidate/{id}")]
+        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate, int id)
         {
-            _context.Candidate.Add(candidate);
-            await _context.SaveChangesAsync();
+            Candidate_JobProfile _candidate_jp = new Candidate_JobProfile();
+            for (int x = 0; x < candidate.Length; x++)
 
-            return CreatedAtAction("GetCandidate", new { id = candidate.ID }, candidate);
+            {
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidate[x].Email);
+                if (entry != null)
+                {
+                    return Ok("user exists");
+                }
+                else
+                {
+              
+                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
+                    var mailBody = service.CandidateMail();
+                    mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
+                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    var candidateID = candidate[x].ID;
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    try
+                    {
+                        service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
+                        _context.Candidate.Add(candidate[x]);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest("some emails have not sent");
+                    }
+                    _candidate_jp.CandidateID = candidate[x].ID;
+                    _candidate_jp.JobProfileID = id;
+
+                    _context.Candidate_JobProfile.Add(_candidate_jp);
+                    await _context.SaveChangesAsync();
+                }
+
+             
+            }
+            return Ok();
         }
 
+     
         // DELETE: api/Candidates/5
         [HttpDelete]
         [Route("DeleteCandidate/{id}")]
@@ -108,45 +149,102 @@ namespace ClickNCheck.Controllers
             return _context.Candidate.Any(e => e.ID == id);
         }
 
-        // POST: api/Candidates/5/AssignCandidates
+        //TODO:
+        //// POST: api/Candidates/5/AssignCandidates
+        //[HttpPost]
+        //[Route("{id}/AssignCandidates")]
+        //public async Task<IActionResult> AssignCandidates(int id, [FromBody]int[] ids)
+        //{
+        //    int jobId = id;
+
+        //    VerificationRequest v = new VerificationRequest();
+        //    v.DateStarted = DateTime.Now;
+            
+        //    //find job profile
+        //    var jobProfile = await _context.JobProfile.FindAsync(jobId);
+
+        //    if (jobProfile == null)
+        //    {
+        //        return NotFound("This Job Profile does not exist");
+        //    }
+
+        //    //find Candidates
+        //    for (int i = 0; i < ids.Length; i++)
+        //    {
+        //        var candidate = await _context.Candidate.FindAsync(ids[i]);
+
+        //        if (candidate == null)
+        //        {
+        //            return NotFound($"The recruiter {candidate.Name} {candidate.Surname} does not exist");
+        //        }
+        //        //add Candidates to verification request
+        //        v.Candidate_VerificationRequest.Add(new Candidate_VerificationRequest { VerificationRequest = v, Candidate = candidate });
+
+        //    }
+
+        //    //add verification request to job profile
+        //    jobProfile.VerificationRequest.Add(v);
+        //    //save changes to job profile
+        //    _context.Entry(jobProfile).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        var exists = _context.User.Any(e => e.ID == jobId);
+        //        if (!JobProfileExists(jobId))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return Ok(jobProfile);
+        //}
+
         [HttpPost]
-        [Route("{id}/AssignCandidates")]
-        public async Task<IActionResult> AssignCandidates(int id, [FromBody]int[] ids)
+        [Route("changePassword/{id}")]
+        public async Task<ActionResult<Candidate>> changePassword(int id, [FromBody]string password)
         {
-            int jobId = id;
+            var candidate = await _context.Candidate.SingleOrDefaultAsync(c => c.ID == id);
 
-            //find job profile
-            var jobProfile = await _context.JobProfile.FindAsync(jobId);
-
-            if (jobProfile == null)
+            if (candidate != null)
             {
-                return NotFound("This Job Profile does not exist");
+                return Ok(candidate);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        //The method below updates the consent to true when candidate approves 
+        [HttpPut]
+        [Route("PutConsent/{id}")]
+        public async Task<IActionResult> PutConsent(int id )
+        {
+            var candidate = _context.Candidate.Where(c => c.ID == id).FirstOrDefault();
+            if (id != candidate.ID)
+            {
+                return BadRequest();
             }
 
-            //find recruiters
-            for (int i = 0; i < ids.Length; i++)
-            {
-                var candidate = await _context.Candidate.FindAsync(ids[i]);
-
-                if (candidate == null)
-                {
-                    return NotFound("The recruiter " + candidate.Name + candidate.Surname + " does not exist");
-                }
-                //add recruiter to job profile
-                jobProfile.Candidate_JobProfile.Add(new Candidate_JobProfile { JobProfile = jobProfile, Candidate = candidate });
-
-            }
-            //save changes to job profile
-            _context.Entry(jobProfile).State = EntityState.Modified;
+            _context.Entry(candidate).State = EntityState.Modified;
 
             try
             {
+                candidate.HasConsented = true;
+                _context.Candidate.Update(candidate);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                var exists = _context.User.Any(e => e.ID == jobId);
-                if (!JobProfileExists(jobId))
+                if (!CandidateExists(id))
                 {
                     return NotFound();
                 }
@@ -156,12 +254,79 @@ namespace ClickNCheck.Controllers
                 }
             }
 
-            return Ok(jobProfile);
+            return Ok(candidate);
+        }
+
+
+        [HttpGet]
+        [Route("ConsentCandidate/{id}")]
+        public async Task<ActionResult<Candidate>> ConsentCandidate(int id, [FromForm]IFormCollection indemnityFile)
+        {
+            var candidate = await _context.Candidate.FindAsync(id);
+            candidate.HasConsented = true;
+            _context.SaveChanges();
+
+            var uploadSuccess = false;
+            foreach (var formFile in indemnityFile.Files.ToList())
+            {
+                if (formFile.Length <= 0)
+                {
+                    continue;
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    formFile.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    uploadSuccess = await uploadService.UploadToBlob(formFile.FileName, fileBytes, null);
+
+                }
+            }
+
+            if (uploadSuccess)
+                return Ok("Upload Success");
+            else
+                return NotFound("Upload Error");
         }
 
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
+        }
+
+        // POST: api/Candidates/CandidateConsentedEmail
+        [HttpPost]
+        [Route("CandidateConsentedEmail")]
+        public async Task<ActionResult<JObject>> CandidateConsentedEmail([FromBody]int[] candidateIDs)
+        {
+            JObject results = new JObject();
+
+            foreach (int id in candidateIDs)
+            {
+                var cnd = _context.Candidate.Find(id);
+
+                if (cnd == null)
+                    throw new Exception("failed to find candidate it in database");
+
+                int orgID = 1;
+                //orgID = cnd.Organisation.ID;
+
+                var org = _context.Organisation.Find(orgID);
+                string mailBody = service.CandidateConsentedMail();
+                //reformat email content
+                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
+                try
+                {
+                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to your verification", mailBody);
+                    results.Add(id.ToString(), serv);
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+
+            return results;
         }
     }
 }
