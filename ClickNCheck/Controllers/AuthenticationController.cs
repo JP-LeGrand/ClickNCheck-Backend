@@ -146,6 +146,10 @@ namespace ClickNCheck.Controllers
             {
                  return Ok("admin");
             }
+            else if(admins.Contains(user.ID) && recruiters.Contains(user.ID))
+            {
+                return Ok("admin_recruiter");
+            }
             else if (recruiters.Contains(user.ID))
             {
                  return Ok("recruiter");
