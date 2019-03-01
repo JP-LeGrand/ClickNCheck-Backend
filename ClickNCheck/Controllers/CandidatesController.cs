@@ -83,10 +83,10 @@ namespace ClickNCheck.Controllers
 
         // POST: api/Candidates
         [HttpPost]
-        [Route("CreateCandidate")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate)
+        [Route("CreateCandidate/{id}")]
+        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate, int id)
         {
-
+            Candidate_JobProfile _candidate_jp = new Candidate_JobProfile();
             for (int x = 0; x < candidate.Length; x++)
 
             {
@@ -97,13 +97,11 @@ namespace ClickNCheck.Controllers
                 }
                 else
                 {
-                   // candidate[x].Password = codeGenerator.ReferenceNumber();
+              
                     var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
                     var mailBody = service.CandidateMail();
-                    //reformat email content
                     mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
                     mailBody = mailBody.Replace("{OrganisationName}", org.Name);
-                   // mailBody = mailBody.Replace("{referenceNumber}", candidate[x].Password);
                     var candidateID = candidate[x].ID;
                     mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
                     try
@@ -116,9 +114,14 @@ namespace ClickNCheck.Controllers
                     {
                         return BadRequest("some emails have not sent");
                     }
-                }
-               
+                    _candidate_jp.CandidateID = candidate[x].ID;
+                    _candidate_jp.JobProfileID = id;
 
+                    _context.Candidate_JobProfile.Add(_candidate_jp);
+                    await _context.SaveChangesAsync();
+                }
+
+             
             }
             return Ok();
         }
