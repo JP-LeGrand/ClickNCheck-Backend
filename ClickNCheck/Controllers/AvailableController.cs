@@ -24,20 +24,35 @@ namespace ClickNCheck.Controllers
         // POST: api/available/addService
         [HttpPost]
         [Route("addService")]
-        public async Task<Object> addService([FromBody] Models.Services serv)
+        public async Task<JObject> addService([FromBody] Models.Services serv)
         {
-            
-            _context.Services.Add(serv);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Services.Add(serv);
+                await _context.SaveChangesAsync();
 
-            return await _context.Services.LastAsync();
+                string name = _context.Services.Find(serv.ID).Name;
+                return new JObject { { "success", name } };
+            }
+            catch (Exception)
+            {
+                return new JObject { { "response", "failed" } };
+            }; 
+            
         }
 
         // GET api/available
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vendor>>> GetVendor()
+        public async Task<List<Vendor>> GetVendor()
         {
-            return await _context.Vendor.ToListAsync();
+            
+            try
+            {
+                Task<List<Vendor>> vendors = _context.Vendor.ToListAsync();
+                return await vendors;
+            }
+            catch (Exception) { return null; }
+      
         }
         // GET api/available/services
         [HttpGet]
@@ -64,12 +79,15 @@ namespace ClickNCheck.Controllers
         // POST: api/available/runChecks/
         [HttpPost]
         [Route("runChecks")]
-        public async Task<Object> runChecks([FromBody]JObject requiredChecks)
+        public async Task<JObject> runChecks([FromBody]JObject requiredChecks)
         {
             CheckerRunner checkRunner = new CheckerRunner(_context, requiredChecks);
-            checkRunner.StartChecks();
-
-            return checkRunner.getResults();
+            if (await checkRunner.StartChecks())
+            {
+                return checkRunner.getResults();
+            }
+            return new JObject { { "message", "faield" } };
+            
         }
 
         // POST: api/available/runCheck/{id}
@@ -92,8 +110,8 @@ namespace ClickNCheck.Controllers
                 {
                     case 0:
                         //Credit check category
-                        List<int> creditVendorServiceID = new List<int> { serviceId };
-                        Credit creditcheck = new Credit(_context, candidate);
+                        JArray creditVendorServiceID = new JArray { { serviceId } };
+                        Credit creditcheck = new Credit(_context, candidateId);
                         res = creditcheck.runAllSelectedCreditChecks(creditVendorServiceID);
                         break;
                     case 1:
