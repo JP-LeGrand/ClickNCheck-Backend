@@ -7,7 +7,7 @@ using System.Linq;
 using ClickNCheck.Models;
 using System.Net.Mime;
 using System.IO;
-
+using System.Reflection;
 
 namespace ClickNCheck
 {
@@ -66,13 +66,17 @@ namespace ClickNCheck
 
        public string CandidateMail()
         {
-            string emailBody = File.ReadAllText(@"C:\repos\Clink-N-Check-Backend\ClickNCheck\Files\CandidateEmail.html");
+
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\CandidateEmail.html"));
+
             return emailBody;
         }
 
         public string CandidateConsentedMail()
         {
             string htmlstring  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
+            /*string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
+            string htmlstring = System.IO.File.ReadAllText(path);*/
             return htmlstring;
         }
     }

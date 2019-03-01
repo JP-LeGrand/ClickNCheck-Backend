@@ -105,8 +105,8 @@ namespace ClickNCheck.Controllers
                 }
                 else if (recruiters.Contains(user.ID))
                 {
-                    string[] token_role_user = { BuildToken(user), "recruiter", user_name };
-                    return Ok(token_role_user);
+                    string[] token_role_user_img = { BuildToken(user), "recruiter", user_name, user.PictureUrl };
+                    return Ok(token_role_user_img);
                 }
 
             }
@@ -145,6 +145,10 @@ namespace ClickNCheck.Controllers
             if (admins.Contains(user.ID))
             {
                  return Ok("admin");
+            }
+            else if(admins.Contains(user.ID) && recruiters.Contains(user.ID))
+            {
+                return Ok("admin_recruiter");
             }
             else if (recruiters.Contains(user.ID))
             {

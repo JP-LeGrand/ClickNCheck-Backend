@@ -83,38 +83,50 @@ namespace ClickNCheck.Controllers
 
         // POST: api/Candidates
         [HttpPost]
-        [Route("CreateCandidate")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate candidate)
+        [Route("CreateCandidate/{id}")]
+        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate, int id)
         {
-            Organisation org = _context.Organisation.FirstOrDefault(o => o.ID == candidate.Organisation.ID);
-            var mailBody = service.CandidateMail();
-            //reformat email content
-            mailBody = mailBody.Replace("CandidateName",candidate.Name).Replace("OrganisationName", org.Name);
-            
-            try
+            Candidate_JobProfile _candidate_jp = new Candidate_JobProfile();
+            for (int x = 0; x < candidate.Length; x++)
+
             {
-                service.SendMail(candidate.Email, "New Verificaiton Request", mailBody);
-                _context.Candidate.Add(candidate);
-                await _context.SaveChangesAsync();
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidate[x].Email);
+                if (entry != null)
+                {
+                    return Ok("user exists");
+                }
+                else
+                {
+              
+                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
+                    var mailBody = service.CandidateMail();
+                    mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
+                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    var candidateID = candidate[x].ID;
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    try
+                    {
+                        service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
+                        _context.Candidate.Add(candidate[x]);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest("some emails have not sent");
+                    }
+                    _candidate_jp.CandidateID = candidate[x].ID;
+                    _candidate_jp.JobProfileID = id;
+
+                    _context.Candidate_JobProfile.Add(_candidate_jp);
+                    await _context.SaveChangesAsync();
+                }
+
+             
             }
-            catch(Exception e)
-            {
-
-            }
-            return CreatedAtAction("GetCandidate", new { id = candidate.ID }, candidate);
-        }
-
-        [HttpPost]
-        [Route("CreateBulkCandidate")]
-        public async Task<ActionResult<Candidate>> CreateBulkCandidate([FromBody] List<Candidate> candidates)
-        {
-
-            await _context.Candidate.AddRangeAsync(candidates);
-            await _context.SaveChangesAsync();
-
             return Ok();
         }
 
+     
         // DELETE: api/Candidates/5
         [HttpDelete]
         [Route("DeleteCandidate/{id}")]

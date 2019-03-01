@@ -26,7 +26,7 @@ namespace ClickNCheck.Controllers
     public class UsersController : ControllerBase
     {
         private ClickNCheckContext _context;
-        EmailService mailS = new EmailService();
+        EmailService emailService = new EmailService();
         LinkCode _model = new LinkCode();
         User _userModel = new User();
         Roles _role = new Roles();
@@ -72,15 +72,15 @@ namespace ClickNCheck.Controllers
 
                     _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                 }
-               /* else if (_entryType.Type == "Manager")
+                 else if (_entryType.Type == "Manager")
 
-                {
-                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                 {
+                     string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                     emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
-                    _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
+                     _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
 
-                }*/
+                 }
 
 
 
@@ -100,50 +100,80 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
-        [Route("PostUsers/{id}")]
-        public ActionResult<User> PostUsers(User[] users, int id)
+        [Route("PostUsers")]
+        public ActionResult<User> PostUsers(JObject users_usertypes)
         {
+            JArray jusers = (JArray)users_usertypes["users"];
+            JArray usertypes = (JArray)users_usertypes["usertypes"];
 
-            var _entryType = _context.UserType.FirstOrDefault(x => x.ID == id);
+            List<User> users = jusers.ToObject<List<User>>();
+
+            List<string> arr_usertype_id = usertypes.ToObject<List<string>>();
+
+            List<UserType> _entryType = new List<UserType>();
+         
             
 
-            for (int x = 0; x < users.Length; x++)
+            string code = "";
+            for (int x = 0; x < users.Count; x++)
             {
                 CodeGenerator _codeGenerator = new CodeGenerator();
                 EmailService _emailService = new EmailService();
                 LinkCode _linkCode = new LinkCode();
-                string code = _codeGenerator.generateCode();
+                code = _codeGenerator.generateCode();
                 _linkCode.Code = code;
                 _linkCode.Used = false;
-                users[x].LinkCode = _linkCode;
-
-                users[x].Roles.Add(new Roles { User = users[x], UserType = _entryType });
-                if (_entryType.Type == "Recruiter")
-                {
-                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
-                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
-
-                    _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
-                }
-                else if (_entryType.Type == "Administrator")
-
-                {
-                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
-
-                    _emailService.SendMail(users[x].Email, "Administrator Signup", emailBody);
-
-                }
-
-
-
+                 users[x].LinkCode = _linkCode;
+                 users[x].Guid = Guid.NewGuid();
             }
+
             _context.User.AddRange(users);
+            _context.SaveChanges();
+
+            for(int x = 0; x < users.Count; x++)
+            {
+                var user = _context.User.First(y => y.Email == users[x].Email);
+
+                
+                        string[] usertype_id = arr_usertype_id.ElementAt(x).Split(",");
+
+                        for (int j = 0; j < usertype_id.Length; j++)
+                        {
+                            var role = new Roles { UserId = user.ID, UserTypeId = Convert.ToInt32(usertype_id[j]) };
+
+                            _context.Roles.Add(role);
+                        }
+                        
+
+
+                for (int y = 0; y < usertype_id.Length; y++)
+                {
+                    if (usertype_id[y] == "3")//recruiter
+                    {
+                        string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
+                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                        emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
+                    }
+                    else if (usertype_id[y] == "1")//admin
+
+
+                    {
+                        string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+
+                        emailService.SendMail(users[x].Email, "Admin Signup", emailBody);
+
+                    }
+                }
+                    
+                } 
+
             _context.SaveChanges();
 
             return Ok("success");
 
-        }
+    }
+    
 
 
 
@@ -203,8 +233,7 @@ namespace ClickNCheck.Controllers
         [Route("register")]
         public async Task<IActionResult> registerRecruiter([FromBody] string[] id_pass_manager)
         {
-            //  var code = Response.
-
+           
             int recruiter_id = Convert.ToInt32(id_pass_manager[0]);
             string pass = id_pass_manager[1];
             int manager_id = -1;
