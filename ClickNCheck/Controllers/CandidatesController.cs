@@ -97,13 +97,13 @@ namespace ClickNCheck.Controllers
                 }
                 else
                 {
-                    candidate[x].Password = codeGenerator.ReferenceNumber();
+                   // candidate[x].Password = codeGenerator.ReferenceNumber();
                     var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
                     var mailBody = service.CandidateMail();
                     //reformat email content
                     mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
                     mailBody = mailBody.Replace("{OrganisationName}", org.Name);
-                    mailBody = mailBody.Replace("{referenceNumber}", candidate[x].Password);
+                   // mailBody = mailBody.Replace("{referenceNumber}", candidate[x].Password);
                     var candidateID = candidate[x].ID;
                     mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
                     try
