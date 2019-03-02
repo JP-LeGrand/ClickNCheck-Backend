@@ -66,10 +66,13 @@ namespace ClickNCheck.Controllers
         [Route("runChecks")]
         public async Task<Object> runChecks([FromBody]JObject requiredChecks)
         {
-            CheckerRunner checkRunner = new CheckerRunner(_context, requiredChecks);
-            checkRunner.StartChecks();
-
-            return checkRunner.getResults();
+            try
+            {
+                CheckerRunner checkRunner = new CheckerRunner(_context, requiredChecks);
+                await checkRunner.StartChecks();
+                return checkRunner.getResults();
+            }
+            catch(Exception e) { return e.Source; }
         }
 
         // POST: api/available/runCheck/{id}
@@ -78,8 +81,7 @@ namespace ClickNCheck.Controllers
         public async Task<Object> runCheck(int serviceId, [FromBody]int candidateId)
         {
             var service = await _context.Services.FindAsync(serviceId);
-            var candidate = await _context.Candidate.FindAsync(candidateId);
-            Task<JObject> res = null;
+            JObject res = null;
 
             if (service == null)
             {
@@ -92,9 +94,10 @@ namespace ClickNCheck.Controllers
                 {
                     case 0:
                         //Credit check category
-                        List<int> creditVendorServiceID = new List<int> { serviceId };
-                        Credit creditcheck = new Credit(_context, candidate);
-                        res = creditcheck.runAllSelectedCreditChecks(creditVendorServiceID);
+                        JArray creditVendorServiceID = new JArray { serviceId };
+                        Credit creditcheck = new Credit(_context, candidateId);
+                        await creditcheck.RunChecks(creditVendorServiceID);
+                        res = creditcheck.getResults();
                         break;
                     case 1:
                         //Criminal check category
@@ -128,6 +131,7 @@ namespace ClickNCheck.Controllers
                 if (results != null)
                 {
                     //candidate name might not be unique so use the id/passport number
+                    Candidate candidate = _context.Candidate.Find(candidateId);
                     string storagePath = $"C:/vault/{candidate.Organisation.Name}/Candidates/{candidate.ID_Passport}/{service.Name}{DateTime.Now}";
                     //find out how to access and use Blob storage not local storage
                     if (ConnectToAPI.makeZipFile($@"{storagePath}.zip", results))

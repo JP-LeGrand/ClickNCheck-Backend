@@ -11,50 +11,58 @@ namespace checkStub
     public class Credit
     {
         // candidate to be checked credit report against.
-        private Candidate candidate;
-        // list of selected credit vendor checks to run
+        private readonly Candidate candidate;
+        // connections to the system.
         ClickNCheckContext _context;
 
         // results from the apis
         private JObject results;
 
-        public Credit( ClickNCheckContext context, Candidate candidate )
+        public Credit( ClickNCheckContext context, int candidateId )
         {
             _context = context;
-            this.candidate = candidate;
+            candidate = _context.Candidate.Find(candidateId);
        
             results = new JObject();
         }
-        public async Task<JObject> runAllSelectedCreditChecks(List<int> selectedCreditVendorServiceID)
+        public async Task<bool> RunChecks(JArray selectedServiceID)
         {
-            foreach (int id in selectedCreditVendorServiceID)
+            foreach (int id in selectedServiceID)
             {
                 Services serv = null;
                 serv = await _context.Services.FindAsync(id);
+
                 if (serv != null)
                     runCreditCheck(serv.APIType, serv.URL, serv.Name);
+                else
+                    throw new Exception("Service not found in database");
             }
-            return getResults();
+            return true;
+        }
+        private async void runCreditCheck(int apiType, string url, string supplierName)
+        {
+            ConnectToAPI apiConnection = new ConnectToAPI();
+            string res = await apiConnection.runCheck(apiType, url, candidate);
+
+            if(res != null)
+                results.Add(supplierName, res);
+            else
+                runCreditStub(apiType, url, supplierName);
         }
 
-        private JObject getResults()
+        private void runCreditStub(int aPIType, string uRL, string servicename)
+        {
+            string servicetype = aPIType == 0 ? "soap" : "rest";
+            results.Add(servicename, $"from url: {uRL}. This is the response. The service type was {servicetype}.");
+        }
+
+        public JObject getResults()
         {
             if (results.Count > 0)
             {
                 return results;
             }
-            else return results;
-        }
-
-        private async void runCreditCheck(int apiType, string url, string supplierName)
-        {
-            try
-            {
-                ConnectToAPI apiConnection = new ConnectToAPI();
-                string res = await apiConnection.runCheck(apiType, url, candidate);
-                results.Add(supplierName, res);
-            }
-            catch(Exception) { /*connection problems*/ }
+            else throw new Exception("Cradit results is empty!");
         }
         
     }

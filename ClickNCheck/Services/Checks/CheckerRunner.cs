@@ -11,30 +11,28 @@ namespace checkStub
 {
     public class CheckerRunner
     {
-        private bool checkAcademics;
-        private bool checkAssociations;
-        private bool checkCredit;
-        private bool checkCriminal;
-        private bool checkDrivers;
-        private bool checkEmployment;
-        private bool checkIdentity;
-        private bool checkPersonal;
-        private bool checkResidency;
-        private JObject requestedChecks;
+        private readonly bool checkAcademics;
+        private readonly bool checkAssociations;
+        private readonly bool checkCredit;
+        private readonly bool checkCriminal;
+        private readonly bool checkDrivers;
+        private readonly bool checkEmployment;
+        private readonly bool checkIdentity;
+        private readonly bool checkPersonal;
+        private readonly bool checkResidency;
+        private readonly JObject requestedChecks;
+        private readonly int candidateID;
 
         private JObject results;
-        private readonly Candidate candidate;
-        // database instance
+        // system instance
         private ClickNCheckContext _context;
 
         public CheckerRunner(ClickNCheckContext context, JObject requestedChecks)
         {
-            //expected input (json) requestedChecks = {'credentials':{'name':jabu}, {'surname':'mahlangu'} ...},'academic': {'required': true, 'params': {'highSchool': true, 'tatiary': true }, 'associations'... }
             _context = context;
-
-            int id = (int) requestedChecks["candiateID"];
-            this.candidate = _context.Candidate.Find(id);
             
+            this.candidateID = (int)requestedChecks["candidateID"];
+
             checkAcademics = (bool)requestedChecks["academic"]["required"];
             checkAssociations = (bool)requestedChecks["association"]["required"];
             checkCredit = (bool)requestedChecks["credit"]["required"]; ;
@@ -47,162 +45,144 @@ namespace checkStub
 
             this.requestedChecks = requestedChecks;
             
-            results = new JObject { };
+            //results =;
         }
 
-        public async void StartChecks()
+        public async Task<string> StartChecks()
         {
-            if (checkAcademics)
+            try
             {
-                //find out which ones under academic are true
-                bool highSchool = (bool)requestedChecks["academic"]["subChecks"]["highSchool"];
-                bool tatiary= (bool)requestedChecks["academic"]["subChecks"]["tatiary"];
-                
-                Academic academicCheck = new Academic(highSchool, tatiary);
-                //run the check
-                academicCheck.runCheck();
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject academicCheckResults = academicCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("academic", academicCheckResults);
-
-            }
-            if (checkAssociations)
-            {
-                Associations associationsCheck = new Associations();
-                associationsCheck.runChecks();
-
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject associationsCheckResults = associationsCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("associations", associationsCheckResults);
-            }
-            if (checkCredit)
-            {
-                //first find out which ones under credit are true
-                
-                var selectedCreditCheck = requestedChecks["credit"]["subChecks"] as JArray;
-                if (selectedCreditCheck == null) throw new Exception("selectedCreditCheck IS EMPTY!");
-
-                List<int> selectedCreditCheckIDs = new List<int>();
-                foreach(int id in selectedCreditCheck)
+                if (checkAcademics)
                 {
-                    selectedCreditCheckIDs.Add(id);
+                    //find out which ones under academic are true
+                    if (!(requestedChecks["academic"]["serviceid"] is JArray selectedServiceID) || selectedServiceID.Count < 1)
+                        throw new Exception("No selected services under academic!");
+
+                    Academic academicCheck = new Academic(_context, candidateID);
+                    //run the check
+                    await academicCheck.RunChecks(selectedServiceID);
+
+                    JObject academicCheckResults = academicCheck.getResults();
+                    results.Add("academic", academicCheckResults);
                 }
+                if (checkAssociations)
+                {
+                    //find out which ones under academic are true
+                    if (!(requestedChecks["association"]["serviceid"] is JArray selectedServiceID) || selectedServiceID.Count < 1)
+                        throw new Exception("No selected services under association!");
 
-                Credit creditCheck = new Credit(_context, candidate);
-                
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject creditCheckResults = await creditCheck.runAllSelectedCreditChecks(selectedCreditCheckIDs);
+                    Associations associationsCheck = new Associations(_context, candidateID);
+                    //run the check
+                    await associationsCheck.RunChecks(selectedServiceID);
 
-                results.Add("credit", creditCheckResults);
+                    JObject associationsCheckResults = associationsCheck.getResults();
+                    results.Add("associations", associationsCheckResults);
+                }
+                if (checkCredit)
+                {
+                    //first find out which ones under credit are true
+                    if (!(requestedChecks["credit"]["serviceid"] is JArray selectedServiceID) || selectedServiceID.Count < 1)
+                        throw new Exception("No selected services under credit!");
+
+                    Credit creditCheck = new Credit(_context, candidateID);
+
+                    await creditCheck.RunChecks(selectedServiceID);
+
+                    JObject creditCheckResults = creditCheck.getResults();
+                    results.Add("credit", creditCheckResults);
+                }
+                if (checkCriminal)
+                {
+                    Criminal criminalCheck = new Criminal();
+                    criminalCheck.runCheck();
+
+                    //you might have to wait for some days for the results
+                    //request the results in JSON format
+                    JObject criminalCheckResults = criminalCheck.getResults();
+
+                    //send results back indepedently soon as they are available
+                    //TODO
+                    results.Add("criminal", criminalCheckResults);
+                }
+                if (checkDrivers)
+                {
+                    Drivers driversCheck = new Drivers();
+                    driversCheck.runCheck();
+
+                    //you might have to wait for some days for the results
+                    //request the results in JSON format
+                    JObject driversCheckResults = driversCheck.getResults();
+
+                    //send results back indepedently soon as they are available
+                    //TODO
+                    results.Add("drivers", driversCheckResults);
+
+                }
+                if (checkEmployment)
+                {
+                    Employment employmentCheck = new Employment();
+                    employmentCheck.runCheck();
+
+                    //you might have to wait for some days for the results
+                    //request the results in JSON format
+                    JObject employmentCheckResults = employmentCheck.getResults();
+
+                    //send results back indepedently soon as they are available
+                    //TODO
+                    results.Add("employment", employmentCheckResults);
+                }
+                if (checkIdentity)
+                {
+                    //first find out which ones under academic are true
+                    bool names = (bool)requestedChecks["identity"]["subChecks"]["names"];
+                    bool idNumber = (bool)requestedChecks["identity"]["subChecks"]["idNumber"];
+                    bool maritalStatus = (bool)requestedChecks["identity"]["subChecks"]["maritalStatus"];
+                    bool deceaseStatus = (bool)requestedChecks["identity"]["subChecks"]["deceaseStatus"];
+
+                    Identity identityCheck = new Identity(names, idNumber, maritalStatus, deceaseStatus);
+                    identityCheck.runCheck();
+
+                    //you might have to wait for some days for the results
+                    //request the results in JSON format
+                    JObject identityCheckResults = identityCheck.getResults();
+
+                    //send results back indepedently soon as they are available
+                    //TODO
+                    results.Add("identity", identityCheckResults);
+                }
+                if (checkPersonal)
+                {
+                    Personal personalCheck = new Personal();
+                    personalCheck.runCheck();
+
+                    JObject personalCheckResults = personalCheck.getResults();
+
+                    //send results back indepedently soon as they are available
+                    //TODO
+                    results.Add("personal", personalCheckResults);
+                }
+                if (checkResidency)
+                {
+                    //first find out which ones under residency are true
+                    Residency residencyCheck = new Residency();
+                    residencyCheck.runCheck();
+
+                    JObject residencyCheckResults = residencyCheck.getResults();
+
+                    //send results back indepedently soon as they are available
+                    //TODO
+                    results.Add("residency", residencyCheckResults);
+                }
+                return "success";
             }
-            if (checkCriminal)
-            {
-                Criminal criminalCheck = new Criminal();
-                criminalCheck.runCheck();
-
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject criminalCheckResults = criminalCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("criminal", criminalCheckResults);
-            }
-            if (checkDrivers)
-            {
-                Drivers driversCheck = new Drivers();
-                driversCheck.runCheck();
-
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject driversCheckResults = driversCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("drivers", driversCheckResults);
-                
-            }
-            if (checkEmployment)
-            {
-                Employment employmentCheck = new Employment();
-                employmentCheck.runCheck();
-
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject employmentCheckResults = employmentCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("employment", employmentCheckResults);
-            }
-            if (checkIdentity)
-            {
-                //first find out which ones under academic are true
-                bool names = (bool)requestedChecks["identity"]["subChecks"]["names"];
-                bool idNumber = (bool)requestedChecks["identity"]["subChecks"]["idNumber"];
-                bool maritalStatus = (bool)requestedChecks["identity"]["subChecks"]["maritalStatus"];
-                bool deceaseStatus = (bool)requestedChecks["identity"]["subChecks"]["deceaseStatus"];
-                
-                Identity identityCheck = new Identity(names, idNumber, maritalStatus, deceaseStatus);
-                identityCheck.runCheck();
-
-                //you might have to wait for some days for the results
-                //request the results in JSON format
-                JObject identityCheckResults = identityCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("identity",identityCheckResults);
-            }
-            if (checkPersonal)
-            {
-                Personal personalCheck = new Personal();
-                personalCheck.runCheck();
-
-                JObject personalCheckResults = personalCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("personal", personalCheckResults);
-            }
-            if (checkResidency)
-            {
-                //first find out which ones under residency are true
-                Residency residencyCheck = new Residency();
-                residencyCheck.runCheck();
-
-                JObject residencyCheckResults = residencyCheck.getResults();
-
-                //send results back indepedently soon as they are available
-                //TODO
-                results.Add("residency", residencyCheckResults);
-            }
+            catch (Exception e) { return e.Source; }
+            
         }
         
         public JObject getResults()
         {
-            return this.results;
+            return results;
         }
-
-        public void logAllResults()
-        {
-            foreach (var pair in results)
-            {
-                Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-            }
-
-        }
-        public void doWork() { }
-
 
     }
 }
