@@ -116,7 +116,22 @@ namespace ClickNCheck.Controllers
             }
             else
             {
+                JArray array = (JArray)jobProfile["checks"];
+                int[] checks = array.Select(jv => (int)jv).ToArray();
                 j.JobCode = jobProfile["code"].ToString();
+
+                //find vendors
+                for (int i = 0; i < checks.Length; i++)
+                {
+                    var services = await _context.Services.FindAsync(checks[i]);
+
+                    if (services == null)
+                    {
+                        return NotFound("The vendor " + services.Name + " does not exist");
+                    }
+                    //add vendor to job profile
+                    j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
+                }
             }
             
             // save job profile
@@ -147,10 +162,11 @@ namespace ClickNCheck.Controllers
         // POST: api/JobProfiles/5/AssignRecruiters
         [HttpPost]
         [Route("{id}/AssignRecruiters")]
-        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]int[] ids)
+        public async Task<IActionResult> AssignRecruiters(int id, [FromBody]JObject ids)
         {
             int jobId = id;
-
+            JArray arr = (JArray)ids["ids"];
+            int[] recruiters = arr.Select(jv => (int)jv).ToArray();
             //find job profile
             var jobProfile = await _context.JobProfile.FindAsync(jobId);
 
@@ -159,17 +175,25 @@ namespace ClickNCheck.Controllers
                 return NotFound("This Job Profile does not exist");
             }
 
+            var recruiterJobProfile = await _context.Recruiter_JobProfile.ToListAsync();
+
             //find recruiters
-            for (int i = 0; i < ids.Length; i++)
+            for (int i = 0; i < recruiters.Length; i++)
             {
-                var recruiter = await _context.User.FindAsync(ids[i]);
+                var recruiter = await _context.User.FindAsync(recruiters[i]);
 
                 if (recruiter == null)
                 {
                     return NotFound("The recruiter " + recruiter.Name + recruiter.Surname + " does not exist");
                 }
                 //add recruiter to job profile
-                jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
+                Recruiter_JobProfile addition = new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter };
+                if (recruiterJobProfile.Contains(addition))
+                {
+                    return BadRequest("Some recruiters have alrdeady been assigned to this job");
+                }
+                else
+                    jobProfile.Recruiter_JobProfile.Add(addition);
 
             }
             //save changes to job profile

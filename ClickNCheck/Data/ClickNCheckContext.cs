@@ -120,7 +120,7 @@ namespace ClickNCheck.Data
 
 
             modelBuilder.Entity<UserType>().HasData(
-                new UserType() { ID = 1, Type = "Administrator"});
+                new UserType() { ID = 1, Type = "Administrator" });
 
             modelBuilder.Entity<UserType>().HasData(
                 new UserType() { ID = 2, Type = "SuperAdmin" });
@@ -164,7 +164,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<AddressType>().HasData(
                new AddressType() { ID = 2, Type = "Billing" });
 
-        
+
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 1,
@@ -540,7 +540,7 @@ namespace ClickNCheck.Data
                 ID = 2,
                 Name = "administrator",
                 Surname = "man",
-                Email = "me@mail.com",
+                Email = "mmohale@retrorabbit.co.za",
                 Phone = "08334419512",
                 EmployeeNumber = 54646,
                 Otp = "54346546",
@@ -548,14 +548,15 @@ namespace ClickNCheck.Data
                 LinkCodeID = 2,
                 ManagerID = 1,
                 UserTypeID = 1,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                Password = "123456789"
             });
             modelBuilder.Entity<User>().HasData(new
             {
                 ID = 3,
                 Name = "Super",
                 Surname = "administrator",
-                Email = "me@mail.com",
+                Email = "mmohale@retrorabbit.co.za",
                 Phone = "08334419512",
                 EmployeeNumber = 54646,
                 Otp = "54346546",
@@ -563,57 +564,13 @@ namespace ClickNCheck.Data
                 LinkCodeID = 3,
                 ManagerID = 1,
                 UserTypeID = 2,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                Password = "123456789"
             });
             modelBuilder.Entity<User>().HasData(new
             {
                 ID = 4,
                 Name = "Recruiter1",
-                Surname = "man",
-                Email = "me@mail.com",
-                Phone = "08334419512",
-                EmployeeNumber = 542435,
-                Otp = "54346546",
-                OrganisationID = 1,
-                LinkCodeID = 4,
-                ManagerID = 1,
-                UserTypeID = 3,
-                Guid = System.Guid.NewGuid()
-            });
-            modelBuilder.Entity<User>().HasData(new
-            {
-                ID = 6,
-                Name = "Recruiter2",
-                Surname = "man",
-                Email = "me@mail.com",
-                Phone = "08334419512",
-                EmployeeNumber = 542435,
-                Otp = "54346546",
-                OrganisationID = 1,
-                LinkCodeID = 4,
-                ManagerID = 1,
-                UserTypeID = 3,
-                Guid = System.Guid.NewGuid()
-            });
-            modelBuilder.Entity<User>().HasData(new
-            {
-                ID = 7,
-                Name = "Recruiter3",
-                Surname = "man",
-                Email = "me@mail.com",
-                Phone = "08334419512",
-                EmployeeNumber = 542435,
-                Otp = "54346546",
-                OrganisationID = 1,
-                LinkCodeID = 4,
-                ManagerID = 1,
-                UserTypeID = 3,
-                Guid = System.Guid.NewGuid()
-            });
-            modelBuilder.Entity<User>().HasData(new
-            {
-                ID = 8,
-                Name = "Recruiter4",
                 Surname = "man",
                 Email = "me@mail.com",
                 Phone = "08334419512",
@@ -641,6 +598,60 @@ namespace ClickNCheck.Data
                 Guid = System.Guid.NewGuid()
             });
 
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 6,
+                Name = "Recruiter",
+                Surname = "Recruiter",
+                Email = "mmohale@retrotabbit.co.za",
+                Phone = "08334419512",
+                EmployeeNumber = 2345,
+                Otp = "0",
+                Password = "rec",
+                OrganisationID = 1,
+                LinkCodeID = 5,
+                ManagerID = 1,
+                UserTypeID = 6,
+                PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
+                Guid = System.Guid.NewGuid()
+            });
+
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 7,
+                Name = "Admin",
+                Surname = "Admin",
+                Email = "mpinanemohale@gmail.com",
+                Phone = "08334419512",
+                EmployeeNumber = 2345,
+                Otp = "0",
+                Password = "admin",
+                OrganisationID = 1,
+                LinkCodeID = 5,
+                ManagerID = 1,
+                UserTypeID = 6,
+                PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
+                Guid = System.Guid.NewGuid()
+            });
+
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 8,
+                Name = "Admin",
+                Surname = "Recruiter",
+                Email = "1363679@students.wits.ac.za",
+                Phone = "08334419512",
+                EmployeeNumber = 2345,
+                Otp = "0",
+                OrganisationID = 1,
+                Password = "admin_rec",
+                LinkCodeID = 5,
+                ManagerID = 1,
+                UserTypeID = 6,
+                PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
+                Guid = System.Guid.NewGuid()
+            });
+
             modelBuilder.Entity<Roles>().HasData(new
             {
                 UserTypeId = 1,
@@ -659,17 +670,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Roles>().HasData(new
             {
                 UserTypeId = 3,
-                UserId = 6
-            });
-            modelBuilder.Entity<Roles>().HasData(new
-            {
-                UserTypeId = 3,
                 UserId = 7
-            });
-            modelBuilder.Entity<Roles>().HasData(new
-            {
-                UserTypeId = 3,
-                UserId = 8
             });
             modelBuilder.Entity<Roles>().HasData(new
             {
@@ -680,6 +681,30 @@ namespace ClickNCheck.Data
             {
                 UserTypeId = 5,
                 UserId = 5
+            });
+
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 3,
+                UserId = 6
+            });
+
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 1,
+                UserId = 7
+            });
+
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 1,
+                UserId = 8
+            });
+
+            modelBuilder.Entity<Roles>().HasData(new
+            {
+                UserTypeId = 3,
+                UserId = 8
             });
 
             modelBuilder.Entity<JobProfile>().HasData(new
@@ -837,6 +862,6 @@ namespace ClickNCheck.Data
             });
         }
 
-  
+
     }
 }
