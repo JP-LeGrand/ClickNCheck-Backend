@@ -16,6 +16,11 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Hangfire;
+using Hangfire.Dashboard;
+
+using Microsoft.AspNetCore.Owin;
+
 
 namespace ClickNCheck
 {
@@ -34,6 +39,10 @@ namespace ClickNCheck
             services.AddDbContext<ClickNCheckContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+        
+
 
             services.AddSwaggerGen(c =>
             {
@@ -83,9 +92,9 @@ namespace ClickNCheck
 
             }
 
-
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
+           // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
@@ -98,6 +107,17 @@ namespace ClickNCheck
             app.UseAuthentication();
 
             app.UseMvc();
+        }
+
+        public class MyAuthorizationFilter : IDashboardAuthorizationFilter
+        {
+            public bool Authorize(DashboardContext context)
+            {
+                var httpContext = context.GetHttpContext();
+
+                // Allow all authenticated users to see the Dashboard (potentially dangerous).
+                return httpContext.User.Identity.IsAuthenticated;
+            }
         }
     }
 }
