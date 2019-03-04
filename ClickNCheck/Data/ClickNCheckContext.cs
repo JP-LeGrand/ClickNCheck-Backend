@@ -548,7 +548,8 @@ namespace ClickNCheck.Data
                 LinkCodeID = 2,
                 ManagerID = 1,
                 UserTypeID = 1,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                Password = "123456789"
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -563,7 +564,8 @@ namespace ClickNCheck.Data
                 LinkCodeID = 3,
                 ManagerID = 1,
                 UserTypeID = 2,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                Password = "123456789"
             });
             modelBuilder.Entity<User>().HasData(new
             {
