@@ -540,7 +540,7 @@ namespace ClickNCheck.Data
                 ID = 2,
                 Name = "administrator",
                 Surname = "man",
-                Email = "me@mail.com",
+                Email = "mmohale@retrorabbit.co.za",
                 Phone = "08334419512",
                 EmployeeNumber = 54646,
                 Otp = "54346546",
@@ -548,14 +548,15 @@ namespace ClickNCheck.Data
                 LinkCodeID = 2,
                 ManagerID = 1,
                 UserTypeID = 1,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                Password = "123456789"
             });
             modelBuilder.Entity<User>().HasData(new
             {
                 ID = 3,
                 Name = "Super",
                 Surname = "administrator",
-                Email = "me@mail.com",
+                Email = "mmohale@retrorabbit.co.za",
                 Phone = "08334419512",
                 EmployeeNumber = 54646,
                 Otp = "54346546",
@@ -563,7 +564,8 @@ namespace ClickNCheck.Data
                 LinkCodeID = 3,
                 ManagerID = 1,
                 UserTypeID = 2,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                Password = "123456789"
             });
             modelBuilder.Entity<User>().HasData(new
             {
