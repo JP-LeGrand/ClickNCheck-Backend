@@ -68,9 +68,12 @@ namespace ClickNCheck.Controllers
         {
             try
             {
+                JObject results = null;
                 CheckerRunner checkRunner = new CheckerRunner(_context, requiredChecks);
-                await checkRunner.StartChecks();
-                return checkRunner.getResults();
+                
+                results = await checkRunner.StartChecks();
+
+                return results;
             }
             catch(Exception e) { return e.Source; }
         }
@@ -96,8 +99,7 @@ namespace ClickNCheck.Controllers
                         //Credit check category
                         JArray creditVendorServiceID = new JArray { serviceId };
                         Credit creditcheck = new Credit(_context, candidateId);
-                        await creditcheck.RunChecks(creditVendorServiceID);
-                        res = creditcheck.getResults();
+                        //res = creditcheck.RunChecks(creditVendorServiceID);
                         break;
                     case 1:
                         //Criminal check category

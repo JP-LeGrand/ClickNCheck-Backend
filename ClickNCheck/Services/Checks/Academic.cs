@@ -12,12 +12,12 @@ namespace checkStub
         private readonly Candidate candidate;
         private ClickNCheckContext _context;
 
-        private JObject results;
+        //private JObject results;
 
         public Academic(ClickNCheckContext context, int candidateId)
         {
             _context = context;
-            results = new JObject();
+            //results = new JObject();
 
             candidate = _context.Candidate.Find(candidateId);
             if (candidate == null)
@@ -25,45 +25,47 @@ namespace checkStub
 
         }
 
-        public async Task<bool> RunChecks(JArray selectedServiceID)
+        public async Task<JObject> RunChecks(JArray selectedServiceID)
         {
+            JObject response = new JObject();
             foreach (int id in selectedServiceID)
             {
                 Services serv = null;
                 serv = await _context.Services.FindAsync(id);
 
                 if (serv != null)
-                    runAcademicCheck(serv.APIType, serv.URL, serv.Name);
+                {
+                    JObject res = await runAcademicCheck(serv.APIType, serv.URL, serv.Name);
+                    response.Add(serv.Name, res);
+                }
+                
                 else
                     throw new Exception("Service not found in database");
             }
-            return true;
+            return response;
         }
-        private async void runAcademicCheck(int apiType, string url, string supplierName)
+        private async Task<JObject> runAcademicCheck(int apiType, string url, string supplierName)
         {
             ConnectToAPI apiConnection = new ConnectToAPI();
             string res = await apiConnection.runCheck(apiType, url, candidate);
 
             if (res != null)
-                results.Add(supplierName, res);
+            {
+                JObject rs = new JObject();
+                rs.Add(supplierName, res);
+                return rs;
+            }
+                
             else
-                runAcademicStub(apiType, url, supplierName);
+                return runAcademicStub(apiType, url, supplierName);
         }
         
-        private void runAcademicStub(int apiType, string url, string servicename )
+        private JObject runAcademicStub(int apiType, string url, string servicename )
         {
             string servicetype = apiType == 0 ? "soap" : "rest";
-            results.Add(servicename, $"from url: {url}. This is the response. The service type was {servicetype}.");
+            JObject rs = new JObject();
+            rs.Add( servicename, $"from url: {url}. This is the response. The service type was {servicetype}." );
+            return rs;
         }
-
-        public JObject getResults()
-        {
-            if (results.Count > 0)
-            {
-                return results;
-            }
-            else throw new Exception("Acedemic results empty!");
-        }
-
     }
 }

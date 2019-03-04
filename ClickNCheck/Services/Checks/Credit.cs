@@ -25,45 +25,45 @@ namespace checkStub
        
             results = new JObject();
         }
-        public async Task<bool> RunChecks(JArray selectedServiceID)
+        public async Task<JObject> RunChecks(JArray selectedServiceID)
         {
+            JObject response = new JObject { };
             foreach (int id in selectedServiceID)
             {
                 Services serv = null;
                 serv = await _context.Services.FindAsync(id);
 
                 if (serv != null)
-                    runCreditCheck(serv.APIType, serv.URL, serv.Name);
+                {
+                    JObject res = await runCreditCheck(serv.APIType, serv.URL, serv.Name);
+                    response.Add(serv.Name, res);
+                }
                 else
                     throw new Exception("Service not found in database");
             }
-            return true;
+            return response;
         }
-        private async void runCreditCheck(int apiType, string url, string supplierName)
+        private async Task<JObject> runCreditCheck(int apiType, string url, string supplierName)
         {
             ConnectToAPI apiConnection = new ConnectToAPI();
             string res = await apiConnection.runCheck(apiType, url, candidate);
 
-            if(res != null)
-                results.Add(supplierName, res);
+            if (res != null)
+            {
+                JObject rs = new JObject();
+                rs.Add(supplierName, res);
+                return rs;
+            }
             else
-                runCreditStub(apiType, url, supplierName);
+                return runCreditStub(apiType, url, supplierName);
         }
 
-        private void runCreditStub(int aPIType, string uRL, string servicename)
+        private JObject runCreditStub(int aPIType, string uRL, string servicename)
         {
             string servicetype = aPIType == 0 ? "soap" : "rest";
-            results.Add(servicename, $"from url: {uRL}. This is the response. The service type was {servicetype}.");
+            JObject rs = new JObject();
+            rs.Add(servicename, $"from url: {uRL}. This is the response. The service type was {servicetype}.");
+            return rs;
         }
-
-        public JObject getResults()
-        {
-            if (results.Count > 0)
-            {
-                return results;
-            }
-            else throw new Exception("Cradit results is empty!");
-        }
-        
     }
 }
