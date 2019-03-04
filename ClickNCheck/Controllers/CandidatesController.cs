@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -317,10 +317,10 @@ namespace ClickNCheck.Controllers
                 mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
                 try
                 {
-                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to your verification", mailBody);
+                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
                     results.Add(id.ToString(), serv);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
 
                 }
