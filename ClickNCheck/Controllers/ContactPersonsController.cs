@@ -72,14 +72,40 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/ContactPersons
-        [HttpPost]
-        public async Task<ActionResult<ContactPerson>> PostContactPerson(ContactPerson contactPerson)
+        // PUT: api/ContactPersons
+        //The method below will add a contact person to an organisation
+        [HttpPut]
+        [Route("AddContactPerson/{OrgID}")]
+        public async Task<ActionResult<ContactPerson>> PostContactPerson([FromBody]ContactPerson contactPerson, int OrgID)
         {
-            _context.ContactPerson.Add(contactPerson);
-            await _context.SaveChangesAsync();
+            var Organisation = _context.Organisation.Where(o => o.ID == OrgID).FirstOrDefault();
 
-            return CreatedAtAction("GetContactPerson", new { id = contactPerson.ID }, contactPerson);
+            if (OrgID != Organisation.ID)
+            {
+                return BadRequest();
+            }
+            _context.Entry(Organisation).State = EntityState.Modified;
+
+            try
+            {
+                Organisation.ContactPerson.Name = contactPerson.Name;
+                Organisation.ContactPerson.Phone = contactPerson.Phone;
+                Organisation.ContactPerson.Email = contactPerson.Email;
+                _context.Organisation.Add(Organisation);
+                await _context.SaveChangesAsync();
+
+            }catch(DbUpdateConcurrencyException)
+            {
+                if (!ContactPersonExists(Organisation.ContactPerson.ID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok();
         }
 
         // DELETE: api/ContactPersons/5
