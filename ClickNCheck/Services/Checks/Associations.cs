@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using ClickNCheck.Data;
 using Newtonsoft.Json.Linq;
 
 namespace checkStub
@@ -10,25 +12,27 @@ namespace checkStub
         private bool checkRan;
         private bool inProgress;
 
-        public Associations()
+        public Associations(ClickNCheckContext context, int candidateId)
         {
             assoc = true;
             results = new JObject();
             checkRan = false;
             inProgress = false;
         }
-        public void runChecks()
+        public async Task<bool> RunChecks(JArray selectedServiceID)
         {
             try
             {
                 inProgress = true;
                 if (assoc)
-                    runAssociationsChecks();  
+                    runAssociationsChecks();
+                return true;
+
             }
-            catch { /*"Associations check failed to run."*/};
+            catch { return true; };
         }
 
-        public void runAssociationsChecks()
+        private void runAssociationsChecks()
         {
             if (true/*connection succeeded*/)
             {
