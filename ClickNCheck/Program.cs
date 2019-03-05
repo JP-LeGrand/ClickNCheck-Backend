@@ -23,6 +23,11 @@ namespace ClickNCheck
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseApplicationInsights()
+                .UseStartup<Startup>().ConfigureLogging(logging=>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                });
     }
 }
