@@ -17,7 +17,7 @@ using System.Net;
 
 namespace ClickNCheck
 {
-    public class SOAPResponsiveService
+    public class SOAPResponse : IResponseService
     {
         ClickNCheckContext clickNCheckContext;
         UploadService UploadService;
@@ -35,10 +35,7 @@ namespace ClickNCheck
             string resultDescription = doc.Descendants("resultDescription").Single().Value;
             string retData = doc.Descendants("resultData").Single().Value;
 
-            makeZipFile("C:\\Users\\Xolani Dlamini\\Downloads\\test.zip", retData);
-            extractTheZip("C:\\Users\\Xolani Dlamini\\Downloads\\test.zip", "C:\\Users\\Xolani Dlamini\\Downloads");
-      
-
+            
         }
 
       

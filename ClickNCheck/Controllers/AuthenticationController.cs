@@ -21,7 +21,8 @@ namespace ClickNCheck.Controllers
     public class AuthenticationController : ControllerBase
     {
         private ClickNCheckContext _context;
-       
+        public CodeGenerator _code = new CodeGenerator();
+
         private IConfiguration _config;
 
         EmailService mailS = new EmailService();
@@ -34,7 +35,7 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("login")]
-        //, ValidateAntiForgeryToken]
+        // ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] string[] credentials) //string email, string password)
         {
             var user = await _context.User
@@ -58,13 +59,11 @@ namespace ClickNCheck.Controllers
         }
 
 
-
-
         [HttpPost]
         [Route("otp")]
         public ActionResult<User> sendOTP([FromBody]int user_id)
         {
-            string otp = randomNumberGenerator();
+            string otp = _code.randomNumberGenerator();
             User user = _context.User.Find(user_id);
             user.Otp = otp;
             _context.Update(user);
@@ -73,15 +72,6 @@ namespace ClickNCheck.Controllers
             return Ok(otp);
         }
 
-        public string randomNumberGenerator()
-        {
-            const string characters = "0123456789";
-            Random rand = new Random();
-
-            string code = new string(Enumerable.Repeat(characters, 5).Select(s => s[rand.Next(s.Length)]).ToArray());
-
-            return code;
-        }
 
         [HttpPost]
         [Route("checkOtp")]
@@ -102,12 +92,12 @@ namespace ClickNCheck.Controllers
 
                 if (admins.Contains(user.ID))
                 {
-                    string []token_role_user = { BuildToken(user), "admin", user_name };
+                    string[] token_role_user = { _code.BuildToken(user), "admin", user_name };
                     return Ok(token_role_user);
                 }
                 else if (recruiters.Contains(user.ID))
                 {
-                    string[] token_role_user_img = { BuildToken(user), "recruiter", user_name, user.PictureUrl };
+                    string[] token_role_user_img = { _code.BuildToken(user), "recruiter", user_name, user.PictureUrl };
                     return Ok(token_role_user_img);
                 }
 
@@ -115,22 +105,7 @@ namespace ClickNCheck.Controllers
             return Unauthorized();
         }
 
-        private string BuildToken(User user)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[] {
-                                    new Claim(JwtRegisteredClaimNames.NameId, user.ID.ToString()),
-                                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                            };
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-            _config["Jwt:Issuer"], claims,
-            expires: DateTime.Now.AddDays(360),
-            signingCredentials: creds);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
 
         [Authorize]
         [HttpPost]
@@ -139,33 +114,31 @@ namespace ClickNCheck.Controllers
         {
             User user = _context.User.Find(Convert.ToInt32(User.Claims.First().Value));
             var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
-                // var Users.Where(x => x.orgid ={ id} && roles.contains(x.roleid))
             var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
-                // var admins = _context.User.FromSql($"SELECT * FROM User WHERE ID IN( SELECT UserID FROM Roles WHERE UserTypeID = 1)").ToList();
             string user_name = user.Name + " " + user.Surname;
 
             if (admins.Contains(user.ID))
             {
-                 return Ok("admin");
+                return Ok("admin");
             }
-            else if(admins.Contains(user.ID) && recruiters.Contains(user.ID))
+            else if (admins.Contains(user.ID) && recruiters.Contains(user.ID))
             {
                 return Ok("admin_recruiter");
             }
             else if (recruiters.Contains(user.ID))
             {
-                 return Ok("recruiter");
+                return Ok("recruiter");
             }
             return Unauthorized();
         }
-        
 
-        [Authorize]
-        [Route("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync();
-            return Ok();
-        }
+
+       //// [Authorize]
+       // [Route("logout")]
+       // public async Task<IActionResult> Logout()
+       // {
+       //     await HttpContext.SignOutAsync();
+       //     return Ok();
+       // }
     }
 }
