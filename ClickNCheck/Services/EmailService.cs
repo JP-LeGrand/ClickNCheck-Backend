@@ -8,6 +8,8 @@ using ClickNCheck.Models;
 using System.Net.Mime;
 using System.IO;
 using System.Reflection;
+using Limilabs.Client.IMAP;
+using Limilabs.Mail;
 
 namespace ClickNCheck
 {
@@ -15,17 +17,19 @@ namespace ClickNCheck
     {
 
         readonly string smtpAddress = "smtp.gmail.com";
+        readonly string popAddress = "pop.gmail.com";
         readonly int portNumber = 587;
+        readonly int popPort = 995;
         readonly bool enableSSL = true;
-        readonly string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
-        readonly string password = "159357OLANI"; //Sender Password
-         
+        readonly string emailFromAddress = "clickncheckservice@gmail.com"; //Sender Email Address
+        readonly string password = "clickncheck@123"; //Sender Password
+        //IClassifier classifier = new IClassifier();
 
         public bool SendMail(string To, string Subject, string Body)
         {
             try
             {
-                using (MailMessage mail = new MailMessage())
+                using (System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage())
                 {
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);
                     SmtpSend(mail);
@@ -38,9 +42,9 @@ namespace ClickNCheck
             return true;
         }
 
-        private void MailAssignment(MailMessage mailMessage, string From, string To, string Subject, string Body)
+        private void MailAssignment(System.Net.Mail.MailMessage mailMessage, string From, string To, string Subject, string Body)
         {
-            mailMessage.From = new MailAddress(From);
+            mailMessage.From = new System.Net.Mail.MailAddress(From);
             mailMessage.To.Add(To);
             mailMessage.Subject = Subject;
             mailMessage.IsBodyHtml = true;
@@ -48,7 +52,7 @@ namespace ClickNCheck
             
         }
 
-        private void SmtpSend(MailMessage mail)
+        private void SmtpSend(System.Net.Mail.MailMessage mail)
         {
             SmtpClient smtp = new SmtpClient(smtpAddress, portNumber)
             {
@@ -78,6 +82,36 @@ namespace ClickNCheck
             /*string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
             string htmlstring = System.IO.File.ReadAllText(path);*/
             return htmlstring;
+        }
+
+        public void CheckMails()
+        {
+            MailMessage smtpMail;
+            using (Imap client = new Imap())
+            {
+                client.ConnectSSL("imap.gmail.com", 993);
+                client.UseBestLogin("clickncheckservice@gmail.com", "clickncheck@123");
+
+                client.SelectInbox();
+
+                List<long> uids = client.Search(Flag.Unseen);
+                foreach (long uid in uids)
+                {
+                    var eml = client.GetMessageByUID(uid);
+                    IMail mail = new MailBuilder().CreateFromEml(eml);
+
+                    smtpMail = new MailMessage();
+
+                    try
+                    {
+                        //process emails
+                    }
+                    catch(Exception ex)
+                    {
+                        //set message to unread.
+                    }
+                }
+            }
         }
     }
 }
