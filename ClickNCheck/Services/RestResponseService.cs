@@ -23,7 +23,7 @@ namespace ClickNCheck.Services
         }
 
 
-        public async void ProcessAsync(Object responseObject)
+        public async void Process(Object responseObject)
         {
             int checkID;
             string resultStatus;
