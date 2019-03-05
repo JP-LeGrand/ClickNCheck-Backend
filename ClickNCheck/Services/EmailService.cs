@@ -23,7 +23,6 @@ namespace ClickNCheck
         readonly bool enableSSL = true;
         readonly string emailFromAddress = "clickncheckservice@gmail.com"; //Sender Email Address
         readonly string password = "clickncheck@123"; //Sender Password
-        //IClassifier classifier = new IClassifier();
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -86,11 +85,10 @@ namespace ClickNCheck
 
         public void CheckMails()
         {
-            MailMessage smtpMail;
             using (Imap client = new Imap())
             {
                 client.ConnectSSL("imap.gmail.com", 993);
-                client.UseBestLogin("clickncheckservice@gmail.com", "clickncheck@123");
+                client.UseBestLogin(emailFromAddress, password);
 
                 client.SelectInbox();
 
@@ -100,11 +98,13 @@ namespace ClickNCheck
                     var eml = client.GetMessageByUID(uid);
                     IMail mail = new MailBuilder().CreateFromEml(eml);
 
-                    smtpMail = new MailMessage();
+                    mail.Attachments.
 
                     try
                     {
                         //process emails
+
+                        client.UnflagMessageByUID(uid, Flag.Seen);
                     }
                     catch(Exception ex)
                     {
