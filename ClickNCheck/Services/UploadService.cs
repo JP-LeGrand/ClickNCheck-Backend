@@ -163,5 +163,55 @@ namespace ClickNCheck.Services
                 return blobUri;
             }
         }
+
+        public async Task<string> UploadCheckResults(string filename, byte[] docBuffer = null, Stream stream = null)
+        {
+            CloudStorageAccount storageAccount = new CloudStorageAccount(
+            new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(
+            "clicknchecksite",
+            "khXgiAz2xr1NeLQj6MzrHDPiW4wKGFMC02jGdUYfzsa47jjL2qpBXMOvT0dXmMwiwPguypyxmT2qGoUUM5ZwQA=="), true);
+            CloudBlobContainer container = null;
+            string blobUri = "";
+            try
+            {
+                // Create the CloudBlobClient that represents the Blob storage endpoint for the storage account.
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+                // Create a container called 'CheckResults ' 
+                container = blobClient.GetContainerReference("CheckResults");
+
+                await container.CreateIfNotExistsAsync();
+                // Set the permissions so the blobs are public. 
+                BlobContainerPermissions permissions = new BlobContainerPermissions
+                {
+                    PublicAccess = BlobContainerPublicAccessType.Blob
+                };
+                await container.SetPermissionsAsync(permissions);
+                // Get a reference to the blob address, then upload the file to the blob.
+                CloudBlockBlob blockBlob = container.GetBlockBlobReference($"{filename}");
+
+                if (docBuffer != null)
+                {
+                    // OPTION A: use imageBuffer (converted from memory stream)
+                    await blockBlob.UploadFromByteArrayAsync(docBuffer, 0, docBuffer.Length);
+                    blobUri = blockBlob.Uri.AbsoluteUri;
+                }
+                else if (stream != null)
+                {
+                    // OPTION B: pass in memory stream directly
+                    await blockBlob.UploadFromStreamAsync(stream);
+                }
+                else
+                {
+                    return blobUri;
+                }
+
+                return blobUri;
+            }
+            catch (StorageException ex)
+            {
+                return blobUri;
+            }
+        }
     }
 }
