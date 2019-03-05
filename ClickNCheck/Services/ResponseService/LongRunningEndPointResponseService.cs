@@ -1,9 +1,11 @@
 ﻿using ClickNCheck.Data;
 using ClickNCheck.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,8 +20,15 @@ namespace ClickNCheck.Services.ResponseService
             JObject o = (JObject)JToken.FromObject(responseObject);
 
             CheckResultService checkResultService = new CheckResultService(clickNCheckContext, uploadService);
+            byte[] file = Convert.FromBase64String(o["file"].ToString());
+            File.WriteAllBytes(@"c:\result.pdf", file);
 
-            await checkResultService.SaveResult((int)o["CheckId"], (string)o["resultStatus"], (string)o["resultDescription"], (IFormCollection)o["resultFiles"]);
+            IFormFileCollection formFiles = new FormFileCollection();
+            IFormFile file 
+            var fFile = formFiles.GetFile("c:\result.pdf"); 
+            formFiles.Append(fFile);
+
+            await checkResultService.SaveResult((int)o["CheckId"], (string)o["resultStatus"], (string)o["resultDescription"], (IFormCollection)formFiles);
         }
     }
 }
