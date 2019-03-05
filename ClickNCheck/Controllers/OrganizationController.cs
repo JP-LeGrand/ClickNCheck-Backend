@@ -81,24 +81,6 @@ namespace ClickNCheck.Controllers
             return Ok(user);
         }
 
-        //The method below will add a contact person into an organisation
-        // POST: api/ContactPersons
-        [HttpPut]
-        [Route("AddContactPerson/{OrgID}")]
-        public async Task<ActionResult<ContactPerson>> PostContactPerson(ContactPerson contactPerson, int OrgID)
-        {
-
-            var admins = from org in _context.Organisation.Where(o => o.ID == OrgID)
-                         select new
-                         {
-                             Name = contactPerson.Name,
-                             Phone = contactPerson.Phone,
-                             Email = contactPerson.Email
-                         };
-
-            return CreatedAtAction("GetAdmins/{id}", new { id = contactPerson.ID }, contactPerson);
-        }
-
         [HttpPost]
         [Route("createJP")] // creatin a job profile
         public async Task<ActionResult<JobProfile>> PostJP([FromBody] JobProfile jobProfile)
