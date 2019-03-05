@@ -228,7 +228,6 @@ namespace ClickNCheck.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> registerRecruiter([FromBody] string[] id_pass_manager)
