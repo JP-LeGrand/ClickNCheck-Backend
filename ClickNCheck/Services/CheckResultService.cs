@@ -23,28 +23,28 @@ namespace ClickNCheck.Services
         }
 
         //THe function below will save the results to azure blobs
-        public async Task<Results> SaveResult(int CheckID, string resultStatus, string resultDescription, IFormCollection resultFiles)
+        public async Task<Results> SaveResult(int CheckID, string resultStatus, string resultDescription, byte[] resultFiles)
         {
             var checkResult = _context.Result.FirstOrDefault();
             checkResult.ServicesID = CheckID;
             checkResult.CheckStatus.name=resultStatus;
             checkResult.resultDescription = resultDescription;
             string resultFilesURL = "";
-            foreach(var fileResults in resultFiles.Files.ToList())
+
+            foreach (var files in resultFiles)
             {
-                if (fileResults.Length <= 0)
+                if (resultFiles.Length <= 0)
                 {
                     continue;
                 }
 
-                using (var ms = new MemoryStream())
+                using (var ms = new MemoryStream(resultFiles))
                 {
-                    fileResults.CopyTo(ms);
                     var fileBytes = ms.ToArray();
-                    resultFilesURL = await _uploadService.UploadCheckResults(fileResults.FileName, fileBytes, null);
-                   
+                    resultFilesURL = await _uploadService.UploadCheckResults(resultFiles.ToString(), fileBytes, null);
                 }
             }
+
             checkResult.resultFilesURL = resultFilesURL; 
             _context.Result.Add(checkResult);
 
