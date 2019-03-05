@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ClickNCheck.Data;
+using ClickNCheck.Models;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +11,15 @@ namespace ClickNCheck.Services.ResponseService
 {
     public class LongRunningEndPointResponseService : IResponseService
     {
-        void IResponseService.Process(object responseObject)
+        async void IResponseService.Process(object responseObject)
         {
+            ClickNCheckContext clickNCheckContext = new ClickNCheckContext();
+            UploadService uploadService = new UploadService();
             JObject o = (JObject)JToken.FromObject(responseObject);
 
-            //TODO:
-            //saveResult(o["CheckId"], o["CheckStatus"], o["ResultStatus"], o["ResultDescription"], o["ResultFiles"]);
+            CheckResultService checkResultService = new CheckResultService(clickNCheckContext, uploadService);
+
+            await checkResultService.SaveResult((int)o["CheckId"], (string)o["resultStatus"], (string)o["resultDescription"], (IFormCollection)o["resultFiles"]);
         }
     }
 }
