@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using ClickNCheck.Services;
 
 namespace ClickNCheck.Controllers
 {
@@ -20,7 +21,7 @@ namespace ClickNCheck.Controllers
     public class AuthenticationController : ControllerBase
     {
         private ClickNCheckContext _context;
-
+       
         private IConfiguration _config;
 
         EmailService mailS = new EmailService();
@@ -44,7 +45,7 @@ namespace ClickNCheck.Controllers
                 if (credentials[1] == user.Password)
                 {
 
-                    return Ok(user.ID); 
+                    return Ok(user.ID);
                 }
                 else
                 {
@@ -53,10 +54,11 @@ namespace ClickNCheck.Controllers
             }
 
             return Unauthorized();
+
         }
 
 
-        
+
 
         [HttpPost]
         [Route("otp")]
