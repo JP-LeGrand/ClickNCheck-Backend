@@ -55,19 +55,20 @@ namespace ClickNCheck.Controllers
         }
 
         // GET: api/Vendors
-        [HttpGet]
+        [HttpPost]
         [Route("GetCheckCategories")]
         public async Task<ActionResult<IEnumerable<object>>> GetCheckCategories()
         {
 
-            //var categories = await _context.CheckCategory.ToListAsync();
+            var categories = await _context.CheckCategory.ToListAsync();
 
 
-            //return Ok(categories);
-            _soap = new SOAPResponsiveService();
-             _soap.process();
+            return Ok(categories);
+
             return Ok();
         }
+
+
 
         // GET: api/Vendors/5
         [HttpGet]

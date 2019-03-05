@@ -40,7 +40,7 @@ namespace ClickNCheck
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+            // services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
         
 
 
@@ -92,8 +92,8 @@ namespace ClickNCheck
 
             }
 
-            app.UseHangfireServer();
-            app.UseHangfireDashboard();
+            //app.UseHangfireServer();
+            //app.UseHangfireDashboard();
            // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
