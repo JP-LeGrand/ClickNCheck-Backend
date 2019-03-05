@@ -24,7 +24,6 @@ namespace ClickNCheck.Services.ResponseService
             File.WriteAllBytes(@"c:\result.pdf", file);
 
             IFormFileCollection formFiles = new FormFileCollection();
-            IFormFile file 
             var fFile = formFiles.GetFile("c:\result.pdf"); 
             formFiles.Append(fFile);
 
