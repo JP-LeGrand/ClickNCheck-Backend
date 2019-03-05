@@ -7,6 +7,6 @@ namespace ClickNCheck.Services.ResponseService
 {
     public interface IResponseService
     {
-         void Process(Object responseObject);
+         void ProcessAsync(Object responseObject);
     }
 }
