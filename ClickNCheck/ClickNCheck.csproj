@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <UserSecretsId>7c1c2f10-bac2-47a2-b091-3b3d49a73f22</UserSecretsId>
-    <ApplicationInsightsResourceId>/subscriptions/9ffe819a-aebc-4c63-b01e-4f3b8e68e146/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/ClickNCheck-1</ApplicationInsightsResourceId>
-    <ApplicationInsightsAnnotationResourceId>/subscriptions/9ffe819a-aebc-4c63-b01e-4f3b8e68e146/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/ClickNCheck-1</ApplicationInsightsAnnotationResourceId>
+    <ApplicationInsightsResourceId>/subscriptions/9ffe819a-aebc-4c63-b01e-4f3b8e68e146/resourcegroups/clickncheckapi/providers/microsoft.insights/components/ClickNCheck</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/9ffe819a-aebc-4c63-b01e-4f3b8e68e146/resourceGroups/clickncheckapi/providers/microsoft.insights/components/ClickNCheck</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
