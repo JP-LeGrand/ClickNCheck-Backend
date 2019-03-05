@@ -4,11 +4,18 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <UserSecretsId>7c1c2f10-bac2-47a2-b091-3b3d49a73f22</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/9ffe819a-aebc-4c63-b01e-4f3b8e68e146/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/ClickNCheck-1</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/9ffe819a-aebc-4c63-b01e-4f3b8e68e146/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/ClickNCheck-1</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="hangfire" Version="1.6.22" />
     <PackageReference Include="JustMock" Version="2019.1.207.1" />
+
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
+
+    <PackageReference Include="Mail.dll" Version="3.0.19029.1200" />
+
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.1" />
@@ -32,6 +39,10 @@
     <None Update="Files\RecruiterEmail.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 

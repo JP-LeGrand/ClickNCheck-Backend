@@ -18,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Hangfire;
 using Hangfire.Dashboard;
-
+using ClickNCheck.Services;
 using Microsoft.AspNetCore.Owin;
 
 
@@ -40,7 +40,7 @@ namespace ClickNCheck
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            // services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
         
 
 
@@ -92,9 +92,11 @@ namespace ClickNCheck
 
             }
 
-            //app.UseHangfireServer();
-            //app.UseHangfireDashboard();
-           // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
+            EmailService emailService = new EmailService();
+            RecurringJob.AddOrUpdate(() => emailService.CheckMails(), Cron.Minutely);
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
