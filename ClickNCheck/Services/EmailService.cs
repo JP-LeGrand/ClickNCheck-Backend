@@ -10,12 +10,13 @@ using System.IO;
 using System.Reflection;
 using Limilabs.Client.IMAP;
 using Limilabs.Mail;
+using ClickNCheck.Services.ResponseService;
 
 namespace ClickNCheck
 {
     public class EmailService
     {
-
+        Classifier Classifier = new Classifier();
         readonly string smtpAddress = "smtp.gmail.com";
         readonly string popAddress = "pop.gmail.com";
         readonly int portNumber = 587;
@@ -89,8 +90,9 @@ namespace ClickNCheck
             {
                 client.ConnectSSL("imap.gmail.com", 993);
                 client.UseBestLogin(emailFromAddress, password);
-
                 client.SelectInbox();
+
+                MailMessage smtpMail = new MailMessage();
 
                 List<long> uids = client.Search(Flag.Unseen);
                 foreach (long uid in uids)
@@ -98,12 +100,10 @@ namespace ClickNCheck
                     var eml = client.GetMessageByUID(uid);
                     IMail mail = new MailBuilder().CreateFromEml(eml);
 
-                    mail.Attachments.
-
                     try
                     {
                         //process emails
-
+                        var response = Classifier.ResponseService(smtpMail);
                         client.UnflagMessageByUID(uid, Flag.Seen);
                     }
                     catch(Exception ex)
