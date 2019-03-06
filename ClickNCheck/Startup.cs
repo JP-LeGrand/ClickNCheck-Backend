@@ -21,7 +21,6 @@ using Hangfire.Dashboard;
 using ClickNCheck.Services;
 using Microsoft.AspNetCore.Owin;
 
-
 namespace ClickNCheck
 {
     public class Startup
@@ -40,8 +39,8 @@ namespace ClickNCheck
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
-        
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+
 
 
             services.AddSwaggerGen(c =>
@@ -69,9 +68,8 @@ namespace ClickNCheck
                 };
             });
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-       public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -83,8 +81,8 @@ namespace ClickNCheck
                 app.UseHsts();
             }
             app.UseCors(o => o.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader());
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
             app.UseHttpsRedirection();
             if (Configuration["EnableCORS"] == "True")
@@ -121,4 +119,3 @@ namespace ClickNCheck
         }
     }
 }
-

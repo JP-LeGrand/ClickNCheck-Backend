@@ -21,12 +21,13 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-
+        [HttpGet]
         public bool IsCodeValid(string code)
         {
             return _context.LinkCodes.Find(code) != null;
         }
 
+        [HttpPost]
         public void UpdateCodeStatus(LinkCode code)
         {
             code.Used = false;
