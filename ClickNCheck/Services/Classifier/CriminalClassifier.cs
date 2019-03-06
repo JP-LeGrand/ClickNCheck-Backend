@@ -15,7 +15,7 @@ namespace ClickNCheck.Services.Classifier
             IResponseService response = null;
             if(mailmessage.Subject.Contains("Results for"))
             {
-                response = new LongRunningMailCredit();
+                response = new LongRunningMailCriminal();
             }
             return response;
         }

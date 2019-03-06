@@ -7,14 +7,14 @@ using ClickNCheck.Services.ResponseService;
 
 namespace ClickNCheck.Services.Classifier
 {
-    public class CreditClassifier : IClassifier
+    public class DriversClassifier : IClassifier
     {
         public IResponseService ResponseService(MailMessage mailmessage)
         {
             IResponseService response = null;
             if (mailmessage.Subject.Contains("Credit Check Ref:"))
             {
-                response = new LongRunningMailCredit();
+                response = new LongRunningMailDrivers();
             }
             return response;
         }

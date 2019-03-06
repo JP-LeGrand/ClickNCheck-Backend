@@ -16,7 +16,6 @@ namespace ClickNCheck
 {
     public class EmailService
     {
-        Classifier Classifier = new Classifier();
         readonly string smtpAddress = "smtp.gmail.com";
         readonly string popAddress = "pop.gmail.com";
         readonly int portNumber = 587;
@@ -103,8 +102,6 @@ namespace ClickNCheck
                     try
                     {
                         //process emails
-                        var response = Classifier.ResponseService(smtpMail);
-                        client.UnflagMessageByUID(uid, Flag.Seen);
                     }
                     catch(Exception ex)
                     {

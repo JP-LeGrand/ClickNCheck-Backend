@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.Services.ResponseService
 {
-    public class LongRunningMailCriminal : IResponseService
+    public class LongRunningMailDrivers : IResponseService
     {
         public void Process(object responseObject)
         {
