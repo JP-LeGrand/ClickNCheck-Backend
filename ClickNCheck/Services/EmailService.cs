@@ -113,13 +113,10 @@ namespace ClickNCheck
             return htmlstring;
         }
 
-        public void CheckMails()
+        public void CheckMails(MailMessage smtpMail)
         {
             try
             {
-                MailMessage smtpMail = new MailMessage();
-                smtpMail.Body = "Hello World";
-                smtpMail.Subject = "Academic";
                 IResponseService response;
                 //process emails
                 if (smtpMail.Body != null)
@@ -213,7 +210,6 @@ namespace ClickNCheck
             IList<Message> messages = request.Execute().Messages;
             if ((messages != null) && (messages.Count > 0))
             {
-                Console.WriteLine(messages.Count);
                 foreach (var msg in messages)
                 {
 
@@ -265,8 +261,8 @@ namespace ClickNCheck
                             byte[] file = Convert.FromBase64String(attData);
                             File.WriteAllBytes(@"c:\" + p.Filename, file);
                             email.Attachments.Add(new System.Net.Mail.Attachment(@"c:\" + p.Filename));
-                            Console.WriteLine(att);
                         }
+                        CheckMails(email);
                     }
 
                     request.Q = "is:unread";
@@ -275,9 +271,8 @@ namespace ClickNCheck
             }
             else
             {
-                Console.WriteLine("No messages found");
+                //log Email
             }
-            Console.Read();
         }
 
         public static byte[] FromBase64ForUrlString(string base64ForUrlInput)
