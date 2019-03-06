@@ -1,4 +1,4 @@
-﻿﻿using checkStub;
+﻿using checkStub;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using ClickNCheck.Services;
@@ -26,7 +26,7 @@ namespace ClickNCheck.Controllers
         [Route("addService")]
         public async Task<Object> addService([FromBody] Models.Services serv)
         {
-            
+
             _context.Services.Add(serv);
             await _context.SaveChangesAsync();
 
@@ -126,7 +126,7 @@ namespace ClickNCheck.Controllers
                     case 8:
                         //Personal check category
                         break;
-                    default:break;
+                    default: break;
                 }
 
                 string results = ConnectToAPI.extractCompuscanRetValue(res.ToString());
