@@ -15,8 +15,8 @@ namespace ClickNCheck.Services
 {
     public class RestResponseService : IResponseService
     {
-        private readonly ClickNCheckContext _context;
-        private readonly UploadService _uploadService;
+        private readonly ClickNCheckContext _context = new ClickNCheckContext();
+        private readonly UploadService _uploadService = new UploadService();
 
         public RestResponseService(ClickNCheckContext context, UploadService uploadService)
         {
@@ -50,7 +50,7 @@ namespace ClickNCheck.Services
             }  
             
             CheckResultService resultService = new CheckResultService(_context, _uploadService);
- //           await resultService.SaveResult(checkID, resultStatus, resultDescription, resultFiles);
+            await resultService.SaveResult(checkID, resultStatus, resultDescription, null);
         }
 
         public async Task<string> connectJson(string url, JObject jsonText)
