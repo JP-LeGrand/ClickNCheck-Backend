@@ -8,23 +8,59 @@ namespace ClickNCheck.Services
 {
     public class VerificationCheck
     {
+        //-------------------------------------------------------------------------------------------------------------------#
+
         private readonly JobProfile jobProfileInstanceWithOrderedChecks;
-        private readonly Queue<Candidate> listOfCandidates;
-        private readonly Queue<Models.Services> orderedJobProfileServices;
+        private readonly int verificationCheckID;
+        private Queue<Candidate> listOfCandidatesToCheckAgainst;
+        private Queue<Models.Services> orderedJobProfileServices;
 
-        public VerificationCheck(JobProfile jobProfWithOrderedServices, Queue<Candidate> candidates)
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public VerificationCheck(int verificationCheckId, JobProfile jobProfWithOrderedServices, Queue<Candidate> candidates)
         {
+            verificationCheckID = verificationCheckId;
             jobProfileInstanceWithOrderedChecks = jobProfWithOrderedServices;
-            listOfCandidates = candidates;
+            listOfCandidatesToCheckAgainst = new Queue<Candidate> ( candidates );
+            orderedJobProfileServices = new Queue<Models.Services>();
         }
 
-        public bool AddToCandidatesQueue()
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public Queue<Models.Services> fetchServicesQueue()
         {
-            /*
-             * if successfully added to the que then return true,
-             * otherwise return false.
-             */
-            return true;
+            if(orderedJobProfileServices.Count() <1)
+            {
+                ICollection<JobProfile_Checks> ne = jobProfileInstanceWithOrderedChecks.JobProfile_Check;
+
+                foreach (JobProfile_Checks check in ne)
+                    orderedJobProfileServices.Enqueue(check.Services);
+            }
+            return orderedJobProfileServices;
         }
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public Queue<Candidate> getCandidatesQueue()
+        {
+            //gets you the list of candidates still on the que for this job profile
+            return listOfCandidatesToCheckAgainst;
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public Models.Services GetNextService()
+        {
+            return orderedJobProfileServices.Dequeue();
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public int getVerificationCheckID()
+        {
+            return verificationCheckID;
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------#
     }
 }
