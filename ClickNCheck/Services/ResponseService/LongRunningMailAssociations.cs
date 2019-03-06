@@ -1,4 +1,5 @@
-﻿using ClickNCheck.Models;
+﻿using ClickNCheck.Data;
+using ClickNCheck.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
