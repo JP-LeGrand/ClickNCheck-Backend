@@ -92,8 +92,6 @@ namespace ClickNCheck
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();
-            EmailService emailService = new EmailService();
-            RecurringJob.AddOrUpdate(() => emailService.CheckMails(), Cron.MinuteInterval(15));
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 

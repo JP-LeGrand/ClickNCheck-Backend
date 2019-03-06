@@ -17,12 +17,14 @@ using System.Net.Sockets;
 using System.Net.Security;
 using Limilabs.Client.POP3;
 using MailMessage = System.Net.Mail.MailMessage;
+using ClickNCheck.Services.ResponseService;
+using ClickNCheck.Services.Classifier;
+
 
 namespace ClickNCheck
 {
     public class EmailService
     {
-
         readonly string smtpAddress = "smtp.gmail.com";
         readonly string popAddress = "pop.gmail.com";
         readonly int portNumber = 587;
@@ -35,6 +37,19 @@ namespace ClickNCheck
         static readonly string[] Scopes = { GmailService.Scope.GmailReadonly };
         static string ApplicationName = "Gmail API .NET Quickstart";
         readonly string userId = "me";
+
+
+        AcademicClassifier academicClassifier = new AcademicClassifier();
+        AssociationsClassifier associationsClassifier = new AssociationsClassifier();
+        CreditClassifier creditClassifier = new CreditClassifier();
+        CriminalClassifier criminalClassifier = new CriminalClassifier();
+        DriversClassifier driversClassifier = new DriversClassifier();
+        EmploymentClassifier employmentClassifier = new EmploymentClassifier();
+        IdentityClassifier identityClassifier = new IdentityClassifier();
+        PersonalClassifier personalClassifier = new PersonalClassifier();
+        ProgrammClassifier programmClassifier = new ProgrammClassifier();
+        ResidencyClassifier residencyClassifier = new ResidencyClassifier();
+
 
 
         public bool SendMail(string To, string Subject, string Body)
@@ -100,31 +115,64 @@ namespace ClickNCheck
 
         public void CheckMails()
         {
-            MailMessage smtpMail;
-            using (Imap client = new Imap())
+            try
             {
-                client.ConnectSSL("imap.gmail.com", 993);
-                client.UseBestLogin("clickncheckservice@gmail.com", "clickncheck@123");
-
-                client.SelectInbox();
-
-                List<long> uids = client.Search(Flag.Unseen);
-                foreach (long uid in uids)
+                MailMessage smtpMail = new MailMessage();
+                smtpMail.Body = "Hello World";
+                smtpMail.Subject = "Academic";
+                IResponseService response;
+                //process emails
+                if (smtpMail.Body != null)
                 {
-                    var eml = client.GetMessageByUID(uid);
-                    IMail mail = new MailBuilder().CreateFromEml(eml);
-
-                    smtpMail = new MailMessage();
-
-                    try
+                    if((response = academicClassifier.ResponseService(smtpMail))!= null)
                     {
-                        //process emails
+                        //response.Process();
                     }
-                    catch(Exception ex)
+                    else if((response = associationsClassifier.ResponseService(smtpMail)) != null)
                     {
-                        //set message to unread.
+                        //response.Process();
+                    }
+                    else if ((response = creditClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = criminalClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = driversClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = employmentClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = identityClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = personalClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = programmClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = residencyClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = residencyClassifier.ResponseService(smtpMail)) == null)
+                    {
+                        //response.Process();
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                //set message to unread.
             }
         }
 
