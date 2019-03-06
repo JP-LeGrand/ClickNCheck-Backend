@@ -24,7 +24,7 @@ namespace ClickNCheck.Services.ResponseService
 
            
             string resultStatus = (string)o["resultStatus"];
-            string resultDescription = (string)o["resultDescription"];
+            string resultDescription = (string)o["resultDesciption"];
             //int checkID = (o["CheckId"]).ToObject<int>(); ;
             JToken token = (o["checkId"]);
             int value = token.ToObject<int>();
@@ -35,7 +35,7 @@ namespace ClickNCheck.Services.ResponseService
             //var fFile = formFiles.GetFile("c:\result.pdf"); 
             //formFiles.Append(fFile);
 
-            await checkResultService.SaveResult(value, resultStatus, resultDescription, file);
+            await checkResultService.SaveResult(value, resultStatus, resultDescription, null);
         }
 
     }
