@@ -102,10 +102,12 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("LongRunningEndPoint")]
-        public void LongRunningEndPoint([FromBody] JObject result)
+        public ActionResult LongRunningEndPoint([FromBody] JObject result)
         {
             IResponseService response = new LongRunningEndPointResponseService();
             response.Process(result);
+
+            return Ok();
         }
 
         private bool ResultsExists(int id)
