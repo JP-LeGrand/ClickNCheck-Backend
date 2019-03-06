@@ -11,6 +11,7 @@ using System.Reflection;
 using Limilabs.Client.IMAP;
 using Limilabs.Mail;
 using ClickNCheck.Services.ResponseService;
+using ClickNCheck.Services.Classifier;
 
 namespace ClickNCheck
 {
@@ -23,6 +24,18 @@ namespace ClickNCheck
         readonly bool enableSSL = true;
         readonly string emailFromAddress = "clickncheckservice@gmail.com"; //Sender Email Address
         readonly string password = "clickncheck@123"; //Sender Password
+
+        AcademicClassifier academicClassifier = new AcademicClassifier();
+        AssociationsClassifier associationsClassifier = new AssociationsClassifier();
+        CreditClassifier creditClassifier = new CreditClassifier();
+        CriminalClassifier criminalClassifier = new CriminalClassifier();
+        DriversClassifier driversClassifier = new DriversClassifier();
+        EmploymentClassifier employmentClassifier = new EmploymentClassifier();
+        IdentityClassifier identityClassifier = new IdentityClassifier();
+        PersonalClassifier personalClassifier = new PersonalClassifier();
+        ProgrammClassifier programmClassifier = new ProgrammClassifier();
+        ResidencyClassifier residencyClassifier = new ResidencyClassifier();
+
 
         public bool SendMail(string To, string Subject, string Body)
         {
@@ -98,10 +111,57 @@ namespace ClickNCheck
                 {
                     var eml = client.GetMessageByUID(uid);
                     IMail mail = new MailBuilder().CreateFromEml(eml);
-
+                    IResponseService response;
                     try
                     {
                         //process emails
+                        if(smtpMail.Body != null)
+                        {
+                            if((response = academicClassifier.ResponseService(smtpMail))!= null)
+                            {
+                                //response.Process();
+                            }
+                            if((response = associationsClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = creditClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = criminalClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = driversClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = employmentClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = identityClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = personalClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = programmClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = residencyClassifier.ResponseService(smtpMail)) != null)
+                            {
+                                //response.Process();
+                            }
+                            if ((response = residencyClassifier.ResponseService(smtpMail)) == null)
+                            {
+                                //response.Process();
+                            }
+                        }
                     }
                     catch(Exception ex)
                     {
