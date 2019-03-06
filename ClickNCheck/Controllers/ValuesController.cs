@@ -10,12 +10,10 @@ namespace ClickNCheck.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        EmailService emailService = new EmailService();
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            emailService.CheckMails();
             return new string[] { "value1", "value2" };
         }
 

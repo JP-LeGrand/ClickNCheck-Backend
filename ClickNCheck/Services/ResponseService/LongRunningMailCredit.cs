@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClickNCheck.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -8,6 +9,9 @@ namespace ClickNCheck.Services.ResponseService
 {
     public class LongRunningMailCredit : IResponseService
     {
+        public static ClickNCheckContext _context = new ClickNCheckContext();
+        public static UploadService _uploadService = new UploadService();
+        CheckResultService resultService = new CheckResultService(_context, _uploadService);
         public void Process(object responseObject)
         {
             throw new NotImplementedException();
