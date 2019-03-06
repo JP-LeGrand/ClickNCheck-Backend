@@ -94,7 +94,8 @@ namespace ClickNCheck.Controllers
                 _context.Organisation.Add(Organisation);
                 await _context.SaveChangesAsync();
 
-            }catch(DbUpdateConcurrencyException)
+            }
+            catch (DbUpdateConcurrencyException)
             {
                 if (!ContactPersonExists(Organisation.ContactPerson.ID))
                 {

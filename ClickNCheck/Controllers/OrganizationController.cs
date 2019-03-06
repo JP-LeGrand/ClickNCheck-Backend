@@ -17,7 +17,7 @@ namespace ClickNCheck.Controllers
     {// GET api/values
 
         private ClickNCheckContext _context;
-       
+
         EmailService mailS = new EmailService();
         UploadService uploadService = new UploadService();
 
@@ -71,13 +71,14 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("createOrganisation")] // create organization
-        public async Task<ActionResult<Organisation>> PostOrganisation([FromBody]Organisation organisation)        {
+        public async Task<ActionResult<Organisation>> PostOrganisation([FromBody]Organisation organisation)
+        {
             await _context.Organisation.AddAsync(organisation);
             var result = await _context.SaveChangesAsync();
 
             var user = await _context.Organisation.LastAsync();
-            int id  = user.ID;
-           
+            int id = user.ID;
+
             return Ok(user);
         }
 
@@ -120,4 +121,3 @@ namespace ClickNCheck.Controllers
 
     }
 }
- 

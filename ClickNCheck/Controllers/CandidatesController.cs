@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +34,7 @@ namespace ClickNCheck.Controllers
         {
             return await _context.Candidate.ToListAsync();
         }
+
 
         // GET: api/Candidates/5
         [HttpGet]
@@ -84,7 +85,7 @@ namespace ClickNCheck.Controllers
         // POST: api/Candidates
         [HttpPost]
         [Route("CreateCandidate/{id}")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate [] candidate, int id)
+        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate[] candidate, int id)
         {
             Candidate_JobProfile _candidate_jp = new Candidate_JobProfile();
             for (int x = 0; x < candidate.Length; x++)
@@ -97,7 +98,7 @@ namespace ClickNCheck.Controllers
                 }
                 else
                 {
-              
+
                     var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
                     var mailBody = service.CandidateMail();
                     mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
@@ -121,12 +122,12 @@ namespace ClickNCheck.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-             
+
             }
             return Ok();
         }
 
-     
+
         // DELETE: api/Candidates/5
         [HttpDelete]
         [Route("DeleteCandidate/{id}")]
@@ -149,7 +150,7 @@ namespace ClickNCheck.Controllers
             return _context.Candidate.Any(e => e.ID == id);
         }
 
-        //TODO:
+        ////TODO:
         //// POST: api/Candidates/5/AssignCandidates
         //[HttpPost]
         //[Route("{id}/AssignCandidates")]
@@ -159,7 +160,7 @@ namespace ClickNCheck.Controllers
 
         //    VerificationRequest v = new VerificationRequest();
         //    v.DateStarted = DateTime.Now;
-            
+
         //    //find job profile
         //    var jobProfile = await _context.JobProfile.FindAsync(jobId);
 
@@ -226,7 +227,7 @@ namespace ClickNCheck.Controllers
         //The method below updates the consent to true when candidate approves 
         [HttpPut]
         [Route("PutConsent/{id}")]
-        public async Task<IActionResult> PutConsent(int id )
+        public async Task<IActionResult> PutConsent(int id)
         {
             var candidate = _context.Candidate.Where(c => c.ID == id).FirstOrDefault();
             if (id != candidate.ID)
