@@ -92,12 +92,12 @@ namespace ClickNCheck.Controllers
 
                 if (admins.Contains(user.ID))
                 {
-                    string[] token_role_user = { _code.BuildToken(user), "admin", user_name };
+                    string[] token_role_user = { _code.BuildToken(user, _config), "admin", user_name };
                     return Ok(token_role_user);
                 }
                 else if (recruiters.Contains(user.ID))
                 {
-                    string[] token_role_user_img = { _code.BuildToken(user), "recruiter", user_name, user.PictureUrl };
+                    string[] token_role_user_img = { _code.BuildToken(user,_config), "recruiter", user_name, user.PictureUrl };
                     return Ok(token_role_user_img);
                 }
 

@@ -22,7 +22,7 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private ClickNCheckContext _context;
@@ -63,20 +63,19 @@ namespace ClickNCheck.Controllers
                 _linkCode.Code = code;
                 _linkCode.Used = false;
                 users[x].LinkCode = _linkCode;
-
+                
                 users[x].Roles.Add(new Roles { User = users[x], UserType = _entryType });
                 if (_entryType.Type == "Recruiter")
                 {
                     string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
-
+                    emailBody = emailBody.Replace("href=\"#\" ", "href=\""+Constants.BASE_URL+"Users/signup/" + code + "\""); 
                     _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                 }
                 else if (_entryType.Type == "Manager")
 
                 {
                     string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"" + Constants.BASE_URL + "Users/signup/" + code + "\"");
 
                     _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
 
@@ -151,7 +150,7 @@ namespace ClickNCheck.Controllers
                     if (usertype_id[y] == "3")//recruiter
                     {
                         string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
-                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"" + Constants.BASE_URL + "Users/signup/" + code + "\"");
                         emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                     }
                     else if (usertype_id[y] == "1")//admin
@@ -159,7 +158,7 @@ namespace ClickNCheck.Controllers
 
                     {
                         string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                        emailBody = emailBody.Replace("href=\"#\" ", "href=\"" + Constants.BASE_URL + "Users/signup/" + code + "\"");
 
                         emailService.SendMail(users[x].Email, "Admin Signup", emailBody);
 
