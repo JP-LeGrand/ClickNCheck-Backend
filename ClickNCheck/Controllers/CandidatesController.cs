@@ -122,7 +122,7 @@ namespace ClickNCheck.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-               /* Use this to check if the checks have been changed
+               /* TODO: Use this to check if the checks have been changed
                 VerificationCheckAuth verificationCheckAuth = new VerificationCheckAuth();
                 verificationCheckAuth.changedChecks(_context, User.Claims.First, candidate[x].ID ....)
                 */
@@ -132,7 +132,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
-        [Route("checkAuth/{val}/{candidate_id}")]
+        [Route("checkAuth/{val}/{verCheckID}")]
         public void receiveVerCheckAuth(string val, int verCheckID)
         {
             var verCheck = _context.VerificationCheck.Find(verCheckID);
