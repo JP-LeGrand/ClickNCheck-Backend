@@ -98,76 +98,64 @@ namespace ClickNCheck
 
         public void CheckMails()
         {
-            using (Imap client = new Imap())
+            try
             {
-                client.ConnectSSL("imap.gmail.com", 993);
-                client.UseBestLogin(emailFromAddress, password);
-                client.SelectInbox();
-
                 MailMessage smtpMail = new MailMessage();
-
-                List<long> uids = client.Search(Flag.Unseen);
-                foreach (long uid in uids)
+                smtpMail.Body = "Hello World";
+                smtpMail.Subject = "Academic";
+                IResponseService response;
+                //process emails
+                if (smtpMail.Body != null)
                 {
-                    var eml = client.GetMessageByUID(uid);
-                    IMail mail = new MailBuilder().CreateFromEml(eml);
-                    IResponseService response;
-                    try
+                    if((response = academicClassifier.ResponseService(smtpMail))!= null)
                     {
-                        //process emails
-                        if(smtpMail.Body != null)
-                        {
-                            if((response = academicClassifier.ResponseService(smtpMail))!= null)
-                            {
-                                //response.Process();
-                            }
-                            if((response = associationsClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = creditClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = criminalClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = driversClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = employmentClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = identityClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = personalClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = programmClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = residencyClassifier.ResponseService(smtpMail)) != null)
-                            {
-                                //response.Process();
-                            }
-                            if ((response = residencyClassifier.ResponseService(smtpMail)) == null)
-                            {
-                                //response.Process();
-                            }
-                        }
+                        //response.Process();
                     }
-                    catch(Exception ex)
+                    else if((response = associationsClassifier.ResponseService(smtpMail)) != null)
                     {
-                        //set message to unread.
+                        //response.Process();
+                    }
+                    else if ((response = creditClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = criminalClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = driversClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = employmentClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = identityClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = personalClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = programmClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = residencyClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = residencyClassifier.ResponseService(smtpMail)) == null)
+                    {
+                        //response.Process();
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                //set message to unread.
             }
         }
     }

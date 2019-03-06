@@ -12,7 +12,7 @@ namespace ClickNCheck.Services.Classifier
         public IResponseService ResponseService(MailMessage mailmessage)
         {
             IResponseService response = null;
-            if (mailmessage.Subject.Contains("Credit Check Ref:"))
+            if (mailmessage.Subject.Contains("Academic"))
             {
                 response = new LongRunningMailAcademic();
             }

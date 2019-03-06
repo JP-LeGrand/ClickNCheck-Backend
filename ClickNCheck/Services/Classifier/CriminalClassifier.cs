@@ -13,7 +13,7 @@ namespace ClickNCheck.Services.Classifier
         public IResponseService ResponseService(MailMessage mailmessage)
         {
             IResponseService response = null;
-            if(mailmessage.Subject.Contains("Results for"))
+            if(mailmessage.Subject.Contains("Criminal"))
             {
                 response = new LongRunningMailCriminal();
             }
