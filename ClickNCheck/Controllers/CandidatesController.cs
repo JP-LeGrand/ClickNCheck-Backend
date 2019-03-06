@@ -145,6 +145,115 @@ namespace ClickNCheck.Controllers
             return candidate;
         }
 
+        [HttpPost]
+        [Route("CreateCandidateJObject/{id}")]
+        public async Task<ActionResult<Candidate>> CreateCandidate(JObject jObject, int id)
+        {
+
+            var vc = await _context.VerificationCheck.FindAsync(id);
+
+            var jpChecks = (from s in _context.JobProfile_Check
+                            where s.JobProfileID == vc.JobProfileID
+                            select s).ToList();
+
+            var vcChecks = new List<Candidate_Verification_Check>();
+            
+            _context.SaveChanges();
+
+            JArray array = (JArray)jObject["services"];
+
+            //run authorization check
+
+            JArray jcandidates = (JArray)jObject["candidates"];
+            List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
+            {
+                Email = (string)x["Email"],
+                HasConsented = (bool)x["HasConsented"],
+                ID_Passport = (string)x["ID_Passport"],
+                ID_Type = (string)x["ID_Type"],
+                Maiden_Surname = (string)x["Maiden_Surname"],
+                Name = (string)x["Name"],
+                Surname = (string)x["Surname"],
+                Phone = (string)x["Phone"],
+                OrganisationID = (int)x["OrganisationID"]
+            }).ToList();
+            List<int> candIds = new List<int>();
+            for (int x = 0; x < candidates.Count; x++)
+            {
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
+                if (entry != null)
+                {
+                    return Ok("user exists");
+                }
+                else
+                {
+
+                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidates[x].Organisation.ID);
+                    var mailBody = service.CandidateMail();
+                    mailBody = mailBody.Replace("{CandidateName}", candidates[x].Name);
+                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    var candidateID = candidates[x].ID;
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    try
+                    {
+                        service.SendMail(candidates[x].Email, "New Verificaiton Request", mailBody);
+                        _context.Candidate.Add(candidates[x]);
+                        //await _context.SaveChangesAsync();
+                        candIds.Add(candidates[x].ID);
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest("some emails have not sent");
+                    }
+                    //await _context.SaveChangesAsync();
+                }
+
+                var candidate_Verification = await _context.Candidate_Verification.ToListAsync();
+                //Assign candidates to verification
+                for (int i = 0; i < candIds.Count; i++)
+                {
+                    var candid = await _context.Candidate.FindAsync(candIds[i]);
+
+                    if (candid == null)
+                    {
+                        return NotFound("The candidate " + candid.Name + candid.Surname + " does not exist");
+                    }
+                    //add candidates to jverification
+                    Candidate_Verification addition = new Candidate_Verification { Candidate = candid, VerificationCheck = vc };
+                    if (candidate_Verification.Contains(addition))
+                    {
+                        return BadRequest("Some recruiters have alrdeady been assigned to this job");
+                    }
+                    else
+                        vc.Candidate_Verification.Add(addition);
+                }
+
+                //update verification object
+                _context.Entry(vc).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Candidate.Any(e => e.ID == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+            }
+
+            //make the Candidate_Verification_checks
+
+            return Ok();
+        }
+
         private bool CandidateExists(int id)
         {
             return _context.Candidate.Any(e => e.ID == id);
