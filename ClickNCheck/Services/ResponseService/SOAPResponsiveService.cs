@@ -19,21 +19,23 @@ namespace ClickNCheck
 {
     public class SOAPResponse : IResponseService
     {
-        ClickNCheckContext clickNCheckContext;
-        UploadService UploadService;
+        ClickNCheckContext clickNCheckContext = new ClickNCheckContext();
+        UploadService UploadService = new UploadService();
 
 
 
-        public void Process(Object check)
+        public async void Process(Object check)
         {
             CheckResultService checkResultService = new CheckResultService(clickNCheckContext, UploadService);
             
             XDocument doc = XDocument.Parse(check.ToString());
-            string checkId = doc.Descendants("checkid").Single().Value;
+            int checkId = int.Parse(doc.Descendants("checkid").Single().Value);
             string checkStatus = doc.Descendants("checkstatus").Single().Value;
             string resultStatus = doc.Descendants("resultstatus").Single().Value;
             string resultDescription = doc.Descendants("resultDescription").Single().Value;
             string retData = doc.Descendants("resultData").Single().Value;
+
+            await checkResultService.SaveResult(checkId, resultStatus, resultDescription, null);
 
             
         }

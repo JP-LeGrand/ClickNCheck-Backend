@@ -117,8 +117,6 @@ namespace checkStub
 
             List<int> cats = new List<int> { 1, 3 };
             //Vendor compuscan = new Vendor(434.68, 1, "compuscan", cats, sercices, prices);
-            
-            Console.ReadKey();
         }
     }
 }
