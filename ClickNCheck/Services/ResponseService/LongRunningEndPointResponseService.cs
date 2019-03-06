@@ -21,13 +21,22 @@ namespace ClickNCheck.Services.ResponseService
 
             CheckResultService checkResultService = new CheckResultService(clickNCheckContext, uploadService);
             byte[] file = Convert.FromBase64String(o["file"].ToString());
-            File.WriteAllBytes(@"c:\result.pdf", file);
 
-            IFormFileCollection formFiles = new FormFileCollection();
-            var fFile = formFiles.GetFile("c:\result.pdf"); 
-            formFiles.Append(fFile);
+           
+            string resultStatus = (string)o["resultStatus"];
+            string resultDescription = (string)o["resultDescription"];
+            //int checkID = (o["CheckId"]).ToObject<int>(); ;
+            JToken token = (o["checkId"]);
+            int value = token.ToObject<int>();
 
-            await checkResultService.SaveResult((int)o["CheckId"], (string)o["resultStatus"], (string)o["resultDescription"], (IFormCollection)formFiles);
+            //File.WriteAllBytes(@"c:\result.pdf", file);
+
+            //IFormFileCollection formFiles = new FormFileCollection();
+            //var fFile = formFiles.GetFile("c:\result.pdf"); 
+            //formFiles.Append(fFile);
+
+            await checkResultService.SaveResult(value, resultStatus, resultDescription, file);
         }
+
     }
 }
