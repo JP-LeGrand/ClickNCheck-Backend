@@ -14,20 +14,23 @@ namespace ClickNCheck.Services
         {
         }
 
-        public bool changedChecks(ClickNCheckContext _context, int loggedInRecID, int candidateID, int verCheckID, List<Candidate_Verification> verChecks, List<Candidate_Verification> jobChecks)
+        public bool changedChecks(ClickNCheckContext _context, int loggedInRecID, int candidateID, int verCheckID, Candidate_Verification candidateVerification, Candidate_JobProfile candidate_JobProfile)
         {
+            var verChecks = _context.Candidate_Verification_Check.Where(x => x.Candidate_VerificationID == candidateVerification.ID).ToList();
+
+            var jobChecks = _context.JobProfile_Check.Where(x => x.JobProfileID == candidate_JobProfile.JobProfileID).ToList();
             if (verChecks.Count == jobChecks.Count)
             {
                 for (int i = 0; i < verChecks.Count; i++)
                 {
-                    if (verChecks.ElementAt(i).VerificationCheck != jobChecks.ElementAt(i).VerificationCheck)
+                    if (verChecks.ElementAt(i).Order != jobChecks.ElementAt(i).Order)
                     {
                         var recruiter = _context.User.Find(loggedInRecID);
                         var manager = _context.User.Find(recruiter.ManagerID);
                         string checks = "";
                         foreach (var check in verChecks)
                         {
-                            checks = "<li>" + check.VerificationCheck.Title + "</li>";
+                            checks = "<li>" + check.Services.CheckCategory.Category + "</li>";
                         }
 
                         EmailService emailService = new EmailService();
