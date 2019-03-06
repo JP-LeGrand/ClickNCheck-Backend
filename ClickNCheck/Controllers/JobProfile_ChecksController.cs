@@ -21,15 +21,15 @@ namespace ClickNCheck.Controllers
             _context = context;
         }
 
-        // GET: api/JobProfile_Checks
-        [HttpGet]
-        [Route("GetJobProfile_Checks")]
+       // GET: api/JobProfile_Checks
+       [HttpGet]
+       [Route("GetJobProfile_Checks")]
         public async Task<ActionResult<IEnumerable<JobProfile_Checks>>> GetJobProfile_Checks()
         {
             return await _context.JobProfile_Check.ToListAsync();
         }
 
-        // GET: api/JobProfile_Checks/5
+        //GET: api/JobProfile_Checks/5
         [HttpGet]
         [Route("GetJobProfile_Check/{id}")]
         public async Task<ActionResult<JobProfile_Checks>> GetJobProfile_Checks(int id)

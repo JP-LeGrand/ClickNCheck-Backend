@@ -1,0 +1,11 @@
+﻿  <?xml version="1.0" encoding="utf-8" ?>
+  <root>
+    <checkName name ="DummyCheck" >
+      <checkId>1</checkId>
+      <checkStatus>"Complete"</checkStatus>
+      <resultStatus>"Excellent"</resultStatus>
+      <resultDescription>"Candidate Credit score is 650/700"</resultDescription>
+    
+    </checkName>
+
+  </root>
