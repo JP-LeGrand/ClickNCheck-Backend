@@ -12,7 +12,7 @@ namespace ClickNCheck.Controllers
     {
         SOAPResponse _soap = new SOAPResponse();
 
-
+        //TODO:
         //GET: api/<controller>
         //[HttpGet]
         //public string Get()

@@ -132,7 +132,7 @@ namespace ClickNCheck.Controllers
             return Unauthorized();
         }
 
-
+        //TODO:
        //// [Authorize]
        // [Route("logout")]
        // public async Task<IActionResult> Logout()
