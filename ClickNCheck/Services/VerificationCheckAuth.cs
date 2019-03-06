@@ -10,7 +10,10 @@ namespace ClickNCheck.Services
     public class VerificationCheckAuth
     {
 
-        public VerificationCheckAuth() { };
+        public VerificationCheckAuth()
+        {
+        }
+
         public bool changedChecks(ClickNCheckContext _context, int loggedInRecID, int candidateID, int verCheckID, List<Candidate_Verification> verChecks, List<Candidate_Verification> jobChecks)
         {
             if (verChecks.Count == jobChecks.Count)
