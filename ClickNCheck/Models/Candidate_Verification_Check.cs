@@ -17,5 +17,6 @@ namespace ClickNCheck.Models
 
         public int CheckStatusTypeID { get; set; }
         public CheckStatusType CheckStatusType { get; set; }
+        public int Order { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace ClickNCheck.Data
         public DbSet<Candidate_JobProfile> Candidate_JobProfile { get; set; }
         public DbSet<Candidate_Verification_Check> Candidate_Verification_Check { get; set; }
         public DbSet<CheckStatusType> CheckStatusType { get; set; }
-        public DbSet<Verification> Verification { get; set; }
+        public DbSet<VerificationCheck> VerificationCheck { get; set; }
         public DbSet<Organisation> Organisation { get; set; }
         public DbSet<Recruiter_JobProfile> Recruiter_JobProfile { get; set; }
         public DbSet<JobProfile> JobProfile { get; set; }
@@ -123,7 +123,7 @@ namespace ClickNCheck.Data
             .HasForeignKey(pt => pt.CandidateID);
 
             modelBuilder.Entity<Candidate_Verification>()
-            .HasOne(pt => pt.Verification)
+            .HasOne(pt => pt.VerificationCheck)
             .WithMany(p => p.Candidate_Verification)
             .HasForeignKey(pt => pt.VerificationID);
 
