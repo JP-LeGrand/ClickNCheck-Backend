@@ -21,7 +21,7 @@ namespace ClickNCheck.Services
         private string apiURL;
 
         public ConnectToAPI()
-        {}
+        { }
 
         public async Task<string> runCheck(int apitype, string url, Candidate candidateDatabaseModel)
         {
@@ -70,7 +70,7 @@ namespace ClickNCheck.Services
 
         private async Task<string> connectXML(string url, string soapText)
         {
-            if(true)
+            if (true)
             {
                 var webWebServiceUrl = @url;
                 var req = (HttpWebRequest)WebRequest.Create(webWebServiceUrl);
@@ -151,7 +151,7 @@ namespace ClickNCheck.Services
         }
 
         public static string decodeBase64(string base64EncodedData)
-        {   
+        {
             return Encoding.UTF8.GetString(System.Convert.FromBase64String(base64EncodedData));
         }
 

@@ -72,15 +72,15 @@ namespace ClickNCheck.Controllers
 
                     _emailService.SendMail(users[x].Email, "Recruiter Signup", emailBody);
                 }
-                 else if (_entryType.Type == "Manager")
+                else if (_entryType.Type == "Manager")
 
-                 {
-                     string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
-                     emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
+                {
+                    string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\SignUpEmail.html"));
+                    emailBody = emailBody.Replace("href=\"#\" ", "href=\"https://localhost:44347/api/Users/signup/" + code + "\"");
 
-                     _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
+                    _emailService.SendMail(users[x].Email, "Manager Signup", emailBody);
 
-                 }
+                }
 
 
 
@@ -111,8 +111,8 @@ namespace ClickNCheck.Controllers
             List<string> arr_usertype_id = usertypes.ToObject<List<string>>();
 
             List<UserType> _entryType = new List<UserType>();
-         
-            
+
+
 
             string code = "";
             for (int x = 0; x < users.Count; x++)
@@ -123,27 +123,27 @@ namespace ClickNCheck.Controllers
                 code = _codeGenerator.generateCode();
                 _linkCode.Code = code;
                 _linkCode.Used = false;
-                 users[x].LinkCode = _linkCode;
-                 users[x].Guid = Guid.NewGuid();
+                users[x].LinkCode = _linkCode;
+                users[x].Guid = Guid.NewGuid();
             }
 
             _context.User.AddRange(users);
             _context.SaveChanges();
 
-            for(int x = 0; x < users.Count; x++)
+            for (int x = 0; x < users.Count; x++)
             {
                 var user = _context.User.First(y => y.Email == users[x].Email);
 
-                
-                        string[] usertype_id = arr_usertype_id.ElementAt(x).Split(",");
 
-                        for (int j = 0; j < usertype_id.Length; j++)
-                        {
-                            var role = new Roles { UserId = user.ID, UserTypeId = Convert.ToInt32(usertype_id[j]) };
+                string[] usertype_id = arr_usertype_id.ElementAt(x).Split(",");
 
-                            _context.Roles.Add(role);
-                        }
-                        
+                for (int j = 0; j < usertype_id.Length; j++)
+                {
+                    var role = new Roles { UserId = user.ID, UserTypeId = Convert.ToInt32(usertype_id[j]) };
+
+                    _context.Roles.Add(role);
+                }
+
 
 
                 for (int y = 0; y < usertype_id.Length; y++)
@@ -165,15 +165,15 @@ namespace ClickNCheck.Controllers
 
                     }
                 }
-                    
-                } 
+
+            }
 
             _context.SaveChanges();
 
             return Ok("success");
 
-    }
-    
+        }
+
 
 
 
@@ -228,12 +228,11 @@ namespace ClickNCheck.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> registerRecruiter([FromBody] string[] id_pass_manager)
         {
-           
+
             int recruiter_id = Convert.ToInt32(id_pass_manager[0]);
             string pass = id_pass_manager[1];
             int manager_id = -1;
@@ -242,12 +241,12 @@ namespace ClickNCheck.Controllers
             {
                 manager_id = Convert.ToInt32(id_pass_manager[2]);
             }
-            
+
 
             User user = _context.User.FirstOrDefault(d => d.ID == recruiter_id);
 
-            
-            
+
+
             var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
             var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
 
@@ -366,7 +365,7 @@ namespace ClickNCheck.Controllers
             }
             EmailService emailService = new EmailService();
             string emailBody = emailService.RecruiterMail();
-            
+
             //find recruiters
             for (int i = 0; i < ids.Length; i++)
             {
@@ -374,9 +373,9 @@ namespace ClickNCheck.Controllers
 
                 if (recruiter == null)
                 {
-                    return NotFound("The recruiter "+recruiter.Name+recruiter.Surname + " does not exist");
+                    return NotFound("The recruiter " + recruiter.Name + recruiter.Surname + " does not exist");
                 }
-               //add recruiter to job profile
+                //add recruiter to job profile
                 jobProfile.Recruiter_JobProfile.Add(new Recruiter_JobProfile { JobProfile = jobProfile, Recruiter = recruiter });
                 emailService.SendMail(recruiter.Email, "New Job Profile", emailBody);
                 //emailService.SendMail(recruiter.Email,"New Job Profile Assignment",);
@@ -401,7 +400,7 @@ namespace ClickNCheck.Controllers
                     throw;
                 }
             }
-            
+
             return Ok(jobProfile);
         }
 
@@ -417,14 +416,14 @@ namespace ClickNCheck.Controllers
 
             List<User> managers = new List<User>();
 
-            for(int i = 0; i < org_users.Count; i++)
+            for (int i = 0; i < org_users.Count; i++)
             {
-                if(all_managers.Contains(org_users.ElementAt(i).ID))
+                if (all_managers.Contains(org_users.ElementAt(i).ID))
                 {
                     managers.Add(org_users.ElementAt(i));
                 }
             }
-           // var managers = org_users.Intersect(all_managers).ToList();
+            // var managers = org_users.Intersect(all_managers).ToList();
 
             return managers;
         }
@@ -467,7 +466,7 @@ namespace ClickNCheck.Controllers
         [Route("UploadImage")]
         public async Task<IEnumerable<UserType>> UploadImage()
         {
-            var  userTypes = await _context.UserType.Where(u => u.Type != "Administrator" && u.Type != "SuperAdmin").ToListAsync();
+            var userTypes = await _context.UserType.Where(u => u.Type != "Administrator" && u.Type != "SuperAdmin").ToListAsync();
             return userTypes;
         }
 
@@ -476,7 +475,7 @@ namespace ClickNCheck.Controllers
         {
             var user = _context.User.Find(id);
             var org = _context.Organisation.Find(user.OrganisationID);
-            
+
             string bloburl = "";
             foreach (var formFile in contractFiles.Files.ToList())
             {
@@ -504,5 +503,5 @@ namespace ClickNCheck.Controllers
 
     }
 
-    
+
 }

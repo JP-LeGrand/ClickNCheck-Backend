@@ -84,11 +84,11 @@ namespace ClickNCheck.Controllers
         [Route("CreateJobProfile/{id}")]
         public async Task<ActionResult<JobProfile>> CreateJobProfile(int id, [FromBody] JObject jobProfile)
         {
-           // check if job profile already exists
+            // check if job profile already exists
             JobProfile j = _context.JobProfile.FirstOrDefault(x => x.Title == jobProfile["title"].ToString());
 
 
-            if(j == null)
+            if (j == null)
             {
                 j = new JobProfile();
                 j.Title = jobProfile["title"].ToString();
@@ -133,13 +133,13 @@ namespace ClickNCheck.Controllers
                     j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
                 }
             }
-            
+
             // save job profile
             _context.JobProfile.Add(j);
 
             await _context.SaveChangesAsync();
 
-            return Ok(j);
+            return Ok(j.ID);
         }
 
         // DELETE: api/JobProfiles/5
@@ -230,7 +230,7 @@ namespace ClickNCheck.Controllers
         [Route("recruiterJobs/{id}")]
         public async Task<IEnumerable<object>> getRecJobs(int id)
         {
-          
+
             var entry = await (from i in _context.Recruiter_JobProfile
                                join u in _context.JobProfile on i.JobProfileId equals u.ID into joinTable
                                from p in joinTable.DefaultIfEmpty()
@@ -263,7 +263,8 @@ namespace ClickNCheck.Controllers
                                 join y in _context.CheckCategory on x.CheckCategoryID equals y.ID into joinTable
                                 from z in joinTable.DefaultIfEmpty()
                                 where i.JobProfileID == id
-                                select new {
+                                select new
+                                {
                                     z.ID,
                                     z.Category
                                 }).ToListAsync();
