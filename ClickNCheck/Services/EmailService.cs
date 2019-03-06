@@ -113,6 +113,14 @@ namespace ClickNCheck
             return htmlstring;
         }
 
+        public string verCheckAuthMail()
+        {
+            //string htmlstring = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\RequestVerCheckAuth.html");
+            string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\RequestVerCheckAuth.html");
+            string htmlstring = System.IO.File.ReadAllText(path);
+            return htmlstring;
+        }
+
         public void CheckMails(MailMessage smtpMail)
         {
             try

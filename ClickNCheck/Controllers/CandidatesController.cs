@@ -127,6 +127,33 @@ namespace ClickNCheck.Controllers
             return Ok();
         }
 
+        public bool changedChecks(int candidateID, List<Candidate_Verification> verChecks, List<Candidate_Verification> jobChecks)
+        {
+            if(verChecks.Count != jobChecks.Count)
+            {
+                //send email
+                var manager = _context.User.Find(_context.User.Find(User.Claims.First()).ManagerID);
+                string managerEmail = manager.Email;
+                EmailService emailService = new EmailService();
+                emailService.
+                return true;
+            }
+            else 
+            {
+                for(int i = 0; i < verChecks.Count; i++)
+                {
+                    if(verChecks.ElementAt(i).VerificationCheck != jobChecks.ElementAt(i).VerificationCheck)
+                    {
+                        //send email
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+
+        }
+
 
         // DELETE: api/Candidates/5
         [HttpDelete]
