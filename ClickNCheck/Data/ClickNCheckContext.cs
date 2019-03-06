@@ -7,10 +7,19 @@ namespace ClickNCheck.Data
     {
         public ClickNCheckContext(DbContextOptions<ClickNCheckContext> options) : base(options)
         {
+           
         }
 
         public ClickNCheckContext()
         {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ClickNCheck;Integrated Security=True");
+            }
         }
 
         public DbSet<User> User { get; set; }
