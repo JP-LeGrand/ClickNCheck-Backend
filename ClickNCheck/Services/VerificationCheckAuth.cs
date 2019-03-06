@@ -26,7 +26,7 @@ namespace ClickNCheck.Services
                     if (verChecks.ElementAt(i).Order != jobChecks.ElementAt(i).Order)
                     {
                         var recruiter = _context.User.Find(loggedInRecID);
-                        var manager = _context.User.Find(recruiter.ManagerID);
+                        var manager = _context.User.Find(recruiter.ManagerID); 
                         string checks = "";
                         foreach (var check in verChecks)
                         {
