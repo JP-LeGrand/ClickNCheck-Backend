@@ -25,9 +25,9 @@ namespace checkStub
        
             results = new JObject();
         }
-        public async Task<JObject> RunChecks(JArray selectedServiceID)
+        public async Task<JArray> RunChecks(JArray selectedServiceID)
         {
-            JObject response = new JObject { };
+            JArray response = new JArray();
             foreach (int id in selectedServiceID)
             {
                 Services serv = null;
@@ -36,7 +36,7 @@ namespace checkStub
                 if (serv != null)
                 {
                     JObject res = await runCreditCheck(serv.APIType, serv.URL, serv.Name);
-                    response.Add(serv.Name, res);
+                    response.Add(res);
                 }
                 else
                     throw new Exception("Service not found in database");

@@ -1,4 +1,5 @@
 ﻿﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
@@ -25,9 +26,9 @@ namespace checkStub
 
         }
 
-        public async Task<JObject> RunChecks(JArray selectedServiceID)
+        public async Task<JArray> RunChecks(JArray selectedServiceID)
         {
-            JObject response = new JObject();
+            JArray response = new JArray();
             foreach (int id in selectedServiceID)
             {
                 Services serv = null;
@@ -36,7 +37,7 @@ namespace checkStub
                 if (serv != null)
                 {
                     JObject res = await runAcademicCheck(serv.APIType, serv.URL, serv.Name);
-                    response.Add(serv.Name, res);
+                    response.Add(res);
                 }
                 
                 else

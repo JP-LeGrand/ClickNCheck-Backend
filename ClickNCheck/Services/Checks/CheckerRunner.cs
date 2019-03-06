@@ -31,7 +31,7 @@ namespace checkStub
         {
             _context = context;
             
-            this.candidateID = (int)requestedChecks["candidateID"];
+            candidateID = (int)requestedChecks["candidateID"];
 
             checkAcademics = (bool)requestedChecks["academic"]["required"];
             checkAssociations = (bool)requestedChecks["association"]["required"];
@@ -60,13 +60,15 @@ namespace checkStub
                     if (!(requestedChecks["academic"]["serviceid"] is JArray selectedServiceID) || selectedServiceID.Count < 1)
                         throw new Exception("No selected services under academic!");
 
-                    JObject academicCheckResults = null;
+                    JArray academicCheckResults = null;
                     Academic academicCheck = new Academic(_context, candidateID);
                     //run the check
                     
                     academicCheckResults = await academicCheck.RunChecks(selectedServiceID);
 
                     //return academicCheckResults;
+                    //pass the results to X's method( candidateID, category, selectedServirceID, academicCheckResults );
+                    //do not store it anywhere;
                     results.Add(category, academicCheckResults);
                 }
                 if (checkAssociations)
