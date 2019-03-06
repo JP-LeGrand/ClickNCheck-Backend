@@ -10,6 +10,7 @@ using ClickNCheck.Models;
 using ClickNCheck.Services;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace ClickNCheck.Controllers
 {
@@ -328,6 +329,41 @@ namespace ClickNCheck.Controllers
             }
 
             return results;
+        }
+
+        //The method will send a recruiter an email based on whether they are authorised to add checks or not to a job profile
+        [HttpGet]
+        [Route("SendAuthorizationEmail/{id}")]
+        public async Task<ActionResult<VerificationCheck>> GetVerificationAuthorization(int id)
+        {
+            //Find the verfification with this id
+            var verCheck = await _context.VerificationCheck.FindAsync(id);
+            if (verCheck == null)
+            {
+                return NotFound();
+            }
+
+            //Finds a Recruiter with this ID
+            var recruiter = await _context.User.FindAsync(verCheck.RecruiterID);
+            var manager = await _context.User.FindAsync(recruiter.ManagerID);
+
+            //So if the authorization has been set to true send an email to the respective recruiter with an approval email
+            if (verCheck.IsAuthorize==true)
+            {
+                var mailBody = service.AuthorizeVerification();
+                mailBody = mailBody.Replace("RecruiterName", recruiter.Name);   
+                mailBody = mailBody.Replace("{ManagerName}", manager.Name);
+                service.SendMail(recruiter.Email, "Authorization Verification", mailBody);
+            }
+            else if (verCheck.IsAuthorize == false)
+            {
+                var mailBody = service.RefuseVerficationEmail();
+                mailBody = mailBody.Replace("RecruiterName", recruiter.Name);
+                mailBody = mailBody.Replace("{ManagerName}", manager.Name);
+                service.SendMail(recruiter.Email, "Authorization Refused", mailBody);
+            }
+
+            return Ok(verCheck);
         }
     }
 }
