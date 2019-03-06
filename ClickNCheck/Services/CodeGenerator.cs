@@ -19,7 +19,7 @@ namespace ClickNCheck.Services
 {
     public class CodeGenerator
     {
-        private IConfiguration _config;
+        //private IConfiguration _config;
 
         public string generateCode()
         {
@@ -60,7 +60,7 @@ namespace ClickNCheck.Services
         }
 
 
-        public string BuildToken(User user)
+        public string BuildToken(User user, IConfiguration _config)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
