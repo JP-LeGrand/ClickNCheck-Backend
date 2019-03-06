@@ -8,24 +8,40 @@ using ClickNCheck.Models;
 using System.Net.Mime;
 using System.IO;
 using System.Reflection;
+using Limilabs.Client.IMAP;
+using Limilabs.Mail;
+using ClickNCheck.Services.ResponseService;
+using ClickNCheck.Services.Classifier;
 
 namespace ClickNCheck
 {
     public class EmailService
     {
-
         readonly string smtpAddress = "smtp.gmail.com";
+        readonly string popAddress = "pop.gmail.com";
         readonly int portNumber = 587;
+        readonly int popPort = 995;
         readonly bool enableSSL = true;
-        readonly string emailFromAddress = "dlaminixolani440@gmail.com"; //Sender Email Address
-        readonly string password = "159357OLANI"; //Sender Password
-         
+        readonly string emailFromAddress = "clickncheckservice@gmail.com"; //Sender Email Address
+        readonly string password = "clickncheck@123"; //Sender Password
+
+        AcademicClassifier academicClassifier = new AcademicClassifier();
+        AssociationsClassifier associationsClassifier = new AssociationsClassifier();
+        CreditClassifier creditClassifier = new CreditClassifier();
+        CriminalClassifier criminalClassifier = new CriminalClassifier();
+        DriversClassifier driversClassifier = new DriversClassifier();
+        EmploymentClassifier employmentClassifier = new EmploymentClassifier();
+        IdentityClassifier identityClassifier = new IdentityClassifier();
+        PersonalClassifier personalClassifier = new PersonalClassifier();
+        ProgrammClassifier programmClassifier = new ProgrammClassifier();
+        ResidencyClassifier residencyClassifier = new ResidencyClassifier();
+
 
         public bool SendMail(string To, string Subject, string Body)
         {
             try
             {
-                using (MailMessage mail = new MailMessage())
+                using (System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage())
                 {
                     MailAssignment(mail, emailFromAddress, To, Subject, Body);
                     SmtpSend(mail);
@@ -38,9 +54,9 @@ namespace ClickNCheck
             return true;
         }
 
-        private void MailAssignment(MailMessage mailMessage, string From, string To, string Subject, string Body)
+        private void MailAssignment(System.Net.Mail.MailMessage mailMessage, string From, string To, string Subject, string Body)
         {
-            mailMessage.From = new MailAddress(From);
+            mailMessage.From = new System.Net.Mail.MailAddress(From);
             mailMessage.To.Add(To);
             mailMessage.Subject = Subject;
             mailMessage.IsBodyHtml = true;
@@ -48,7 +64,7 @@ namespace ClickNCheck
             
         }
 
-        private void SmtpSend(MailMessage mail)
+        private void SmtpSend(System.Net.Mail.MailMessage mail)
         {
             SmtpClient smtp = new SmtpClient(smtpAddress, portNumber)
             {
@@ -78,6 +94,69 @@ namespace ClickNCheck
             /*string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
             string htmlstring = System.IO.File.ReadAllText(path);*/
             return htmlstring;
+        }
+
+        public void CheckMails()
+        {
+            try
+            {
+                MailMessage smtpMail = new MailMessage();
+                smtpMail.Body = "Hello World";
+                smtpMail.Subject = "Academic";
+                IResponseService response;
+                //process emails
+                if (smtpMail.Body != null)
+                {
+                    if((response = academicClassifier.ResponseService(smtpMail))!= null)
+                    {
+                        //response.Process();
+                    }
+                    else if((response = associationsClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = creditClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = criminalClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = driversClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = employmentClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = identityClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = personalClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = programmClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = residencyClassifier.ResponseService(smtpMail)) != null)
+                    {
+                        //response.Process();
+                    }
+                    else if ((response = residencyClassifier.ResponseService(smtpMail)) == null)
+                    {
+                        //response.Process();
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                //set message to unread.
+            }
         }
     }
 }
