@@ -122,36 +122,31 @@ namespace ClickNCheck.Controllers
                     await _context.SaveChangesAsync();
                 }
 
+               /* Use this to check if the checks have been changed
+                VerificationCheckAuth verificationCheckAuth = new VerificationCheckAuth();
+                verificationCheckAuth.changedChecks(_context, User.Claims.First, candidate[x].ID ....)
+                */
 
             }
             return Ok();
         }
 
-        public bool changedChecks(int candidateID, List<Candidate_Verification> verChecks, List<Candidate_Verification> jobChecks)
+        [HttpPost]
+        [Route("checkAuth/{val}/{candidate_id}")]
+        public void receiveVerCheckAuth(string val, int verCheckID)
         {
-            if(verChecks.Count != jobChecks.Count)
+            var verCheck = _context.VerificationCheck.Find(verCheckID);
+            if (val == "true")
             {
-                //send email
-                var manager = _context.User.Find(_context.User.Find(User.Claims.First()).ManagerID);
-                string managerEmail = manager.Email;
-                EmailService emailService = new EmailService();
-                emailService.
-                return true;
+                verCheck.IsAuthorize = true;
             }
-            else 
+            else if(val == "false")
             {
-                for(int i = 0; i < verChecks.Count; i++)
-                {
-                    if(verChecks.ElementAt(i).VerificationCheck != jobChecks.ElementAt(i).VerificationCheck)
-                    {
-                        //send email
-                        return true;
-                    }
-                }
+                verCheck.IsAuthorize = false;
             }
 
-            return false;
-
+            _context.Update(verCheck);
+            _context.SaveChanges();
         }
 
 
