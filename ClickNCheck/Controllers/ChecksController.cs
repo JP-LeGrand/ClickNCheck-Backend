@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ClickNCheck.Services;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,12 @@ namespace ClickNCheck.Controllers
     public class ChecksController : Controller
     {
         SOAPResponse _soap = new SOAPResponse();
+        RestResponseService _rest = new RestResponseService();
 
         //TODO:
         //GET: api/<controller>
         //[HttpGet]
-        //public string Get()
+        //public string Get(int resType)
         //{
         //    return "ping - responded";
         //}
@@ -28,31 +31,39 @@ namespace ClickNCheck.Controllers
 
         // POST api/<controller>/compuscan
         [HttpGet]
-        [Route("Compuscan")]
-        public async void Compuscan()
+        [Route("{resType}/Compuscan")]
+        public async void Compuscan(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Compuscan", soapText);
-            _soap.Process(response);
+            if (resType == 0)
+            {
+                string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Compuscan", soapText);
+                _soap.Process(response);
+            }
+            else
+            {
+                string response = await _rest.connectJson("https://localhost:44393/api/RestCheck/Compuscan", jsonObject);
+                _rest.Process(JObject.Parse(response));
+            }
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("Umalusi")]
-        public async void Umalusi()
+        [Route("{resType}/Umalusi")]
+        public async void Umalusi(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Umalusi", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("Afiswitch")]
-        public async void Afiswitch()
+        [Route("{resType}/Afiswitch")]
+        public async void Afiswitch(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Afiswitch", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("LexisNexis")]
+        [Route("{resType}/LexisNexis")]
         public async void LexisNexis(string value)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/LexisNexis", soapText);
@@ -60,32 +71,32 @@ namespace ClickNCheck.Controllers
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("MIE")]
-        public async void MIE()
+        [Route("{resType}/MIE")]
+        public async void MIE(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/MIE", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("PNet")]
-        public async void PNet()
+        [Route("{resType}/PNet")]
+        public async void PNet(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/PNet", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("Transunion")]
-        public async void Transunion()
+        [Route("{resType}/Transunion")]
+        public async void Transunion(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Transunion", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("XDS")]
-        public async void XDS()
+        [Route("{resType}/XDS")]
+        public async void XDS(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/XDS", soapText);
             _soap.Process(response);
@@ -93,60 +104,65 @@ namespace ClickNCheck.Controllers
 
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("Experian")]
-        public async void Experian()
+        [Route("{resType}/Experian")]
+        public async void Experian(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Experian", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("SAPS")]
-        public async void SAPS()
+        [Route("{resType}/SAPS")]
+        public async void SAPS(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/SAPS", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("FSCA")]
-        public async void FSCA()
+        [Route("{resType}/FSCA")]
+        public async void FSCA(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/FSCA", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("INSETA")]
-        public async void INSETA()
+        [Route("{resType}/INSETA")]
+        public async void INSETA(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/INSETA", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("TrafficDepartment")]
-        public async void TrafficDepartment()
+        [Route("{resType}/TrafficDepartment")]
+        public async void TrafficDepartment(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/TrafficDepartment", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("HomeAffairs")]
-        public async void HomeAffairs()
+        [Route("{resType}/HomeAffairs")]
+        public async void HomeAffairs(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/HomeAffairs", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
         [HttpGet]
-        [Route("SAQA")]
-        public async void SAQA()
+        [Route("{resType}/SAQA")]
+        public async void SAQA(int resType)
         {
             string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/SAQA", soapText);
             _soap.Process(response);
         }
+
+
+        JObject jsonObject = new JObject(new JProperty("name", "John"),
+             new JProperty("surname", "Doe"),
+             new JProperty("id", "998087543211"));
 
         const string soapText =
     @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:web=""http://webServices/"">
