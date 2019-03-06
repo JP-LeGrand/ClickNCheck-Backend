@@ -18,7 +18,7 @@ namespace ClickNCheck.Controllers
     public class VendorsController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
-        private SOAPResponsiveService _soap;
+        private SOAPResponse _soap;
 
 
         public VendorsController(ClickNCheckContext context)
@@ -33,13 +33,13 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
         {
             var services = await (from s in _context.Services
-                            select new
-                            {
-                                ID = s.ID,
-                                Name = s.Name,
-                                TurnaroundTime = s.TurnaroundTime,
-                                CheckCategoryID = s.CheckCategoryID,
-                            }
+                                  select new
+                                  {
+                                      ID = s.ID,
+                                      Name = s.Name,
+                                      TurnaroundTime = s.TurnaroundTime,
+                                      CheckCategoryID = s.CheckCategoryID,
+                                  }
                                ).ToListAsync();
 
             var checkCategories = await _context.CheckCategory.ToListAsync();
@@ -64,8 +64,6 @@ namespace ClickNCheck.Controllers
 
 
             return Ok(categories);
-
-            return Ok();
         }
 
 
