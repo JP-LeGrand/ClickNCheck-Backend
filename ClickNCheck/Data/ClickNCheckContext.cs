@@ -123,7 +123,7 @@ namespace ClickNCheck.Data
             .HasForeignKey(pt => pt.CandidateID);
 
             modelBuilder.Entity<Candidate_Verification>()
-            .HasOne(pt => pt.Verification)
+            .HasOne(pt => pt.VerificationCheck)
             .WithMany(p => p.Candidate_Verification)
             .HasForeignKey(pt => pt.VerificationID);
 
