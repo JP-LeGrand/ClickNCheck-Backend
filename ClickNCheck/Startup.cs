@@ -16,6 +16,10 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Hangfire;
+using Hangfire.Dashboard;
+using ClickNCheck.Services;
+using Microsoft.AspNetCore.Owin;
 
 namespace ClickNCheck
 {
@@ -34,6 +38,10 @@ namespace ClickNCheck
             services.AddDbContext<ClickNCheckContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+
+
 
             services.AddSwaggerGen(c =>
             {
@@ -60,9 +68,8 @@ namespace ClickNCheck
                 };
             });
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-       public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -74,8 +81,8 @@ namespace ClickNCheck
                 app.UseHsts();
             }
             app.UseCors(o => o.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader());
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
             app.UseHttpsRedirection();
             if (Configuration["EnableCORS"] == "True")
@@ -83,8 +90,10 @@ namespace ClickNCheck
 
             }
 
-
-
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
+            EmailService emailService = new EmailService();
+            RecurringJob.AddOrUpdate(() => emailService.CheckMails(), Cron.MinuteInterval(15));
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -99,6 +108,16 @@ namespace ClickNCheck
 
             app.UseMvc();
         }
+
+        public class MyAuthorizationFilter : IDashboardAuthorizationFilter
+        {
+            public bool Authorize(DashboardContext context)
+            {
+                var httpContext = context.GetHttpContext();
+
+                // Allow all authenticated users to see the Dashboard (potentially dangerous).
+                return httpContext.User.Identity.IsAuthenticated;
+            }
+        }
     }
 }
-

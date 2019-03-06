@@ -9,6 +9,7 @@ using ClickNCheck.Data;
 using ClickNCheck.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using ClickNCheck.Services;
 
 namespace ClickNCheck.Controllers
 {
@@ -17,6 +18,8 @@ namespace ClickNCheck.Controllers
     public class VendorsController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
+        private SOAPResponse _soap;
+
 
         public VendorsController(ClickNCheckContext context)
         {
@@ -30,13 +33,13 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetAllVendors()
         {
             var services = await (from s in _context.Services
-                            select new
-                            {
-                                ID = s.ID,
-                                Name = s.Name,
-                                TurnaroundTime = s.TurnaroundTime,
-                                CheckCategoryID = s.CheckCategoryID,
-                            }
+                                  select new
+                                  {
+                                      ID = s.ID,
+                                      Name = s.Name,
+                                      TurnaroundTime = s.TurnaroundTime,
+                                      CheckCategoryID = s.CheckCategoryID,
+                                  }
                                ).ToListAsync();
 
             var checkCategories = await _context.CheckCategory.ToListAsync();
@@ -48,10 +51,11 @@ namespace ClickNCheck.Controllers
             };
 
             return Ok(json);
+
         }
 
         // GET: api/Vendors
-        [HttpGet]
+        [HttpPost]
         [Route("GetCheckCategories")]
         public async Task<ActionResult<IEnumerable<object>>> GetCheckCategories()
         {
@@ -61,6 +65,8 @@ namespace ClickNCheck.Controllers
 
             return Ok(categories);
         }
+
+
 
         // GET: api/Vendors/5
         [HttpGet]

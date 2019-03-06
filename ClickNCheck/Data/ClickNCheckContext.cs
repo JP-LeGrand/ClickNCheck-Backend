@@ -36,7 +36,7 @@ namespace ClickNCheck.Data
         public DbSet<LinkCode> LinkCodes { get; set; }
         public DbSet<UserType> UserType { get; set; }
         public DbSet<Vendor> Vendor { get; set; }
-
+        public DbSet<Results> Result { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
