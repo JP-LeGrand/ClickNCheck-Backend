@@ -20,7 +20,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using ClickNCheck.Services;
 using Microsoft.AspNetCore.Owin;
-
+using ClickNCheck.Controllers;
 
 namespace ClickNCheck
 {
@@ -107,6 +107,11 @@ namespace ClickNCheck
             app.UseAuthentication();
 
             app.UseMvc();
+            ValuesController valuesController = new ValuesController();
+            VerificationChecking veriCheck = new VerificationChecking();
+
+            RecurringJob.AddOrUpdate(() => veriCheck.AutomateChecks(), Cron.MinuteInterval(1));
+            RecurringJob.AddOrUpdate(() => valuesController.Get(), Cron.Minutely);
         }
 
         public class MyAuthorizationFilter : IDashboardAuthorizationFilter

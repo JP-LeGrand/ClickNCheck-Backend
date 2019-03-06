@@ -1,4 +1,5 @@
-﻿using ClickNCheck.Models;
+﻿using ClickNCheck.Data;
+using ClickNCheck.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,22 +7,87 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.Services
 {
-    public class VerificationCheck
+    public class VerificationChecking
     {
         //-------------------------------------------------------------------------------------------------------------------#
 
+        private int verificationCheckID;
+        private ClickNCheckContext _context;
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public VerificationChecking(int id = 0)
+        {
+            _context = new ClickNCheckContext();
+            verificationCheckID = id;
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public void AutomateChecks()
+        {
+            if (verificationCheckID == 0)
+            {
+               //0 _context.VerificationCheck.
+            }
+            else
+            {
+                VerificationCheck(verificationCheckID);
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public bool VerificationCheck(int id)
+        {
+            VerificationCheck newCheck = _context.VerificationCheck.Find(id);
+
+            //newCheck.JobProfile;
+            //id =  verification id
+            return false;
+        }
+        
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        public void SetVerificationCheckID(int id)
+        {
+            verificationCheckID = id;
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
         private readonly JobProfile jobProfileInstanceWithOrderedChecks;
-        private readonly int verificationCheckID;
-        private Queue<Candidate> listOfCandidatesToCheckAgainst;
+        //private readonly int verificationCheckID;
+        private List<Candidate> listOfCandidatesToCheckAgainst;
         private Queue<Models.Services> orderedJobProfileServices;
 
         //-------------------------------------------------------------------------------------------------------------------#
 
-        public VerificationCheck(int verificationCheckId, JobProfile jobProfWithOrderedServices, Queue<Candidate> candidates)
+        public VerificationChecking(int verificationCheckId, JobProfile jobProfWithOrderedServices, List<Candidate> candidates)
         {
             verificationCheckID = verificationCheckId;
             jobProfileInstanceWithOrderedChecks = jobProfWithOrderedServices;
-            listOfCandidatesToCheckAgainst = new Queue<Candidate> ( candidates );
+            listOfCandidatesToCheckAgainst = new List<Candidate> ( candidates );
             orderedJobProfileServices = new Queue<Models.Services>();
         }
 
@@ -41,7 +107,7 @@ namespace ClickNCheck.Services
 
         //-------------------------------------------------------------------------------------------------------------------#
 
-        public Queue<Candidate> getCandidatesQueue()
+        public List<Candidate> getCandidatesQueue()
         {
             //gets you the list of candidates still on the que for this job profile
             return listOfCandidatesToCheckAgainst;
