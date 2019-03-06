@@ -90,7 +90,7 @@ namespace checkStub
                     if (!(requestedChecks["credit"]["serviceid"] is JArray selectedServiceID) || selectedServiceID.Count < 1)
                         throw new Exception("No selected services under credit!");
 
-                    JObject creditCheckResults = null;
+                    JArray creditCheckResults = null;
                     Credit creditCheck = new Credit(_context, candidateID);
                     
                     creditCheckResults = await creditCheck.RunChecks(selectedServiceID);
