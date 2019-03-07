@@ -113,6 +113,27 @@ namespace ClickNCheck
             return htmlstring;
         }
 
+        public string verCheckAuthMail()
+        {
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RequestVerCheckAuth.html"));
+
+            return emailBody;
+        }
+
+        public string AuthorizeVerification()
+        {
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterNotificationGranted.html"));
+
+            return emailBody;
+        }
+
+        public string RefuseVerficationEmail()
+        {
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterNotificationRefused.html"));
+
+            return emailBody;
+        }
+
         public void CheckMails(MailMessage smtpMail)
         {
             try
