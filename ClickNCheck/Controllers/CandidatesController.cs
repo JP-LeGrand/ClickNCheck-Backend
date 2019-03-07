@@ -159,6 +159,7 @@ namespace ClickNCheck.Controllers
             var vcChecks = new List<Candidate_Verification_Check>();
 
             JArray array = (JArray)jObject["services"];
+            int[] services = array.Select(jv => (int)jv).ToArray();
 
             //run authorization check
 
@@ -204,7 +205,7 @@ namespace ClickNCheck.Controllers
                     {
                         return BadRequest("some emails have not sent");
                     }
-                    //await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
 
                 var candidate_Verification = await _context.Candidate_Verification.ToListAsync();
@@ -221,7 +222,7 @@ namespace ClickNCheck.Controllers
                     Candidate_Verification addition = new Candidate_Verification { Candidate = candid, VerificationCheck = vc };
                     if (candidate_Verification.Contains(addition))
                     {
-                        return BadRequest("Some recruiters have alrdeady been assigned to this job");
+                        return BadRequest("Some candidates have alrdeady been assigned to this verification check");
                     }
                     else
                         vc.Candidate_Verification.Add(addition);
@@ -249,6 +250,28 @@ namespace ClickNCheck.Controllers
             }
 
             //make the Candidate_Verification_checks
+            var cdList = (from s in _context.Candidate_Verification
+                          where s.VerificationCheckID == vc.ID
+                          select s).ToList();
+
+            var NotStartedStatus = await  _context.CheckStatusType.FindAsync(5);
+            var VC = await  _context.CheckStatusType.FindAsync(5);
+
+            for (int i = 0; i < cdList.Count; i++)
+            {
+                for (int j = 0; j < services.Length; j++)
+                {
+                    var s = await _context.Services.FindAsync(services[j]);
+                    Candidate_Verification_Check candidate_Verification_Check = new Candidate_Verification_Check();
+                    candidate_Verification_Check.Candidate_Verification = cdList[i];
+                    candidate_Verification_Check.Services = s;
+                    candidate_Verification_Check.CheckStatusType = NotStartedStatus;
+                    _context.Candidate_Verification_Check.Add(candidate_Verification_Check);
+                    
+                }
+            }
+            await _context.SaveChangesAsync();
+
 
             return Ok();
         }

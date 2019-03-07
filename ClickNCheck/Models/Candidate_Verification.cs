@@ -12,7 +12,7 @@ namespace ClickNCheck.Models
         public int CandidateID { get; set; }
         public Candidate Candidate { get; set; }
 
-        public int VerificationID { get; set; }
+        public int VerificationCheckID { get; set; }
         public VerificationCheck VerificationCheck { get; set; } 
     }
 }
