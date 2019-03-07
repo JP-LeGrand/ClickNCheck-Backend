@@ -45,7 +45,7 @@ namespace ClickNCheck.Services
             }  
             
             CheckResultService resultService = new CheckResultService(_context, _uploadService);
-            await resultService.SaveResult(checkID, resultStatus, resultDescription, resultFiles);
+            await resultService.SaveResult(checkID, resultStatus, resultDescription, null);
         }
     }
 }
