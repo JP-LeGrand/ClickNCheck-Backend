@@ -107,11 +107,11 @@ namespace ClickNCheck
             app.UseAuthentication();
 
             app.UseMvc();
-            ValuesController valuesController = new ValuesController();
+            /*ValuesController valuesController = new ValuesController();
             VerificationChecking veriCheck = new VerificationChecking();
 
             RecurringJob.AddOrUpdate(() => veriCheck.AutomateChecks(), Cron.MinuteInterval(1));
-            RecurringJob.AddOrUpdate(() => valuesController.Get(), Cron.Minutely);
+            RecurringJob.AddOrUpdate(() => valuesController.Get(), Cron.Minutely);*/
         }
 
         public class MyAuthorizationFilter : IDashboardAuthorizationFilter
