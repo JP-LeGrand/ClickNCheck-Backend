@@ -27,6 +27,10 @@ namespace ClickNCheck.Services
             {
                 Results checkResult = new Results();
                 checkResult.CheckID = CheckID;
+                var check = _context.Candidate_Verification_Check.Find(CheckID);
+                var status = _context.CheckStatusType.First(m => m.Name == resultStatus);
+                check.CheckStatusTypeID = status.ID;
+                check.CheckStatusType = status;
                 checkResult.resultStatus = resultStatus;
                 checkResult.resultDescription = resultDescription;
                 string resultFilesURL = "";
@@ -52,6 +56,7 @@ namespace ClickNCheck.Services
 
             checkResult.resultFilesURL = resultFilesURL;
                 _context.Result.Add(checkResult);
+            _context.Candidate_Verification_Check.Update(check);
                 await _context.SaveChangesAsync();
                 return checkResult;
             }
