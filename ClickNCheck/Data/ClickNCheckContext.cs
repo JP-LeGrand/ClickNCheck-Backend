@@ -125,7 +125,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Candidate_Verification>()
             .HasOne(pt => pt.VerificationCheck)
             .WithMany(p => p.Candidate_Verification)
-            .HasForeignKey(pt => pt.VerificationID);
+            .HasForeignKey(pt => pt.VerificationCheckID);
 
 
             modelBuilder.Entity<UserType>().HasData(

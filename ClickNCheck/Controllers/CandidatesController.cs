@@ -306,6 +306,7 @@ namespace ClickNCheck.Controllers
                     Candidate_Verification_Check candidate_Verification_Check = new Candidate_Verification_Check();
                     candidate_Verification_Check.Candidate_Verification = cdList[i];
                     candidate_Verification_Check.Services = s;
+                    candidate_Verification_Check.Order = j + 1;
                     candidate_Verification_Check.CheckStatusType = NotStartedStatus;
                     _context.Candidate_Verification_Check.Add(candidate_Verification_Check);
                     
