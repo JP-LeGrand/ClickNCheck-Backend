@@ -135,16 +135,18 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("checkAuth/{val}/{verCheckID}")]
-        public void receiveVerCheckAuth(string val, int verCheckID)
+        public async void receiveVerCheckAuth(string val, int verCheckID)
         {
             var verCheck = _context.VerificationCheck.Find(verCheckID);
             if (val == "true")
             {
                 verCheck.IsAuthorize = true;
+                await GetVerificationAuthorization(verCheckID);
             }
             else if(val == "false")
             {
                 verCheck.IsAuthorize = false;
+                await GetVerificationAuthorization(verCheckID);
             }
 
             _context.Update(verCheck);
@@ -535,7 +537,7 @@ namespace ClickNCheck.Controllers
                 mailBody = mailBody.Replace("RecruiterName", recruiter.Name);
                 mailBody = mailBody.Replace("{Checks}", checklist);
                 mailBody = mailBody.Replace("ManagerName", manager.Name);
-                service.SendMail(recruiter.Email, "Authorization Verification", mailBody);
+                service.SendMail(recruiter.Email, "Authorization Granted", mailBody);
             }
             else if (verCheck.IsAuthorize == false)
             {
