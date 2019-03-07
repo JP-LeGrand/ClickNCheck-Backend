@@ -185,29 +185,6 @@ namespace ClickNCheck.Controllers
             JArray array = (JArray)jObject["services"];
             int[] services = array.Select(jv => (int)jv).ToArray();
 
-            //run authorization check
-            if(vc.IsAuthorize == false)
-            {
-                if (!(jpChecks.Count == array.Count))
-                {
-                    //TODO: send verification
-                }
-                else
-                {
-                    for (int i = 0; i < jpChecks.Count; i++)
-                    {
-                        if (jpChecks[i].ServicesID == (int)array[i])
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            //TODO: send verification
-                        }
-                    }
-                }
-            }
-
             JArray jcandidates = (JArray)jObject["candidates"];
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
             {
@@ -270,6 +247,29 @@ namespace ClickNCheck.Controllers
                     }
                     else
                         vc.Candidate_Verification.Add(addition);
+                }
+
+                //run authorization check
+                if (vc.IsAuthorize == false)
+                {
+                    if (!(jpChecks.Count == array.Count))
+                    {
+                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < jpChecks.Count; i++)
+                        {
+                            if (jpChecks[i].ServicesID == (int)array[i])
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                            }
+                        }
+                    }
                 }
 
                 //update verification object
