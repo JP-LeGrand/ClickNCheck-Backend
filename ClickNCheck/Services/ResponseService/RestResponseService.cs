@@ -33,7 +33,6 @@ namespace ClickNCheck.Services
             int checkID;
             string resultStatus;
             string resultDescription;
-            IFormCollection resultFiles = null;
 
             JObject rObject = JObject.FromObject(responseObject);
             checkID = 1;

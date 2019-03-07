@@ -14,6 +14,8 @@ namespace ClickNCheck.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
+            Services.VerificationChecking verCheck = new Services.VerificationChecking();
+            verCheck.ExecuteCheck(1, 1);
             return new string[] { "value1", "value2" };
         }
 
