@@ -22,6 +22,7 @@ namespace ClickNCheck.Controllers
         CodeGenerator codeGenerator = new CodeGenerator();
         EmailService service = new EmailService();
         UploadService uploadService = new UploadService();
+        VerificationCheckAuth checkAuth = new VerificationCheckAuth();
 
         public CandidatesController(ClickNCheckContext context)
         {
@@ -185,22 +186,24 @@ namespace ClickNCheck.Controllers
             int[] services = array.Select(jv => (int)jv).ToArray();
 
             //run authorization check
-            if (!(jpChecks.Count == array.Count))
+            if(vc.IsAuthorize == false)
             {
-                //TODO: send verification
-
-            }
-            else
-            {
-                for (int i = 0; i < jpChecks.Count; i++)
+                if (!(jpChecks.Count == array.Count))
                 {
-                    if (jpChecks[i].ServicesID == (int)array[i])
+                    //TODO: send verification
+                }
+                else
+                {
+                    for (int i = 0; i < jpChecks.Count; i++)
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        //TODO: send verification
+                        if (jpChecks[i].ServicesID == (int)array[i])
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            //TODO: send verification
+                        }
                     }
                 }
             }
