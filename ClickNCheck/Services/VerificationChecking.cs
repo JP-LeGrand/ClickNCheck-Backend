@@ -31,7 +31,7 @@ namespace ClickNCheck.Services
             int apiType = service.APIType;
             string apiURL = service.URL;
             var candidate = _context.Candidate.Find(candidateID);
-            if (apiType == 1) //SOAP
+            if (apiType == 0) //SOAP
             {
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
                 webRequest.ContentType = "application/json";
@@ -56,7 +56,7 @@ namespace ClickNCheck.Services
                 }
                 
             }
-            else if (apiType == 0) //REST
+            else if (apiType == 1) //REST
             {
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
                 webRequest.ContentType = "application/json";
@@ -85,10 +85,17 @@ namespace ClickNCheck.Services
                     restResponse.Process(responseJson);
                 }
             }
-            else if (apiType == 2) //LONG RUNNING
+            else if (apiType == 3) //LONG RUNNING
             {
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
                 webRequest.Method = "POST";
+                webRequest.KeepAlive = true;
+                webRequest.GetResponse();
+            }
+            else if (apiType == 2) //LONG RUNNING
+            {
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
+                webRequest.Method = "GET";
                 webRequest.KeepAlive = true;
                 webRequest.GetResponse();
             }
