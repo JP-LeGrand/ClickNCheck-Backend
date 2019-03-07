@@ -160,5 +160,16 @@ namespace ClickNCheck.Controllers
         public void Delete(int id)
         {
         }
+
+        //TEST
+        [HttpGet]
+        [Route("goFire")]
+        public ActionResult<string> goFire()
+        {
+            VerificationChecking verify = new VerificationChecking();
+            verify.doStuff();
+
+            return new string("fired");
+        }
     }
 }
