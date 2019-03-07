@@ -248,7 +248,7 @@ namespace ClickNCheck.Controllers
                     else
                         vc.Candidate_Verification.Add(addition);
                 }
-
+                /*
                 //run authorization check
                 if (vc.IsAuthorize == false)
                 {
@@ -270,7 +270,7 @@ namespace ClickNCheck.Controllers
                             }
                         }
                     }
-                }
+                }*/
 
                 //update verification object
                 _context.Entry(vc).State = EntityState.Modified;

@@ -16,7 +16,7 @@ namespace ClickNCheck.Services
         //-------------------------------------------------------------------------------------------------------------------#
 
         private ClickNCheckContext _context;
-        private Job job;
+        //private Job job;
         private int verificationCheckID;
 
         //-------------------------------------------------------------------------------------------------------------------#
@@ -24,7 +24,7 @@ namespace ClickNCheck.Services
         public VerificationChecking(int verificationCheckId=3)
         {
             _context = new ClickNCheckContext();
-            job = new Job(new Queue<Models.Services>(), new List<Candidate>());
+            //job = new Job(new Queue<Models.Services>(), new List<Candidate>());
             verificationCheckID = verificationCheckId;
         }
 
@@ -37,6 +37,7 @@ namespace ClickNCheck.Services
             vc.Candidate_Verification = cv;
             List<Candidate_Verification_Check> cvc = new List<Candidate_Verification_Check>();
             List<object> objList = new List<object>();
+        }
         public void ExecuteCheck(int candidateID, Models.Services service)
         {
             int apiType = service.APIType;
@@ -239,7 +240,7 @@ namespace ClickNCheck.Services
                 if (orderedJobProfileServices.Count < 1)
                     return null;
                 return orderedJobProfileServices.Dequeue();
-            }
+            }*/
 
             //-----------------------------------------------------------------------------------------------------------------#
         }
