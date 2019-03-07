@@ -94,9 +94,7 @@ namespace ClickNCheck
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();
-            verficationCandidateLogic logic = new verficationCandidateLogic();
-            RecurringJob.AddOrUpdate(() => logic.executeCheck(), Cron.Minutely);
-
+   
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
