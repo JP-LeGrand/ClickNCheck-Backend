@@ -21,7 +21,7 @@ namespace ClickNCheck.Services
 
         //-------------------------------------------------------------------------------------------------------------------#
 
-        public VerificationChecking(int verificationCheckId=3)
+        public VerificationChecking(int verificationCheckId=1)
         {
             _context = new ClickNCheckContext();
             //job = new Job(new Queue<Models.Services>(), new List<Candidate>());
@@ -32,11 +32,50 @@ namespace ClickNCheck.Services
 
         public void doStuff()
         {
-            var vc = _context.VerificationCheck.Find(this.verificationCheckID);
+            var vc = _context.VerificationCheck.Find(verificationCheckID);
             var cv = _context.Candidate_Verification.Where(x => x.VerificationCheckID == vc.ID).ToList();
             vc.Candidate_Verification = cv;
             List<Candidate_Verification_Check> cvc = new List<Candidate_Verification_Check>();
             List<object> objList = new List<object>();
+
+            //var _lst2 = from s in _context
+
+            for (int x = 0; x < cv.Count; x++)
+            {
+                var _lst = (from i in _context.Candidate_Verification_Check
+                            join j in _context.Candidate_Verification on i.Candidate_VerificationID equals j.ID
+                            join k in _context.Candidate_Verification_Check on j.ID equals k.ID
+                            where i.Candidate_Verification.VerificationCheckID == cv[x].VerificationCheckID
+                            //group i by i.Order
+                            select new
+                            {
+                                j.VerificationCheckID,
+                                j.CandidateID,
+                                j.Candidate.Name,
+                                j.Candidate.Surname,
+                                j.Candidate.Maiden_Surname,
+                                j.Candidate.ID_Passport,
+                                j.Candidate.ID_Type,
+                                j.Candidate.HasConsented,
+                                j.Candidate.Phone,
+                                j.Candidate.Email,
+                                CandidateVerificationID = i.ID,
+                                i.ServicesID,
+                                i.Order
+                            }).ToList<object>().Distinct();
+                objList.AddRange(_lst);
+            }
+            //ExecuteCheck();
+            foreach(object item in objList)
+            {
+                JObject jItem = JObject.FromObject(new {item });
+                int candidateId = (int)jItem["item"]["CandidateID"];
+                int servID = (int)jItem["item"]["ServicesID"];
+                Models.Services serv = _context.Services.Find(servID);
+                ExecuteCheck(candidateId, serv);
+            }
+
+
         }
         public void ExecuteCheck(int candidateID, Models.Services service)
         {
@@ -50,8 +89,11 @@ namespace ClickNCheck.Services
                 webRequest.Method = "POST";
                 webRequest.KeepAlive = true;
 
+                dynamic candidateDetails = new JObject();
+                candidateDetails.name = candidate.Name;
+                candidateDetails.surname = candidate.Surname;
 
-                byte[] body = Encoding.UTF8.GetBytes(candidate.Name + " " + candidate.Surname);
+                byte[] body = Encoding.UTF8.GetBytes(candidateDetails.ToString());
                 Stream newStream = webRequest.GetRequestStream();
                 webRequest.Accept = "application/xrds+xml";
                 webRequest.ContentLength = body.Length;
@@ -97,14 +139,14 @@ namespace ClickNCheck.Services
                     restResponse.Process(responseJson);
                 }
             }
-            else if (apiType == 3) //LONG RUNNING
+            else if (apiType == 3) //LONG RUNNING ENDPOINT
             {
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
                 webRequest.Method = "POST";
                 webRequest.KeepAlive = true;
                 webRequest.GetResponse();
             }
-            else if (apiType == 2) //LONG RUNNING
+            else if (apiType == 2) //LONG RUNNING MAIL
             {
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
                 webRequest.Method = "GET";
@@ -114,46 +156,8 @@ namespace ClickNCheck.Services
         }
 
         public void AutomateChecks()
-        {/*
-            List<VerificationCheck> verificationcheck = _context.VerificationCheck.ToList();
-            foreach (VerificationCheck ver in verificationcheck)
-            {
-                //isComplete isn't enough, we need another field
-                //to indicate the status of the check, how do you
-                //ensure you dont run a same verification check twice?
+        {   
 
-                if (ver.IsAuthorize && !ver.IsComplete)
-                {
-                    List<Candidate_Verification> jobVerCandidates = ver.Candidate_Verification.ToList();
-                    List<Candidate> jobCandidates = new List<Candidate>();
-
-            //var _lst2 = from s in _context
-
-            for (int x = 0; x < cv.Count; x++)
-            {
-                var _lst = (from i in _context.Candidate_Verification_Check
-                            join j in _context.Candidate_Verification on i.Candidate_VerificationID equals j.ID
-                            join k in _context.Candidate_Verification_Check on j.ID equals k.ID
-                            where i.Candidate_Verification.VerificationCheckID == cv[x].VerificationCheckID
-                            //group i by i.Order
-                            select new
-                            {
-                                j.VerificationCheckID,
-                                j.CandidateID,
-                                j.Candidate.Name,
-                                j.Candidate.Surname,
-                                j.Candidate.Maiden_Surname,
-                                j.Candidate.ID_Passport,
-                                j.Candidate.ID_Type,
-                                j.Candidate.HasConsented,
-                                j.Candidate.Phone,
-                                j.Candidate.Email,
-                                CandidateVerificationID = i.ID,
-                                i.ServicesID,
-                                i.Order
-                            }).ToList<object>().Distinct();
-                objList.AddRange(_lst);
-            }
         }
         //-------------------------------------------------------------------------------------------------------------------#
 
@@ -240,7 +244,7 @@ namespace ClickNCheck.Services
                 if (orderedJobProfileServices.Count < 1)
                     return null;
                 return orderedJobProfileServices.Dequeue();
-            }*/
+            }
 
             //-----------------------------------------------------------------------------------------------------------------#
         }

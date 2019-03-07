@@ -30,10 +30,13 @@ namespace ClickNCheck
             
             XDocument doc = XDocument.Parse(check.ToString());
             int checkId = int.Parse(doc.Descendants("checkid").Single().Value);
-            string checkStatus = doc.Descendants("checkstatus").Single().Value;
-            string resultStatus = doc.Descendants("resultstatus").Single().Value;
+            string resultStatus = "";
+            if (doc.Descendants("resultStatus").Single().Value == "success")
+            {
+                resultStatus = "Cleared";
+            }
+            
             string resultDescription = doc.Descendants("resultDescription").Single().Value;
-            string retData = doc.Descendants("resultData").Single().Value;
 
             await checkResultService.SaveResult(checkId, resultStatus, resultDescription, null);
 
