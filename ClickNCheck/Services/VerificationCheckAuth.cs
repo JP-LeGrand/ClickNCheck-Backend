@@ -31,7 +31,7 @@ namespace ClickNCheck.Services
                         }
 
                         EmailService emailService = new EmailService();
-                        string emailBody = emailService.verCheckAuthMail();
+                        string emailBody = emailService.CandidateMail(); //[FIX THIS]
                         emailBody = emailBody.Replace("{ManagerName}", manager.Name + " " + manager.Surname);
                         emailBody = emailBody.Replace("{RecruiterName}", recruiter.Name + " " + recruiter.Surname);
                         emailBody = emailBody.Replace("{Checks}", checks);

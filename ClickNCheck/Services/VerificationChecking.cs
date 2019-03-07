@@ -11,122 +11,98 @@ namespace ClickNCheck.Services
     {
         //-------------------------------------------------------------------------------------------------------------------#
 
-        private int verificationCheckID;
         private ClickNCheckContext _context;
 
         //-------------------------------------------------------------------------------------------------------------------#
 
-        public VerificationChecking(int id = 0)
+        public VerificationChecking()
         {
             _context = new ClickNCheckContext();
-            verificationCheckID = id;
         }
 
         //-------------------------------------------------------------------------------------------------------------------#
 
         public void AutomateChecks()
         {
-            if (verificationCheckID == 0)
+            List<VerificationCheck> verificationcheck = _context.VerificationCheck.ToList();
+            foreach (VerificationCheck ver in verificationcheck)
             {
-               //0 _context.VerificationCheck.
+                //isComplete isn't enough, we need another field
+                //to indicate the status of the check, how do you
+                //ensure you dont run a same verification check twice?
+
+                if (ver.IsAuthorize && !ver.IsComplete)
+                {
+                    List<Candidate_Verification> jobVerCandidates = ver.Candidate_Verification.ToList();
+                    List<Candidate> jobCandidates = new List<Candidate>();
+
+                    foreach (Candidate_Verification jobVer in jobVerCandidates)
+                        jobCandidates.Add(jobVer.Candidate);
+
+                    Job newJobVerification = new Job(ver.ID, ver.JobProfile, jobCandidates);
+                    //TODO
+                    //run the methods you need from the Job object
+                }
             }
-            else
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------#
+
+        private class Job
+        {
+
+            private JobProfile jobProfileInstanceWithOrderedChecks;
+            private int verificationCheckID;
+            private List<Candidate> listOfCandidatesToCheckAgainst;
+            private Queue<Models.Services> orderedJobProfileServices;
+
+            //-------------------------------------------------------------------------------------------------------------------#
+
+            public Job(int verificationCheckId, JobProfile jobProfWithOrderedServices, List<Candidate> candidates)
             {
-                VerificationCheck(verificationCheckID);
+                verificationCheckID = verificationCheckId;
+                jobProfileInstanceWithOrderedChecks = jobProfWithOrderedServices;
+                listOfCandidatesToCheckAgainst = new List<Candidate>(candidates);
+                orderedJobProfileServices = new Queue<Models.Services>();
             }
-        }
 
-        //-------------------------------------------------------------------------------------------------------------------#
+            //-------------------------------------------------------------------------------------------------------------------#
 
-        public bool VerificationCheck(int id)
-        {
-            VerificationCheck newCheck = _context.VerificationCheck.Find(id);
-
-            //newCheck.JobProfile;
-            //id =  verification id
-            return false;
-        }
-        
-        //-------------------------------------------------------------------------------------------------------------------#
-
-        public void SetVerificationCheckID(int id)
-        {
-            verificationCheckID = id;
-        }
-
-        //-------------------------------------------------------------------------------------------------------------------#
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //-------------------------------------------------------------------------------------------------------------------#
-
-        private readonly JobProfile jobProfileInstanceWithOrderedChecks;
-        //private readonly int verificationCheckID;
-        private List<Candidate> listOfCandidatesToCheckAgainst;
-        private Queue<Models.Services> orderedJobProfileServices;
-
-        //-------------------------------------------------------------------------------------------------------------------#
-
-        public VerificationChecking(int verificationCheckId, JobProfile jobProfWithOrderedServices, List<Candidate> candidates)
-        {
-            verificationCheckID = verificationCheckId;
-            jobProfileInstanceWithOrderedChecks = jobProfWithOrderedServices;
-            listOfCandidatesToCheckAgainst = new List<Candidate> ( candidates );
-            orderedJobProfileServices = new Queue<Models.Services>();
-        }
-
-        //-------------------------------------------------------------------------------------------------------------------#
-
-        public Queue<Models.Services> fetchServicesQueue()
-        {
-            if(orderedJobProfileServices.Count() <1)
+            public Queue<Models.Services> fetchServicesQueue()
             {
-                ICollection<JobProfile_Checks> ne = jobProfileInstanceWithOrderedChecks.JobProfile_Check;
+                if (orderedJobProfileServices.Count() < 1)
+                {
+                    ICollection<JobProfile_Checks> ne = jobProfileInstanceWithOrderedChecks.JobProfile_Check;
 
-                foreach (JobProfile_Checks check in ne)
-                    orderedJobProfileServices.Enqueue(check.Services);
+                    foreach (JobProfile_Checks check in ne)
+                        orderedJobProfileServices.Enqueue(check.Services);
+                }
+                return orderedJobProfileServices;
             }
-            return orderedJobProfileServices;
+
+            //-------------------------------------------------------------------------------------------------------------------#
+
+            public List<Candidate> getCandidatesQueue()
+            {
+                //gets you the list of candidates still on the que for this job profile
+                return listOfCandidatesToCheckAgainst;
+            }
+
+            //-------------------------------------------------------------------------------------------------------------------#
+
+            public Models.Services GetNextService()
+            {
+                return orderedJobProfileServices.Dequeue();
+            }
+
+            //-------------------------------------------------------------------------------------------------------------------#
+
+            public int getVerificationCheckID()
+            {
+                return verificationCheckID;
+            }
+
+            //-------------------------------------------------------------------------------------------------------------------#
         }
-
-        //-------------------------------------------------------------------------------------------------------------------#
-
-        public List<Candidate> getCandidatesQueue()
-        {
-            //gets you the list of candidates still on the que for this job profile
-            return listOfCandidatesToCheckAgainst;
-        }
-
-        //-------------------------------------------------------------------------------------------------------------------#
-
-        public Models.Services GetNextService()
-        {
-            return orderedJobProfileServices.Dequeue();
-        }
-
-        //-------------------------------------------------------------------------------------------------------------------#
-
-        public int getVerificationCheckID()
-        {
-            return verificationCheckID;
-        }
-
-        //-------------------------------------------------------------------------------------------------------------------#
     }
 }
