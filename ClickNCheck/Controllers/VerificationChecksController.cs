@@ -78,6 +78,16 @@ namespace ClickNCheck.Controllers
         [Route("CreateVerificationCheck")]
         public async Task<ActionResult<VerificationCheck>> CreateVerificationCheck(VerificationCheck verificationCheck)
         {
+            var jpAuth = _context.JobProfile.Find(verificationCheck.JobProfileID).authorisationRequired;
+            if(jpAuth)
+            {
+                verificationCheck.IsAuthorize = false;
+            }
+            else
+            {
+                verificationCheck.IsAuthorize = true;
+            }
+
             _context.VerificationCheck.Add(verificationCheck);
             await _context.SaveChangesAsync();
 

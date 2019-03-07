@@ -22,6 +22,7 @@ namespace ClickNCheck.Controllers
         CodeGenerator codeGenerator = new CodeGenerator();
         EmailService service = new EmailService();
         UploadService uploadService = new UploadService();
+        VerificationCheckAuth checkAuth = new VerificationCheckAuth();
 
         public CandidatesController(ClickNCheckContext context)
         {
@@ -184,27 +185,6 @@ namespace ClickNCheck.Controllers
             JArray array = (JArray)jObject["services"];
             int[] services = array.Select(jv => (int)jv).ToArray();
 
-            //run authorization check
-            if (!(jpChecks.Count == array.Count))
-            {
-                //TODO: send verification
-
-            }
-            else
-            {
-                for (int i = 0; i < jpChecks.Count; i++)
-                {
-                    if (jpChecks[i].ServicesID == (int)array[i])
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        //TODO: send verification
-                    }
-                }
-            }
-
             JArray jcandidates = (JArray)jObject["candidates"];
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
             {
@@ -267,6 +247,29 @@ namespace ClickNCheck.Controllers
                     }
                     else
                         vc.Candidate_Verification.Add(addition);
+                }
+
+                //run authorization check
+                if (vc.IsAuthorize == false)
+                {
+                    if (!(jpChecks.Count == array.Count))
+                    {
+                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < jpChecks.Count; i++)
+                        {
+                            if (jpChecks[i].ServicesID == (int)array[i])
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                            }
+                        }
+                    }
                 }
 
                 //update verification object
@@ -518,20 +521,28 @@ namespace ClickNCheck.Controllers
             //Finds a Recruiter with this ID
             var recruiter = await _context.User.FindAsync(verCheck.RecruiterID);
             var manager = await _context.User.FindAsync(recruiter.ManagerID);
+            var checks = _context.JobProfile_Check.Where(c => c.JobProfileID == verCheck.JobProfileID).ToList();
 
+            string checklist= "";
+            foreach (var item in checks)
+            {
+                checklist = "<li>" + item.Services.CheckCategory.Category + "</li>";
+            }
             //So if the authorization has been set to true send an email to the respective recruiter with an approval email
             if (verCheck.IsAuthorize==true)
             {
                 var mailBody = service.AuthorizeVerification();
-                mailBody = mailBody.Replace("RecruiterName", recruiter.Name);   
-                mailBody = mailBody.Replace("{ManagerName}", manager.Name);
+                mailBody = mailBody.Replace("RecruiterName", recruiter.Name);
+                mailBody = mailBody.Replace("{Checks}", checklist);
+                mailBody = mailBody.Replace("ManagerName", manager.Name);
                 service.SendMail(recruiter.Email, "Authorization Verification", mailBody);
             }
             else if (verCheck.IsAuthorize == false)
             {
                 var mailBody = service.RefuseVerficationEmail();
                 mailBody = mailBody.Replace("RecruiterName", recruiter.Name);
-                mailBody = mailBody.Replace("{ManagerName}", manager.Name);
+                mailBody = mailBody.Replace("ManagerName", manager.Name);
+                mailBody = mailBody.Replace("{Checks}", checklist);
                 service.SendMail(recruiter.Email, "Authorization Refused", mailBody);
             }
 
