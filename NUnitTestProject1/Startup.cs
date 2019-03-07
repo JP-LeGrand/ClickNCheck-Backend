@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ClickNCheck.Data;
 using Swashbuckle.AspNetCore.Swagger;
+using ClickNCheck.Services;
+using Hangfire;
 
 namespace ClickNCheck
 {
@@ -31,6 +33,7 @@ namespace ClickNCheck
             services.AddDbContext<ClickNCheckContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSwaggerGen(c =>
             {
@@ -60,7 +63,8 @@ namespace ClickNCheck
 
             }
 
-
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -73,6 +77,7 @@ namespace ClickNCheck
             });
 
             app.UseMvc();
+           
         }
     }
 }

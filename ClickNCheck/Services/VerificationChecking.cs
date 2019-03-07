@@ -1,8 +1,12 @@
 ﻿using ClickNCheck.Data;
 using ClickNCheck.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ClickNCheck.Services
@@ -12,97 +16,237 @@ namespace ClickNCheck.Services
         //-------------------------------------------------------------------------------------------------------------------#
 
         private ClickNCheckContext _context;
+        //private Job job;
+        private int verificationCheckID;
 
         //-------------------------------------------------------------------------------------------------------------------#
 
-        public VerificationChecking()
+        public VerificationChecking(int verificationCheckId=1)
         {
             _context = new ClickNCheckContext();
+            //job = new Job(new Queue<Models.Services>(), new List<Candidate>());
+            verificationCheckID = verificationCheckId;
         }
 
         //-------------------------------------------------------------------------------------------------------------------#
 
-        public void AutomateChecks()
+        public void doStuff()
         {
-            List<VerificationCheck> verificationcheck = _context.VerificationCheck.ToList();
-            foreach (VerificationCheck ver in verificationcheck)
+            var vc = _context.VerificationCheck.Find(verificationCheckID);
+            var cv = _context.Candidate_Verification.Where(x => x.VerificationCheckID == vc.ID).ToList();
+            vc.Candidate_Verification = cv;
+            List<Candidate_Verification_Check> cvc = new List<Candidate_Verification_Check>();
+            List<object> objList = new List<object>();
+
+            //var _lst2 = from s in _context
+
+            for (int x = 0; x < cv.Count; x++)
             {
-                //isComplete isn't enough, we need another field
-                //to indicate the status of the check, how do you
-                //ensure you dont run a same verification check twice?
+                var _lst = (from i in _context.Candidate_Verification_Check
+                            join j in _context.Candidate_Verification on i.Candidate_VerificationID equals j.ID
+                            join k in _context.Candidate_Verification_Check on j.ID equals k.ID
+                            where i.Candidate_Verification.VerificationCheckID == cv[x].VerificationCheckID
+                            //group i by i.Order
+                            select new
+                            {
+                                j.VerificationCheckID,
+                                j.CandidateID,
+                                j.Candidate.Name,
+                                j.Candidate.Surname,
+                                j.Candidate.Maiden_Surname,
+                                j.Candidate.ID_Passport,
+                                j.Candidate.ID_Type,
+                                j.Candidate.HasConsented,
+                                j.Candidate.Phone,
+                                j.Candidate.Email,
+                                CandidateVerificationID = i.ID,
+                                i.ServicesID,
+                                i.Order
+                            }).ToList<object>().Distinct();
+                objList.AddRange(_lst);
+            }
+            //ExecuteCheck();
+            foreach(object item in objList)
+            {
+                JObject jItem = JObject.FromObject(new {item });
+                int candidateId = (int)jItem["item"]["CandidateID"];
+                int servID = (int)jItem["item"]["ServicesID"];
+                Models.Services serv = _context.Services.Find(servID);
+                ExecuteCheck(candidateId, serv);
+            }
 
-                if (ver.IsAuthorize && !ver.IsComplete)
+
+        }
+        public void ExecuteCheck(int candidateID, Models.Services service)
+        {
+            int apiType = service.APIType;
+            string apiURL = service.URL;
+            var candidate = _context.Candidate.Find(candidateID);
+            if (apiType == 0) //SOAP
+            {
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
+                webRequest.ContentType = "application/json";
+                webRequest.Method = "POST";
+                webRequest.KeepAlive = true;
+
+                dynamic candidateDetails = new JObject();
+                candidateDetails.name = candidate.Name;
+                candidateDetails.surname = candidate.Surname;
+
+                byte[] body = Encoding.UTF8.GetBytes(candidateDetails.ToString());
+                Stream newStream = webRequest.GetRequestStream();
+                webRequest.Accept = "application/xrds+xml";
+                webRequest.ContentLength = body.Length;
+                newStream.Write(body, 0, body.Length);
+                newStream.Close();
+                SOAPResponse soapResponse = new SOAPResponse();
+                WebResponse response = webRequest.GetResponse();
+                WebHeaderCollection header = response.Headers;
+                
+                using (var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                 {
-                    List<Candidate_Verification> jobVerCandidates = ver.Candidate_Verification.ToList();
-                    List<Candidate> jobCandidates = new List<Candidate>();
-
-                    foreach (Candidate_Verification jobVer in jobVerCandidates)
-                        jobCandidates.Add(jobVer.Candidate);
-
-                    Job newJobVerification = new Job(ver.ID, ver.JobProfile, jobCandidates);
-                    //TODO
-                    //run the methods you need from the Job object
+                    string responseXml = reader.ReadToEnd();
+                    soapResponse.Process(responseXml);
                 }
+                
+            }
+            else if (apiType == 1) //REST
+            {
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
+                webRequest.ContentType = "application/json";
+                webRequest.Method = "POST";
+                webRequest.KeepAlive = true;
+
+                dynamic candidateDetails = new JObject();
+                candidateDetails.name = candidate.Name;
+                candidateDetails.surname = candidate.Surname;
+                candidateDetails.id = candidate.ID;
+
+
+                byte[] body = Encoding.UTF8.GetBytes(candidateDetails.ToString());
+                Stream newStream = webRequest.GetRequestStream();
+                webRequest.Accept = "application/json";
+                webRequest.ContentLength = body.Length;
+                newStream.Write(body, 0, body.Length);
+                newStream.Close();
+                RestResponseService restResponse = new RestResponseService();
+                WebResponse response = webRequest.GetResponse();
+                WebHeaderCollection header = response.Headers;
+
+                using (var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                {
+                    JObject responseJson = JObject.Parse(reader.ReadToEnd());
+                    restResponse.Process(responseJson);
+                }
+            }
+            else if (apiType == 3) //LONG RUNNING ENDPOINT
+            {
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
+                webRequest.Method = "POST";
+                webRequest.KeepAlive = true;
+                webRequest.GetResponse();
+            }
+            else if (apiType == 2) //LONG RUNNING MAIL
+            {
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(apiURL);
+                webRequest.Method = "GET";
+                webRequest.KeepAlive = true;
+                webRequest.GetResponse();
             }
         }
 
+        public void AutomateChecks()
+        {   
+
+        }
         //-------------------------------------------------------------------------------------------------------------------#
 
         private class Job
         {
-
-            private JobProfile jobProfileInstanceWithOrderedChecks;
-            private int verificationCheckID;
+            //---------------------------------------------------------------------------------------------------------------#
+            
             private List<Candidate> listOfCandidatesToCheckAgainst;
             private Queue<Models.Services> orderedJobProfileServices;
 
-            //-------------------------------------------------------------------------------------------------------------------#
+            //---------------------------------------------------------------------------------------------------------------#
 
-            public Job(int verificationCheckId, JobProfile jobProfWithOrderedServices, List<Candidate> candidates)
+            private List<int> clearedCandidateID, possibleIssuesCandidateID, failedCandidateID, inProgressCandidateID, notStartedCandidateID;
+
+            //---------------------------------------------------------------------------------------------------------------#
+
+            public Job(Queue<Models.Services> jobProfileServices, List<Candidate> candidates)
             {
-                verificationCheckID = verificationCheckId;
-                jobProfileInstanceWithOrderedChecks = jobProfWithOrderedServices;
                 listOfCandidatesToCheckAgainst = new List<Candidate>(candidates);
-                orderedJobProfileServices = new Queue<Models.Services>();
+                orderedJobProfileServices = new Queue<Models.Services>(jobProfileServices);
             }
 
-            //-------------------------------------------------------------------------------------------------------------------#
+            //---------------------------------------------------------------------------------------------------------------#
 
-            public Queue<Models.Services> fetchServicesQueue()
+            public void AutomateChecks()
             {
-                if (orderedJobProfileServices.Count() < 1)
+                while (orderedJobProfileServices.Count > 0)
                 {
-                    ICollection<JobProfile_Checks> ne = jobProfileInstanceWithOrderedChecks.JobProfile_Check;
-
-                    foreach (JobProfile_Checks check in ne)
-                        orderedJobProfileServices.Enqueue(check.Services);
+                    runSingleCheckPerAllCandidates( orderedJobProfileServices.Dequeue(), listOfCandidatesToCheckAgainst );
                 }
+            }
+
+            //----------------------------------------------------------------------------------------------------------------#
+
+            private void runSingleCheckPerAllCandidates(Models.Services service, List<Candidate> listOfCandidatesToCheckAgainst)
+            {
+                string serviceName = service.Name;
+
+                switch (service.APIType)
+                {
+                    case 0:
+                        //SOAP ASYNC
+                        // 1 - call Chuba dummy servirce endpoint using serviceName as route;
+                        // 2 - on return call Xolani's IResponseHandler;
+                        break;
+                    case 1:
+                        //REST ASYNC
+                        //1 - call Mpinane's service api endpoint using serviceName as route;
+                        //2 - on return call Fiwa's IResponseHandler;
+                        break;
+                    case 2:
+                        //LONG MAIL
+                        // 1 - call Tafara's dummy servirce endpoint using serviceName as route;
+                        // 2 - on return call KB IResponseHandler;
+                        break;
+                    case 3:
+                        //LONG ENDPOINT
+                        // 1 - call Chuba dummy servirce endpoint using serviceName as route;
+                        // 2 - on return call Xolani's IResponseHandler;
+                        break;
+                    default:break;
+                }
+            }
+
+            //----------------------------------------------------------------------------------------------------------------#
+
+            public Queue<Models.Services> FetchServicesQueue()
+            {
                 return orderedJobProfileServices;
             }
 
-            //-------------------------------------------------------------------------------------------------------------------#
+            //----------------------------------------------------------------------------------------------------------------#
 
-            public List<Candidate> getCandidatesQueue()
+            private List<Candidate> getCandidatesList()
             {
                 //gets you the list of candidates still on the que for this job profile
                 return listOfCandidatesToCheckAgainst;
             }
 
-            //-------------------------------------------------------------------------------------------------------------------#
+            //----------------------------------------------------------------------------------------------------------------#
 
-            public Models.Services GetNextService()
+            private Models.Services GetNextService()
             {
+                if (orderedJobProfileServices.Count < 1)
+                    return null;
                 return orderedJobProfileServices.Dequeue();
             }
 
-            //-------------------------------------------------------------------------------------------------------------------#
-
-            public int getVerificationCheckID()
-            {
-                return verificationCheckID;
-            }
-
-            //-------------------------------------------------------------------------------------------------------------------#
+            //-----------------------------------------------------------------------------------------------------------------#
         }
     }
 }

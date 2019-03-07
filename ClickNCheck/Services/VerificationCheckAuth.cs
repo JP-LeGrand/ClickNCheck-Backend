@@ -14,39 +14,27 @@ namespace ClickNCheck.Services
         {
         }
 
-        public bool changedChecks(ClickNCheckContext _context, int loggedInRecID, int candidateID, int verCheckID, Candidate_Verification candidateVerification, Candidate_JobProfile candidate_JobProfile)
+        public void changedChecks(ClickNCheckContext _context, int recID, int verCheckID, int candidateVerificationID)
         {
-            var verChecks = _context.Candidate_Verification_Check.Where(x => x.Candidate_VerificationID == candidateVerification.ID).ToList();
-
-            var jobChecks = _context.JobProfile_Check.Where(x => x.JobProfileID == candidate_JobProfile.JobProfileID).ToList();
-            if (verChecks.Count == jobChecks.Count)
+            var verChecks = _context.Candidate_Verification_Check.Where(x => x.Candidate_VerificationID == candidateVerificationID).ToList();
+            
+            var recruiter = _context.User.Find(recID);
+            var manager = _context.User.Find(recruiter.ManagerID); 
+            string checks = "";
+            foreach (var check in verChecks)
             {
-                for (int i = 0; i < verChecks.Count; i++)
-                {
-                    if (verChecks.ElementAt(i).Order != jobChecks.ElementAt(i).Order)
-                    {
-                        var recruiter = _context.User.Find(loggedInRecID);
-                        var manager = _context.User.Find(recruiter.ManagerID); 
-                        string checks = "";
-                        foreach (var check in verChecks)
-                        {
-                            checks = "<li>" + check.Services.CheckCategory.Category + "</li>";
-                        }
-
-                        EmailService emailService = new EmailService();
-                        string emailBody = emailService.CandidateMail(); //[FIX THIS]
-                        emailBody = emailBody.Replace("{ManagerName}", manager.Name + " " + manager.Surname);
-                        emailBody = emailBody.Replace("{RecruiterName}", recruiter.Name + " " + recruiter.Surname);
-                        emailBody = emailBody.Replace("{Checks}", checks);
-                        emailBody = emailBody.Replace("{NO}", Constants.BASE_URL + "Candidates/checkAuth/false/" + verCheckID);
-                        emailBody = emailBody.Replace("{YES}", Constants.BASE_URL + "Candidates/checkAuth/true/" + verCheckID);
-
-                        emailService.SendMail(manager.Email, "Check List Change Authorisation", emailBody);
-                        return true;
-                    }
-                }
+                checks = "<li>" + check.Services.CheckCategory.Category + "</li>";
             }
-            return false;
+
+            EmailService emailService = new EmailService();
+            string emailBody = emailService.verCheckAuthMail();
+            emailBody = emailBody.Replace("{ManagerName}", manager.Name + " " + manager.Surname);
+            emailBody = emailBody.Replace("{RecruiterName}", recruiter.Name + " " + recruiter.Surname);
+            emailBody = emailBody.Replace("{Checks}", checks);
+            emailBody = emailBody.Replace("{NO}", Constants.BASE_URL + "Candidates/checkAuth/false/" + verCheckID);
+            emailBody = emailBody.Replace("{YES}", Constants.BASE_URL + "Candidates/checkAuth/true/" + verCheckID);
+
+            emailService.SendMail(manager.Email, "Check List Change Authorisation", emailBody);              
         }
     }
 }
