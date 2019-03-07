@@ -33,7 +33,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\CandidateConsentedMail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\CandidateEmail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\RecruiterNotificationGranted.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Files\SignUpEmail.html">
