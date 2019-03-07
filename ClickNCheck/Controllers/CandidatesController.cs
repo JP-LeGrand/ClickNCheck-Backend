@@ -157,12 +157,11 @@ namespace ClickNCheck.Controllers
                             select s).ToList();
 
             var vcChecks = new List<Candidate_Verification_Check>();
-            
-            _context.SaveChanges();
 
             JArray array = (JArray)jObject["services"];
 
             //run authorization check
+
 
             JArray jcandidates = (JArray)jObject["candidates"];
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
@@ -188,7 +187,7 @@ namespace ClickNCheck.Controllers
                 else
                 {
 
-                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidates[x].Organisation.ID);
+                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidates[x].OrganisationID);
                     var mailBody = service.CandidateMail();
                     mailBody = mailBody.Replace("{CandidateName}", candidates[x].Name);
                     mailBody = mailBody.Replace("{OrganisationName}", org.Name);
@@ -198,7 +197,7 @@ namespace ClickNCheck.Controllers
                     {
                         service.SendMail(candidates[x].Email, "New Verificaiton Request", mailBody);
                         _context.Candidate.Add(candidates[x]);
-                        //await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
                         candIds.Add(candidates[x].ID);
                     }
                     catch (Exception e)
