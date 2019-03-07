@@ -26,7 +26,7 @@ namespace ClickNCheck.Models
         public bool HasConsented { get; set; }
         public string Phone { get; set; }
         
-        [ForeignKey("OrganisationID")]
+        public int OrganisationID { get; set; }
         public Organisation Organisation { get; set; }
         
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();

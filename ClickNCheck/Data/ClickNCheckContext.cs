@@ -27,7 +27,7 @@ namespace ClickNCheck.Data
         public DbSet<Candidate_JobProfile> Candidate_JobProfile { get; set; }
         public DbSet<Candidate_Verification_Check> Candidate_Verification_Check { get; set; }
         public DbSet<CheckStatusType> CheckStatusType { get; set; }
-        public DbSet<Verification> Verification { get; set; }
+        public DbSet<VerificationCheck> VerificationCheck { get; set; }
         public DbSet<Organisation> Organisation { get; set; }
         public DbSet<Recruiter_JobProfile> Recruiter_JobProfile { get; set; }
         public DbSet<JobProfile> JobProfile { get; set; }
@@ -123,9 +123,9 @@ namespace ClickNCheck.Data
             .HasForeignKey(pt => pt.CandidateID);
 
             modelBuilder.Entity<Candidate_Verification>()
-            .HasOne(pt => pt.Verification)
+            .HasOne(pt => pt.VerificationCheck)
             .WithMany(p => p.Candidate_Verification)
-            .HasForeignKey(pt => pt.VerificationID);
+            .HasForeignKey(pt => pt.VerificationCheckID);
 
 
             modelBuilder.Entity<UserType>().HasData(
@@ -142,6 +142,21 @@ namespace ClickNCheck.Data
 
             modelBuilder.Entity<UserType>().HasData(
                 new UserType() { ID = 5, Type = "Operator" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+               new CheckStatusType() { ID = 1, Name = "Cleared" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 2, Name = "Possible Issues" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 3, Name = "Failed" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 4, Name = "In Progress" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 5, Name = "Not Started" });
 
             modelBuilder.Entity<CheckCategory>().HasData(
                 new CheckCategory() { ID = 1, Category = "Credit" });
