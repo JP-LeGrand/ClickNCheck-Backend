@@ -196,10 +196,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Compuscan credit report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/SOAPCheck/theEndpoint/Umalusi",
                 VendorID = 1,
                 CheckCategoryID = 1,
-                APIType = 0
+                APIType = 0 
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -209,10 +209,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Experian employment report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/RestCheck/theEndpoint/Experian",
                 VendorID = 2,
                 CheckCategoryID = 5,
-                APIType = 0
+                APIType = 1
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -222,10 +222,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Lexis Nexis criminal report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/mail",
                 VendorID = 3,
                 CheckCategoryID = 2,
-                APIType = 0
+                APIType = 2
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -235,10 +235,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "MIE identity report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/longRunningEndpoint/theEndpoint",
                 VendorID = 4,
                 CheckCategoryID = 3,
-                APIType = 0
+                APIType = 3
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -248,7 +248,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "PNet driver's report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/SOAPCheck/theEndpoint/PNet",
                 VendorID = 5,
                 CheckCategoryID = 4,
                 APIType = 0
@@ -261,10 +261,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Umalusi academic report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/RestCheck/theEndpoint/Experian",
                 VendorID = 6,
                 CheckCategoryID = 6,
-                APIType = 0
+                APIType = 1
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -274,10 +274,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Transunion residency report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/mail",
                 VendorID = 7,
                 CheckCategoryID = 7,
-                APIType = 0
+                APIType = 2
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -287,10 +287,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "XDS personal report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/longRunningEndpoint/theEndpoint",
                 VendorID = 8,
                 CheckCategoryID = 8,
-                APIType = 0
+                APIType = 3
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -300,7 +300,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "SAPS criminal report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/SOAPCheck/theEndpoint/SAPS",
                 VendorID = 9,
                 CheckCategoryID = 2,
                 APIType = 0
@@ -313,10 +313,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "FSCA credit report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/RestCheck/theEndpoint/Experian",
                 VendorID = 10,
                 CheckCategoryID = 1,
-                APIType = 0
+                APIType = 1
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -326,10 +326,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "INSETA employment report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/mail",
                 VendorID = 11,
                 CheckCategoryID = 5,
-                APIType = 0
+                APIType = 2
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -339,10 +339,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "SAQA academic report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/longRunningEndpoint/theEndpoint",
                 VendorID = 12,
                 CheckCategoryID = 6,
-                APIType = 0
+                APIType = 3
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -352,7 +352,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Traffic Department driver's report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/SOAPCheck/theEndpoint/TrafficDepartment",
                 VendorID = 13,
                 CheckCategoryID = 4,
                 APIType = 0
@@ -365,10 +365,10 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Home Affairs identity report",
                 TurnaroundTime = "2 days",
-                URL = "www.google.com",
+                URL = "https://localhost:44393/api/RestCheck/theEndpoint/Experian",
                 VendorID = 14,
                 CheckCategoryID = 5,
-                APIType = 0
+                APIType = 1
             });
 
 
