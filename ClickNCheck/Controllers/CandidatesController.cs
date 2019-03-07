@@ -22,6 +22,7 @@ namespace ClickNCheck.Controllers
         CodeGenerator codeGenerator = new CodeGenerator();
         EmailService service = new EmailService();
         UploadService uploadService = new UploadService();
+        VerificationCheckAuth checkAuth = new VerificationCheckAuth();
 
         public CandidatesController(ClickNCheckContext context)
         {
@@ -166,6 +167,158 @@ namespace ClickNCheck.Controllers
             await _context.SaveChangesAsync();
 
             return candidate;
+        }
+
+        [HttpPost]
+        [Route("CreateCandidateJObject/{id}")]
+        public async Task<ActionResult<Candidate>> CreateCandidate(JObject jObject, int id)
+        {
+
+            var vc = await _context.VerificationCheck.FindAsync(id);
+
+            var jpChecks = (from s in _context.JobProfile_Check
+                            where s.JobProfileID == vc.JobProfileID
+                            select s).ToList();
+
+            var vcChecks = new List<Candidate_Verification_Check>();
+
+            JArray array = (JArray)jObject["services"];
+            int[] services = array.Select(jv => (int)jv).ToArray();
+
+            JArray jcandidates = (JArray)jObject["candidates"];
+            List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
+            {
+                Email = (string)x["Email"],
+                HasConsented = (bool)x["HasConsented"],
+                ID_Passport = (string)x["ID_Passport"],
+                ID_Type = (string)x["ID_Type"],
+                Maiden_Surname = (string)x["Maiden_Surname"],
+                Name = (string)x["Name"],
+                Surname = (string)x["Surname"],
+                Phone = (string)x["Phone"],
+                OrganisationID = (int)x["OrganisationID"]
+            }).ToList();
+            List<int> candIds = new List<int>();
+            for (int x = 0; x < candidates.Count; x++)
+            {
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
+                if (entry != null)
+                {
+                    return Ok("user exists");
+                }
+                else
+                {
+
+                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidates[x].OrganisationID);
+                    var mailBody = service.CandidateMail();
+                    mailBody = mailBody.Replace("{CandidateName}", candidates[x].Name);
+                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    var candidateID = candidates[x].ID;
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    try
+                    {
+                        service.SendMail(candidates[x].Email, "New Verificaiton Request", mailBody);
+                        _context.Candidate.Add(candidates[x]);
+                        await _context.SaveChangesAsync();
+                        candIds.Add(candidates[x].ID);
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest("some emails have not sent");
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                var candidate_Verification = await _context.Candidate_Verification.ToListAsync();
+                //Assign candidates to verification
+                for (int i = 0; i < candIds.Count; i++)
+                {
+                    var candid = await _context.Candidate.FindAsync(candIds[i]);
+
+                    if (candid == null)
+                    {
+                        return NotFound("The candidate " + candid.Name + candid.Surname + " does not exist");
+                    }
+                    //add candidates to jverification
+                    Candidate_Verification addition = new Candidate_Verification { Candidate = candid, VerificationCheck = vc };
+                    if (candidate_Verification.Contains(addition))
+                    {
+                        return BadRequest("Some candidates have alrdeady been assigned to this verification check");
+                    }
+                    else
+                        vc.Candidate_Verification.Add(addition);
+                }
+
+                //run authorization check
+                if (vc.IsAuthorize == false)
+                {
+                    if (!(jpChecks.Count == array.Count))
+                    {
+                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < jpChecks.Count; i++)
+                        {
+                            if (jpChecks[i].ServicesID == (int)array[i])
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                            }
+                        }
+                    }
+                }
+
+                //update verification object
+                _context.Entry(vc).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Candidate.Any(e => e.ID == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+            }
+
+            //make the Candidate_Verification_checks
+            var cdList = (from s in _context.Candidate_Verification
+                          where s.VerificationCheckID == vc.ID
+                          select s).ToList();
+
+            var NotStartedStatus = await  _context.CheckStatusType.FindAsync(5);
+            var VC = await  _context.CheckStatusType.FindAsync(5);
+
+            for (int i = 0; i < cdList.Count; i++)
+            {
+                for (int j = 0; j < services.Length; j++)
+                {
+                    var s = await _context.Services.FindAsync(services[j]);
+                    Candidate_Verification_Check candidate_Verification_Check = new Candidate_Verification_Check();
+                    candidate_Verification_Check.Candidate_Verification = cdList[i];
+                    candidate_Verification_Check.Services = s;
+                    candidate_Verification_Check.Order = j + 1;
+                    candidate_Verification_Check.CheckStatusType = NotStartedStatus;
+                    _context.Candidate_Verification_Check.Add(candidate_Verification_Check);
+                    
+                }
+            }
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
         }
 
         private bool CandidateExists(int id)
@@ -368,20 +521,28 @@ namespace ClickNCheck.Controllers
             //Finds a Recruiter with this ID
             var recruiter = await _context.User.FindAsync(verCheck.RecruiterID);
             var manager = await _context.User.FindAsync(recruiter.ManagerID);
+            var checks = _context.JobProfile_Check.Where(c => c.JobProfileID == verCheck.JobProfileID).ToList();
 
+            string checklist= "";
+            foreach (var item in checks)
+            {
+                checklist = "<li>" + item.Services.CheckCategory.Category + "</li>";
+            }
             //So if the authorization has been set to true send an email to the respective recruiter with an approval email
             if (verCheck.IsAuthorize==true)
             {
                 var mailBody = service.AuthorizeVerification();
-                mailBody = mailBody.Replace("RecruiterName", recruiter.Name);   
-                mailBody = mailBody.Replace("{ManagerName}", manager.Name);
+                mailBody = mailBody.Replace("RecruiterName", recruiter.Name);
+                mailBody = mailBody.Replace("{Checks}", checklist);
+                mailBody = mailBody.Replace("ManagerName", manager.Name);
                 service.SendMail(recruiter.Email, "Authorization Verification", mailBody);
             }
             else if (verCheck.IsAuthorize == false)
             {
                 var mailBody = service.RefuseVerficationEmail();
                 mailBody = mailBody.Replace("RecruiterName", recruiter.Name);
-                mailBody = mailBody.Replace("{ManagerName}", manager.Name);
+                mailBody = mailBody.Replace("ManagerName", manager.Name);
+                mailBody = mailBody.Replace("{Checks}", checklist);
                 service.SendMail(recruiter.Email, "Authorization Refused", mailBody);
             }
 

@@ -143,6 +143,21 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<UserType>().HasData(
                 new UserType() { ID = 5, Type = "Operator" });
 
+            modelBuilder.Entity<CheckStatusType>().HasData(
+               new CheckStatusType() { ID = 1, Name = "Cleared" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 2, Name = "Possible Issues" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 3, Name = "Failed" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 4, Name = "In Progress" });
+
+            modelBuilder.Entity<CheckStatusType>().HasData(
+              new CheckStatusType() { ID = 5, Name = "Not Started" });
+
             modelBuilder.Entity<CheckCategory>().HasData(
                 new CheckCategory() { ID = 1, Category = "Credit" });
 

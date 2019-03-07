@@ -74,6 +74,7 @@ namespace ClickNCheck.Controllers
                 }
             }
 
+            
 
             return NoContent();
         }
@@ -249,7 +250,7 @@ namespace ClickNCheck.Controllers
         [Route("getAllChecks")]
         public async Task<IEnumerable<object>> getAllChecks(int id)
         {
-            var allChecks = await _context.CheckCategory.ToListAsync();
+            var allChecks = await _context.Services.ToListAsync();
 
             return allChecks;
         }
@@ -259,14 +260,13 @@ namespace ClickNCheck.Controllers
         public async Task<IEnumerable<object>> getChecks(int id)
         {
             var checks = await (from i in _context.JobProfile_Check
-                                join x in _context.Services on i.ServicesID equals x.ID
-                                join y in _context.CheckCategory on x.CheckCategoryID equals y.ID into joinTable
+                                join x in _context.Services on i.ServicesID equals x.ID into joinTable
                                 from z in joinTable.DefaultIfEmpty()
                                 where i.JobProfileID == id
                                 select new
                                 {
                                     z.ID,
-                                    z.Category
+                                    z.Name
                                 }).ToListAsync();
 
             return checks;
