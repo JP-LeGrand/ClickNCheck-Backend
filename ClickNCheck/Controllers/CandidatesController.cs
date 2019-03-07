@@ -528,7 +528,8 @@ namespace ClickNCheck.Controllers
             string checklist= "";
             foreach (var item in checks)
             {
-                checklist = "<li>" + item.Services.CheckCategory.Category + "</li>";
+                var services = _context.Services.Find(item.ServicesID);
+                checklist = "<li>" + services.CheckCategory + "</li>";
             }
             //So if the authorization has been set to true send an email to the respective recruiter with an approval email
             if (verCheck.IsAuthorize==true)
