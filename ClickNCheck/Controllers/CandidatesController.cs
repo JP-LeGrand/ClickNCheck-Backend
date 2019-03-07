@@ -162,7 +162,25 @@ namespace ClickNCheck.Controllers
             int[] services = array.Select(jv => (int)jv).ToArray();
 
             //run authorization check
+            if (!(jpChecks.Count == array.Count))
+            {
+                //TODO: send verification
 
+            }
+            else
+            {
+                for (int i = 0; i < jpChecks.Count; i++)
+                {
+                    if (jpChecks[i].ServicesID == (int)array[i])
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        //TODO: send verification
+                    }
+                }
+            }
 
             JArray jcandidates = (JArray)jObject["candidates"];
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
