@@ -1,112 +1,72 @@
 ﻿﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ClickNCheck.Data;
+using ClickNCheck.Models;
+using ClickNCheck.Services;
 using Newtonsoft.Json.Linq;
 
 namespace checkStub
 {
     public class Academic
     {
-        // possible checks under residency
-        private bool highSchool;
-        private bool tatiary;
-        
-        // results from the apis
-        private JObject results;
+        private readonly Candidate candidate;
+        private ClickNCheckContext _context;
 
-        // results from the apis class defination
-        // or instead of a struct you can define a JSON
-        // JSON with keys highSchool & tatiary
-        // turns true when check is completed
-        private bool checkRan;
+        //private JObject results;
 
-        // turns true when then check is completed
-        private bool inProgress;
-
-        // if all offered by 1 api, then use only one connection
-        // instantiate it in the constructor
-        // Connection connection;
-
-        public Academic(bool highSchool, bool tatiary)
+        public Academic(ClickNCheckContext context, int candidateId)
         {
-            this.highSchool = highSchool;
-            this.tatiary = tatiary;
+            _context = context;
+            //results = new JObject();
 
-            // tracking variables
-            this.checkRan = false;
-            this.inProgress = false;
+            candidate = _context.Candidate.Find(candidateId);
+            if (candidate == null)
+                throw new Exception("Candidate not found in database");
 
-            this.results = new JObject();
         }
 
-        public void runCheck()
+        public async Task<JArray> RunChecks(JArray selectedServiceID)
         {
-            try
+            JArray response = new JArray();
+            foreach (int id in selectedServiceID)
             {
-                inProgress = true;
+                Services serv = null;
+                serv = await _context.Services.FindAsync(id);
 
-                if (highSchool)
-                    runHighSchoolCheck();
-
-                if (tatiary)
-                    runTatiaryCheck();
-
-                // you might wanna have a promise handler for results
-                
-            }
-            catch(Exception) { /*connection problems*/ }
-        }
-
-        public JObject getResults()
-        {
-            if (!inProgress && checkRan)
-            {
-                return results;
-            }
-            else throw new Exception("Acedemic check either still in progress or never ran!");
-        }
-
-        //make this an asychronous method
-        private void runHighSchoolCheck()
-        {
-            // if not provided by 1 api, then instantiate connection;
-            // otherwise use the existing connection made by the constructor
-            if (true/*connection to API succeeded*/)
-            {
-                /*then get results we dont wave ride, marry j blidge
-                //wait results.highSchool = connection.getVerification();
-                //turn ranCheck to true after, and inProgress to false*/
-                results.Add( "highSchool", "NSC, 2005, Pretoria Boys High School" );
-                
-                if ((tatiary && results.Count == 2) || (!tatiary && results.Count == 1))
+                if (serv != null)
                 {
-                    inProgress = false;
-                    checkRan = true;
+                    JObject res = await runAcademicCheck(serv.APIType, serv.URL, serv.Name);
+                    response.Add(res);
                 }
-
+                
+                else
+                    throw new Exception("Service not found in database");
             }
-            else throw new Exception();
+            return response;
         }
-
-        //make this an asychronous method
-        private void runTatiaryCheck()
+        private async Task<JObject> runAcademicCheck(int apiType, string url, string supplierName)
         {
-            // if not provided by 1 api, then instantiate connection;
-            // otherwise use the existing connection made by the constructor
-            if (true/*connection to API succeeded*/)
+            ConnectToAPI apiConnection = new ConnectToAPI();
+            string res = await apiConnection.runCheck(apiType, url, candidate);
+
+            if (res != null)
             {
-                //then get results
-                //wait results.tatiary = connection.getVerification();
-                //turn ranCheck to true after
-                results.Add("tatiary","BSc Applied Mathematics, 2009, University of Pretoria");
-
-                if ((highSchool && results.Count == 2) || (!highSchool && results.Count == 1))
-                {
-                    inProgress = false;
-                    checkRan = true;
-                }
+                JObject rs = new JObject();
+                rs.Add(supplierName, res);
+                return rs;
             }
-            else throw new Exception();
+                
+            else
+                return runAcademicStub(apiType, url, supplierName);
         }
-
         
+        private JObject runAcademicStub(int apiType, string url, string servicename )
+        {
+            string servicetype = apiType == 0 ? "soap" : "rest";
+            JObject rs = new JObject();
+            rs.Add( servicename, $"from url: {url}. This is the response. The service type was {servicetype}." );
+            return rs;
+        }
     }
 }

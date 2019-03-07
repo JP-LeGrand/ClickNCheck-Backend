@@ -49,7 +49,7 @@ namespace ClickNCheck.Services
 
         private JObject fillRESTCredentials(Candidate candidateDatabaseModel)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("fillRESTCredentials function");
         }
 
         private string fillSOAPCredentials(Candidate candidateDatabaseModel)
