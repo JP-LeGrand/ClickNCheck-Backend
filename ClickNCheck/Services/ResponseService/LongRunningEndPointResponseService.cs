@@ -19,7 +19,7 @@ namespace ClickNCheck.Services.ResponseService
 
             CheckResultService checkResultService = new CheckResultService(clickNCheckContext, uploadService);
 
-            await checkResultService.SaveResult((int)o["CheckId"], (string)o["resultStatus"], (string)o["resultDescription"], (IFormCollection)o["resultFiles"]);
+            await checkResultService.SaveResult((int)o["CheckId"], (string)o["resultStatus"], (string)o["resultDescription"],null);
         }
     }
 }
