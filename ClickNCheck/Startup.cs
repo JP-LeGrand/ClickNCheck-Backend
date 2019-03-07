@@ -94,6 +94,8 @@ namespace ClickNCheck
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();
+   
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -107,11 +109,6 @@ namespace ClickNCheck
             app.UseAuthentication();
 
             app.UseMvc();
-            /* ValuesController valuesController = new ValuesController();
-           VerificationChecking veriCheck = new VerificationChecking();
-
-            RecurringJob.AddOrUpdate(() => veriCheck.AutomateChecks(), Cron.MinuteInterval(1));
-            RecurringJob.AddOrUpdate(() => valuesController.Get(), Cron.Minutely);*/
         }
 
         public class MyAuthorizationFilter : IDashboardAuthorizationFilter
@@ -126,4 +123,3 @@ namespace ClickNCheck
         }
     }
 }
-
