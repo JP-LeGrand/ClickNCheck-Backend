@@ -109,6 +109,8 @@ namespace ClickNCheck
             app.UseAuthentication();
 
             app.UseMvc();
+            VerificationChecking verificationChecking = new VerificationChecking();
+            RecurringJob.AddOrUpdate(() => verificationChecking.doStuff(), Cron.MinuteInterval(1));
         }
 
         public class MyAuthorizationFilter : IDashboardAuthorizationFilter
