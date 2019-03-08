@@ -140,7 +140,7 @@ namespace ClickNCheck.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(j.ID);
+            return Ok(j.ID+"");
         }
 
         // DELETE: api/JobProfiles/5
@@ -217,7 +217,7 @@ namespace ClickNCheck.Controllers
                 }
             }
 
-            return Ok(jobProfile);
+            return Ok(jobProfile.ToString());
         }
 
 
