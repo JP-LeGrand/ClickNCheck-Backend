@@ -84,58 +84,9 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/Candidates
-        [HttpPost]
-        [Route("CreateCandidate/{id}")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate[] candidate, int id)
-        {
-            Candidate_JobProfile _candidate_jp = new Candidate_JobProfile();
-            for (int x = 0; x < candidate.Length; x++)
-
-            {
-                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidate[x].Email);
-                if (entry != null)
-                {
-                    return Ok("user exists");
-                }
-                else
-                {
-
-                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
-                    var mailBody = service.CandidateMail();
-                    mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
-                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
-                    var candidateID = candidate[x].ID;
-                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
-                    try
-                    {
-                        service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
-                        _context.Candidate.Add(candidate[x]);
-                        await _context.SaveChangesAsync();
-                    }
-                    catch (Exception e)
-                    {
-                        return BadRequest("some emails have not sent");
-                    }
-                    _candidate_jp.CandidateID = candidate[x].ID;
-                    _candidate_jp.JobProfileID = id;
-
-                    _context.Candidate_JobProfile.Add(_candidate_jp);
-                    await _context.SaveChangesAsync();
-                }
-
-               /* TODO: Use this to check if the checks have been changed
-                VerificationCheckAuth verificationCheckAuth = new VerificationCheckAuth();
-                verificationCheckAuth.changedChecks(_context, User.Claims.First, candidate[x].ID ....)
-                */
-
-            }
-            return Ok();
-        }
-
-        [HttpPost]
+        [HttpGet]
         [Route("checkAuth/{val}/{verCheckID}")]
-        public async void receiveVerCheckAuth(string val, int verCheckID)
+        public void receiveVerCheckAuth(string val, int verCheckID)
         {
             var verCheck = _context.VerificationCheck.Find(verCheckID);
             if (val == "true")
@@ -206,7 +157,8 @@ namespace ClickNCheck.Controllers
                 var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
                 if (entry != null)
                 {
-                    return Ok("user exists");
+                    //eturn Ok("user exists");
+                    continue;
                 }
                 else
                 {
@@ -245,10 +197,12 @@ namespace ClickNCheck.Controllers
                     Candidate_Verification addition = new Candidate_Verification { Candidate = candid, VerificationCheck = vc };
                     if (candidate_Verification.Contains(addition))
                     {
-                        return BadRequest("Some candidates have alrdeady been assigned to this verification check");
+                        continue;
                     }
                     else
                     {
+                        vc.Candidate_Verification.Add(addition);
+                        await _context.SaveChangesAsync();
                         //run authorization check
                         if (vc.IsAuthorize == false && verCount == 0)
                         {
@@ -273,29 +227,12 @@ namespace ClickNCheck.Controllers
                                 }
                             }
                         }
-                        vc.Candidate_Verification.Add(addition);
+                       
                     }
                 }
 
                 //update verification object
                 _context.Entry(vc).State = EntityState.Modified;
-
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Candidate.Any(e => e.ID == id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
             }
 
             //make the Candidate_Verification_checks
