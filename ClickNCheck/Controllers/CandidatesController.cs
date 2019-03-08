@@ -152,9 +152,11 @@ namespace ClickNCheck.Controllers
                 OrganisationID = (int)x["OrganisationID"]
             }).ToList();
             List<int> candIds = new List<int>();
+            int additionID = 0;
             for (int x = 0; x < candidates.Count; x++)
             {
                 var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
+                
                 if (entry != null)
                 {
                     //eturn Ok("user exists");
@@ -214,7 +216,8 @@ namespace ClickNCheck.Controllers
                         {
                             if (!(jpChecks.Count == array.Count))
                             {
-                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, addition.ID);
+
+                                additionID = addition.ID;
                                 verCount++;
                             }
                             else
@@ -264,7 +267,7 @@ namespace ClickNCheck.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-
+            checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, additionID);
 
             return Ok();
         }
