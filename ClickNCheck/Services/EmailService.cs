@@ -107,9 +107,9 @@ namespace ClickNCheck
 
         public string CandidateConsentedMail()
         {
-            string htmlstring  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
-            /*string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
-            string htmlstring = System.IO.File.ReadAllText(path);*/
+            //string htmlstring  = File.ReadAllText(@"C:\repos\Click-N-Check-Backend\ClickNCheck\Files\CandidateConsentedMail.html");
+            string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"Files\CandidateConsentedMail.html");
+            string htmlstring = System.IO.File.ReadAllText(path);
             return htmlstring;
         }
 

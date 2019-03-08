@@ -210,16 +210,22 @@ namespace ClickNCheck.Controllers
                 }
                 else
                 {
-
+                    var verChecks = _context.Candidate_Verification_Check.Where(verc => verc.Candidate_VerificationID == id).ToList();
+                    string checks = "";
+                    foreach (var check in verChecks)
+                    {
+                        checks += "<li>" + check.Services.CheckCategory.Category + "</li>";
+                    }
                     var org = _context.Organisation.FirstOrDefault(o => o.ID == candidates[x].OrganisationID);
-                    var mailBody = service.CandidateMail();
+                    var mailBody = service.CandidateConsentedMail();
                     mailBody = mailBody.Replace("{CandidateName}", candidates[x].Name);
                     mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    mailBody = mailBody.Replace("{Checks}", checks);
                     var candidateID = candidates[x].ID;
-                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID+"&vc="+id);
                     try
                     {
-                        service.SendMail(candidates[x].Email, "New Verificaiton Request", mailBody);
+                        service.SendMail(candidates[x].Email, "Consent for New Verificaiton Request", mailBody);
                         _context.Candidate.Add(candidates[x]);
                         await _context.SaveChangesAsync();
                         candIds.Add(candidates[x].ID);
@@ -496,7 +502,7 @@ namespace ClickNCheck.Controllers
                 var org = _context.Organisation.Find(orgID);
                 string mailBody = service.CandidateConsentedMail();
                 //reformat email content
-                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
+                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); 
                 try
                 {
                     bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);

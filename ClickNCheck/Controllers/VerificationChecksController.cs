@@ -42,6 +42,24 @@ namespace ClickNCheck.Controllers
 
             return verificationCheck;
         }
+        [HttpGet("services/{id}")]
+        public async Task<object> GetVerificationCheckServices(int id)
+        {
+            var verChecks =  _context.Candidate_Verification_Check.Find(id);
+            
+            var checks = new List<string>();
+            var _lst = (from i in _context.VerificationCheck
+                        join j in _context.Candidate_Verification on i.ID equals j.VerificationCheckID
+                        join k in _context.Candidate_Verification_Check on j.ID equals k.Candidate_VerificationID
+                        //group i by i.Order
+                        select new
+                        {
+                            k.Services
+                        }).ToList<object>().Distinct();
+            
+       
+            return _lst;
+        }
 
         // PUT: api/VerificationChecks/5
         [HttpPut("{id}")]
