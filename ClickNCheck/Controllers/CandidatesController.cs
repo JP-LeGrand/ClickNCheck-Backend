@@ -206,7 +206,7 @@ namespace ClickNCheck.Controllers
                 var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
                 if (entry != null)
                 {
-                    return Ok("user exists");
+                    continue;
                 }
                 else
                 {
