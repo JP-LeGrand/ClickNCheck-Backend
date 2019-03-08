@@ -38,6 +38,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost()]
+        [AllowAnonymous]
         [Route("signUp")]
         public ActionResult<User> regAdmin(User[] administrators)
         {
@@ -48,6 +49,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost()]
+        [AllowAnonymous]
         [Route("signUpRec")]
         public ActionResult<User> regRec(User[] users)
         {
@@ -177,6 +179,7 @@ namespace ClickNCheck.Controllers
 
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("signup/{code}")]
         public ActionResult<string> checkCode(string code)
         {
@@ -208,6 +211,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("registration")]
         public ActionResult<string> registerUser([FromBody] string[] Password)
         {
@@ -228,6 +232,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("register")]
         public async Task<IActionResult> registerRecruiter([FromBody] string[] id_pass_manager)
         {
