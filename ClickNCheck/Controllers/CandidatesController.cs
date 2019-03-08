@@ -141,12 +141,12 @@ namespace ClickNCheck.Controllers
             if (val == "true")
             {
                 verCheck.IsAuthorize = true;
-                await GetVerificationAuthorization(verCheckID);
+                 GetVerificationAuthorization(verCheckID);
             }
             else if(val == "false")
             {
                 verCheck.IsAuthorize = false;
-                await GetVerificationAuthorization(verCheckID);
+                 GetVerificationAuthorization(verCheckID);
             }
 
             _context.Update(verCheck);
@@ -514,25 +514,26 @@ namespace ClickNCheck.Controllers
         //The method will send a recruiter an email based on whether they are authorised to add checks or not to a job profile
         [HttpGet]
         [Route("SendAuthorizationEmail/{id}")]
-        public async Task<ActionResult<VerificationCheck>> GetVerificationAuthorization(int id)
+        public  ActionResult<VerificationCheck> GetVerificationAuthorization(int id)
         {
             //Find the verfification with this id
-            var verCheck = await _context.VerificationCheck.FindAsync(id);
+            var verCheck =  _context.VerificationCheck.Find(id);
             if (verCheck == null)
             {
                 return NotFound();
             }
 
             //Finds a Recruiter with this ID
-            var recruiter = await _context.User.FindAsync(verCheck.RecruiterID);
-            var manager = await _context.User.FindAsync(recruiter.ManagerID);
+            var recruiter =  _context.User.Find(verCheck.RecruiterID);
+            var manager =  _context.User.Find(recruiter.ManagerID);
             var checks = _context.JobProfile_Check.Where(c => c.JobProfileID == verCheck.JobProfileID).ToList();
 
             string checklist= "";
             foreach (var item in checks)
             {
                 var services = _context.Services.Find(item.ServicesID);
-                checklist = "<li>" + services.CheckCategory + "</li>";
+                var category = _context.CheckCategory.Find(services.CheckCategoryID);
+                checklist += "<li>" + category.Category+ "</li>";
             }
             //So if the authorization has been set to true send an email to the respective recruiter with an approval email
             if (verCheck.IsAuthorize==true)
