@@ -15,6 +15,7 @@ using ClickNCheck.Data;
 using Swashbuckle.AspNetCore.Swagger;
 using ClickNCheck.Services;
 using Hangfire;
+using ClickNCheck.Controllers;
 
 namespace ClickNCheck
 {
@@ -77,7 +78,6 @@ namespace ClickNCheck
             });
 
             app.UseMvc();
-           
         }
     }
 }

@@ -68,11 +68,22 @@ namespace ClickNCheck.Services
             //ExecuteCheck();
             foreach(object item in objList)
             {
+               
                 JObject jItem = JObject.FromObject(new {item });
                 int candidateId = (int)jItem["item"]["CandidateID"];
-                int servID = (int)jItem["item"]["ServicesID"];
-                Models.Services serv = _context.Services.Find(servID);
-                ExecuteCheck(candidateId, serv);
+                var candidate = _context.Candidate.Find(candidateId);
+
+                if (candidate.HasConsented)
+                {
+                    int servID = (int)jItem["item"]["ServicesID"];
+                    Models.Services serv = _context.Services.Find(servID);
+                    ExecuteCheck(candidateId, serv);
+                }
+                else {
+                    //the remove the candidate
+
+                    //objList.Remove(candidate);
+                }
             }
 
 
