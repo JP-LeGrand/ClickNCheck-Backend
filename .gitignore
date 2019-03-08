@@ -264,3 +264,4 @@ __pycache__/
 /ClickNCheck/Migrations/*
 
 
+/ClickNCheck/Properties/PublishProfiles/ClickNCheck - Web Deploy.pubxml
