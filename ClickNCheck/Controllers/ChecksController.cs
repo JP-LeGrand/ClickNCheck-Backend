@@ -36,12 +36,12 @@ namespace ClickNCheck.Controllers
         {
             if (resType == 0)
             {
-                string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Compuscan", soapText);
+                string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/Compuscan", soapText);
                 _soap.Process(response);
             }
             else
             {
-                string response = await _rest.connectJson("https://localhost:44393/api/RestCheck/Compuscan", jsonObject);
+                string response = await _rest.connectJson("checkserviceapi.azurewebsites.net/api/RestCheck/Compuscan", jsonObject);
                 _rest.Process(JObject.Parse(response));
             }
         }
@@ -50,7 +50,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/Umalusi")]
         public async void Umalusi(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Umalusi", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/Umalusi", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -58,7 +58,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/Afiswitch")]
         public async void Afiswitch(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Afiswitch", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/Afiswitch", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -66,7 +66,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/LexisNexis")]
         public async void LexisNexis(string value)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/LexisNexis", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/LexisNexis", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -74,7 +74,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/MIE")]
         public async void MIE(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/MIE", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/MIE", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -82,7 +82,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/PNet")]
         public async void PNet(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/PNet", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/PNet", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -90,7 +90,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/Transunion")]
         public async void Transunion(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Transunion", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/Transunion", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -98,7 +98,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/XDS")]
         public async void XDS(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/XDS", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/XDS", soapText);
             _soap.Process(response);
         }
 
@@ -107,7 +107,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/Experian")]
         public async void Experian(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/Experian", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/Experian", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -115,7 +115,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/SAPS")]
         public async void SAPS(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/SAPS", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/SAPS", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -123,7 +123,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/FSCA")]
         public async void FSCA(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/FSCA", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/FSCA", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -131,7 +131,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/INSETA")]
         public async void INSETA(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/INSETA", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/INSETA", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -139,7 +139,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/TrafficDepartment")]
         public async void TrafficDepartment(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/TrafficDepartment", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/TrafficDepartment", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -147,7 +147,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/HomeAffairs")]
         public async void HomeAffairs(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/HomeAffairs", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/HomeAffairs", soapText);
             _soap.Process(response);
         }
         // POST api/<controller>/therest
@@ -155,7 +155,7 @@ namespace ClickNCheck.Controllers
         [Route("{resType}/SAQA")]
         public async void SAQA(int resType)
         {
-            string response = await _soap.connectXML("https://localhost:44393/api/soapcheck/SAQA", soapText);
+            string response = await _soap.connectXML("checkserviceapi.azurewebsites.net/api/soapcheck/SAQA", soapText);
             _soap.Process(response);
         }
 
