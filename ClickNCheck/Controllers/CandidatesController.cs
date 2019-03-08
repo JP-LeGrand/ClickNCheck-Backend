@@ -135,16 +135,18 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("checkAuth/{val}/{verCheckID}")]
-        public void receiveVerCheckAuth(string val, int verCheckID)
+        public async void receiveVerCheckAuth(string val, int verCheckID)
         {
             var verCheck = _context.VerificationCheck.Find(verCheckID);
             if (val == "true")
             {
                 verCheck.IsAuthorize = true;
+                await GetVerificationAuthorization(verCheckID);
             }
             else if(val == "false")
             {
                 verCheck.IsAuthorize = false;
+                await GetVerificationAuthorization(verCheckID);
             }
 
             _context.Update(verCheck);
@@ -173,7 +175,7 @@ namespace ClickNCheck.Controllers
         [Route("CreateCandidateJObject/{id}")]
         public async Task<ActionResult<Candidate>> CreateCandidate(JObject jObject, int id)
         {
-
+            int verCount = 0;
             var vc = await _context.VerificationCheck.FindAsync(id);
 
             var jpChecks = (from s in _context.JobProfile_Check
@@ -246,31 +248,34 @@ namespace ClickNCheck.Controllers
                         return BadRequest("Some candidates have alrdeady been assigned to this verification check");
                     }
                     else
-                        vc.Candidate_Verification.Add(addition);
-                }
-                /*
-                //run authorization check
-                if (vc.IsAuthorize == false)
-                {
-                    if (!(jpChecks.Count == array.Count))
                     {
-                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < jpChecks.Count; i++)
+                        //run authorization check
+                        if (vc.IsAuthorize == false && verCount == 0)
                         {
-                            if (jpChecks[i].ServicesID == (int)array[i])
+                            if (!(jpChecks.Count == array.Count))
                             {
-                                continue;
+                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, addition.ID);
+                                verCount++;
                             }
                             else
                             {
-                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                                for (int m = 0; m < jpChecks.Count; m++)
+                                {
+                                    if (jpChecks[m].ServicesID == (int)array[m])
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                                        verCount++;
+                                    }
+                                }
                             }
                         }
+                        vc.Candidate_Verification.Add(addition);
                     }
-                }*/
+                }
 
                 //update verification object
                 _context.Entry(vc).State = EntityState.Modified;
@@ -526,7 +531,8 @@ namespace ClickNCheck.Controllers
             string checklist= "";
             foreach (var item in checks)
             {
-                checklist = "<li>" + item.Services.CheckCategory.Category + "</li>";
+                var services = _context.Services.Find(item.ServicesID);
+                checklist = "<li>" + services.CheckCategory + "</li>";
             }
             //So if the authorization has been set to true send an email to the respective recruiter with an approval email
             if (verCheck.IsAuthorize==true)
@@ -535,7 +541,7 @@ namespace ClickNCheck.Controllers
                 mailBody = mailBody.Replace("RecruiterName", recruiter.Name);
                 mailBody = mailBody.Replace("{Checks}", checklist);
                 mailBody = mailBody.Replace("ManagerName", manager.Name);
-                service.SendMail(recruiter.Email, "Authorization Verification", mailBody);
+                service.SendMail(recruiter.Email, "Authorization Granted", mailBody);
             }
             else if (verCheck.IsAuthorize == false)
             {

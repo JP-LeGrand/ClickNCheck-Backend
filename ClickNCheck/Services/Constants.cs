@@ -7,7 +7,7 @@ namespace ClickNCheck.Services
 {
     public static class Constants
     {
-        public const string BASE_URL = "https://localhost:44347/api/";// https://clickncheck.azurewebsites.net/api/";/* alternative url for testing on local db https://localhost:44347/api/ */
+        public const string BASE_URL = "https://clickncheck.azurewebsites.net/api/"; /* alternative url for testing on local db https://localhost:44347/api/ */
         public const string IS_LOGGED_IN = "authentication/isLoggedIn";
         public const string ADD_USER = "Users/PostUsers";
         public const string GET_USER_TYPES = "Users/userTypes";
