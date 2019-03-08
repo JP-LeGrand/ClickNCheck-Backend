@@ -175,7 +175,7 @@ namespace ClickNCheck.Controllers
         [Route("CreateCandidateJObject/{id}")]
         public async Task<ActionResult<Candidate>> CreateCandidate(JObject jObject, int id)
         {
-
+            int verCount = 0;
             var vc = await _context.VerificationCheck.FindAsync(id);
 
             var jpChecks = (from s in _context.JobProfile_Check
@@ -248,31 +248,34 @@ namespace ClickNCheck.Controllers
                         return BadRequest("Some candidates have alrdeady been assigned to this verification check");
                     }
                     else
-                        vc.Candidate_Verification.Add(addition);
-                }
-                /*
-                //run authorization check
-                if (vc.IsAuthorize == false)
-                {
-                    if (!(jpChecks.Count == array.Count))
                     {
-                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < jpChecks.Count; i++)
+                        //run authorization check
+                        if (vc.IsAuthorize == false && verCount == 0)
                         {
-                            if (jpChecks[i].ServicesID == (int)array[i])
+                            if (!(jpChecks.Count == array.Count))
                             {
-                                continue;
+                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, addition.ID);
+                                verCount++;
                             }
                             else
                             {
-                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                                for (int m = 0; m < jpChecks.Count; m++)
+                                {
+                                    if (jpChecks[m].ServicesID == (int)array[m])
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                                        verCount++;
+                                    }
+                                }
                             }
                         }
+                        vc.Candidate_Verification.Add(addition);
                     }
-                }*/
+                }
 
                 //update verification object
                 _context.Entry(vc).State = EntityState.Modified;
