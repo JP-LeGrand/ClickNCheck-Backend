@@ -111,7 +111,8 @@ namespace ClickNCheck
             app.UseMvc();
             VerificationChecking verificationChecking = new VerificationChecking();
             RecurringJob.AddOrUpdate(() => verificationChecking.doStuff(), Cron.MinuteInterval(1));
-
+            
+            //Solution to hangfire not working online
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = new[] { new MyAuthorizationFilter() }
@@ -128,6 +129,5 @@ namespace ClickNCheck
                 return httpContext.User.Identity.IsAuthenticated;
             }
         }
-
     }
 }
