@@ -24,6 +24,7 @@ namespace ClickNCheck.Controllers
         private ClickNCheckContext _context;
         public CodeGenerator _code = new CodeGenerator();
         EmailService service = new EmailService();
+        SMSService sMSService = new SMSService();
         private IConfiguration _config;
 
         EmailService mailS = new EmailService();
@@ -157,10 +158,10 @@ namespace ClickNCheck.Controllers
             var user = _context.User.Where(u => u.ID_Passport == passportNumber && u.Phone == phonenumber).ToList();
             foreach (var u in user)
             {
-                string message = $"Hi {u.Name}, ClickNCheck has received your request to recover your password, your password is:{u.password} \n" +
+                string message = $"Hi {u.Name}, ClickNCheck has received your request to recover your password, your password is: {u.Password} \n" +
                      $"Please Note: You have 30 days to provide us with a new password, a 5 day notice will be sent to renew your password";
 
-                smsService.sendsms(message,u.Phone);
+                sMSService.SendSMS(message,u.Phone);
             }
 
             return Ok(user);
