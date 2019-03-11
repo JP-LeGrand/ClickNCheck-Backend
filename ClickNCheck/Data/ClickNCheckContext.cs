@@ -18,7 +18,7 @@ namespace ClickNCheck.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Data Source=tcp:clicknchecksvr.database.windows.net,1433;Initial Catalog=ClickNCheck;User Id=usagisan@clicknchecksvr.database.windows.net;Password=clickncheck@123;");
+                optionsBuilder.UseSqlServer(@"Server = (localdb)\mssqllocaldb; Database = ClickNCheck; Trusted_Connection = True; MultipleActiveResultSets = true");
             }
         }
 
@@ -558,7 +558,8 @@ namespace ClickNCheck.Data
                 LinkCodeID = 1,
                 ManagerID = 1,
                 UserTypeID = 4,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -574,7 +575,8 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 1,
                 Guid = System.Guid.NewGuid(),
-                Password = "123456789"
+                Password = "123456789",
+                PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -590,7 +592,8 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 2,
                 Guid = System.Guid.NewGuid(),
-                Password = "123456789"
+                Password = "123456789",
+                PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -606,7 +609,8 @@ namespace ClickNCheck.Data
                 LinkCodeID = 4,
                 ManagerID = 1,
                 UserTypeID = 3,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
             {
@@ -622,7 +626,8 @@ namespace ClickNCheck.Data
                 LinkCodeID = 5,
                 ManagerID = 1,
                 UserTypeID = 5,
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                PasswordExpiryDate = System.DateTime.Now
             });
 
             modelBuilder.Entity<User>().HasData(new
@@ -640,7 +645,8 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 6,
                 PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                PasswordExpiryDate = System.DateTime.Now
             });
 
             modelBuilder.Entity<User>().HasData(new
@@ -658,7 +664,8 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 6,
                 PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                PasswordExpiryDate = System.DateTime.Now
             });
 
             modelBuilder.Entity<User>().HasData(new
@@ -676,7 +683,8 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 6,
                 PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
-                Guid = System.Guid.NewGuid()
+                Guid = System.Guid.NewGuid(),
+                PasswordExpiryDate = System.DateTime.Now
             });
 
             modelBuilder.Entity<Roles>().HasData(new
