@@ -22,6 +22,8 @@ namespace ClickNCheck.Models
         public string Phone { get; set; }
         public int EmployeeNumber { get; set; }
         public string Password { get; set; }
+        public string ID_Passport { get; set; }
+        public string ID_Type { get; set; }
         public string Salt { get; set; }
         public string Otp { get; set; }
         public string PictureUrl { get; set; }
@@ -30,6 +32,7 @@ namespace ClickNCheck.Models
         public Organisation Organisation { get; set; }
         public int LinkCodeID { get; set; }
         public LinkCode LinkCode { get; set; }
+        public DateTime PasswordExpiryDate { get; set; }
         
         public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; set; } = new List<Recruiter_JobProfile>();
         
