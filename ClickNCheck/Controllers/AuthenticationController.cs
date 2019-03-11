@@ -162,7 +162,6 @@ namespace ClickNCheck.Controllers
                      $"Please Note: You have 30 days to provide us with a new password, a 5 day notice will be sent to renew your password";
                 sMSService.SendSMS(message,u.Phone);
             }
-
             return Ok(user);
         }
     }
