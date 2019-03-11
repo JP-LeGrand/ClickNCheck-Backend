@@ -24,8 +24,7 @@ namespace ClickNCheck.Services
             foreach (var check in verChecks)
             {
                 var services = _context.Services.Find(check.ServicesID);
-                var category = _context.CheckCategory.Find(services.CheckCategoryID);
-                checks += "<li>" + category.Category + "</li>";
+                checks += "<li>" + services.Name + "</li>";
             }
 
             EmailService emailService = new EmailService();

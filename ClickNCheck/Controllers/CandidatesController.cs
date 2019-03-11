@@ -84,58 +84,9 @@ namespace ClickNCheck.Controllers
             return NoContent();
         }
 
-        // POST: api/Candidates
-        [HttpPost]
-        [Route("CreateCandidate/{id}")]
-        public async Task<ActionResult<Candidate>> CreateCandidate(Candidate[] candidate, int id)
-        {
-            Candidate_JobProfile _candidate_jp = new Candidate_JobProfile();
-            for (int x = 0; x < candidate.Length; x++)
-
-            {
-                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidate[x].Email);
-                if (entry != null)
-                {
-                    return Ok("user exists");
-                }
-                else
-                {
-
-                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidate[x].Organisation.ID);
-                    var mailBody = service.CandidateMail();
-                    mailBody = mailBody.Replace("{CandidateName}", candidate[x].Name);
-                    mailBody = mailBody.Replace("{OrganisationName}", org.Name);
-                    var candidateID = candidate[x].ID;
-                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
-                    try
-                    {
-                        service.SendMail(candidate[x].Email, "New Verificaiton Request", mailBody);
-                        _context.Candidate.Add(candidate[x]);
-                        await _context.SaveChangesAsync();
-                    }
-                    catch (Exception e)
-                    {
-                        return BadRequest("some emails have not sent");
-                    }
-                    _candidate_jp.CandidateID = candidate[x].ID;
-                    _candidate_jp.JobProfileID = id;
-
-                    _context.Candidate_JobProfile.Add(_candidate_jp);
-                    await _context.SaveChangesAsync();
-                }
-
-               /* TODO: Use this to check if the checks have been changed
-                VerificationCheckAuth verificationCheckAuth = new VerificationCheckAuth();
-                verificationCheckAuth.changedChecks(_context, User.Claims.First, candidate[x].ID ....)
-                */
-
-            }
-            return Ok();
-        }
-
-        [HttpPost]
+        [HttpGet]
         [Route("checkAuth/{val}/{verCheckID}")]
-        public async void receiveVerCheckAuth(string val, int verCheckID)
+        public void receiveVerCheckAuth(string val, int verCheckID)
         {
             var verCheck = _context.VerificationCheck.Find(verCheckID);
             if (val == "true")
@@ -201,25 +152,34 @@ namespace ClickNCheck.Controllers
                 OrganisationID = (int)x["OrganisationID"]
             }).ToList();
             List<int> candIds = new List<int>();
+            int additionID = 0;
             for (int x = 0; x < candidates.Count; x++)
             {
                 var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
+                
                 if (entry != null)
                 {
+                    //eturn Ok("user exists");
                     continue;
                 }
                 else
                 {
-
+                    var verChecks = _context.Candidate_Verification_Check.Where(verc => verc.Candidate_VerificationID == id).ToList();
+                    string checks = "";
+                    foreach (var check in verChecks)
+                    {
+                        checks += "<li>" + check.Services.CheckCategory.Category + "</li>";
+                    }
                     var org = _context.Organisation.FirstOrDefault(o => o.ID == candidates[x].OrganisationID);
-                    var mailBody = service.CandidateMail();
+                    var mailBody = service.CandidateConsentedMail();
                     mailBody = mailBody.Replace("{CandidateName}", candidates[x].Name);
                     mailBody = mailBody.Replace("{OrganisationName}", org.Name);
+                    mailBody = mailBody.Replace("{Checks}", checks);
                     var candidateID = candidates[x].ID;
-                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID);
+                    mailBody = mailBody.Replace("{link}", "https://s3.amazonaws.com/clickncheck-frontend-tafara/components/candidate/consent/consent.html" + "?id=" + candidateID+"&vc="+id);
                     try
                     {
-                        service.SendMail(candidates[x].Email, "New Verificaiton Request", mailBody);
+                        service.SendMail(candidates[x].Email, "Consent for New Verificaiton Request", mailBody);
                         _context.Candidate.Add(candidates[x]);
                         await _context.SaveChangesAsync();
                         candIds.Add(candidates[x].ID);
@@ -245,16 +205,19 @@ namespace ClickNCheck.Controllers
                     Candidate_Verification addition = new Candidate_Verification { Candidate = candid, VerificationCheck = vc };
                     if (candidate_Verification.Contains(addition))
                     {
-                        return BadRequest("Some candidates have alrdeady been assigned to this verification check");
+                        continue;
                     }
                     else
                     {
+                        vc.Candidate_Verification.Add(addition);
+                        await _context.SaveChangesAsync();
                         //run authorization check
                         if (vc.IsAuthorize == false && verCount == 0)
                         {
                             if (!(jpChecks.Count == array.Count))
                             {
-                                checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, addition.ID);
+
+                                additionID = addition.ID;
                                 verCount++;
                             }
                             else
@@ -273,29 +236,12 @@ namespace ClickNCheck.Controllers
                                 }
                             }
                         }
-                        vc.Candidate_Verification.Add(addition);
+                       
                     }
                 }
 
                 //update verification object
                 _context.Entry(vc).State = EntityState.Modified;
-
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Candidate.Any(e => e.ID == id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
             }
 
             //make the Candidate_Verification_checks
@@ -321,7 +267,7 @@ namespace ClickNCheck.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-
+            checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, additionID);
 
             return Ok();
         }
@@ -496,7 +442,7 @@ namespace ClickNCheck.Controllers
                 var org = _context.Organisation.Find(orgID);
                 string mailBody = service.CandidateConsentedMail();
                 //reformat email content
-                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); ;
+                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); 
                 try
                 {
                     bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
@@ -532,8 +478,7 @@ namespace ClickNCheck.Controllers
             foreach (var item in checks)
             {
                 var services = _context.Services.Find(item.ServicesID);
-                var category = _context.CheckCategory.Find(services.CheckCategoryID);
-                checklist += "<li>" + category.Category+ "</li>";
+                checklist += "<li>" + services.Name + "</li>";
             }
             //So if the authorization has been set to true send an email to the respective recruiter with an approval email
             if (verCheck.IsAuthorize==true)
