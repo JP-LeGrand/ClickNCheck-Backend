@@ -134,6 +134,12 @@ namespace ClickNCheck
             return emailBody;
         }
 
+        public string RecoverPassword()
+        {
+            string emailBody= System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\UserRecoverPassword.html"));
+            return emailBody;
+        }
+
         public void CheckMails(MailMessage smtpMail)
         {
             try

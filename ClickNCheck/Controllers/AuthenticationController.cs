@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using ClickNCheck.Services;
+using System.Collections.Generic;
 
 namespace ClickNCheck.Controllers
 {
@@ -22,7 +23,7 @@ namespace ClickNCheck.Controllers
     {
         private ClickNCheckContext _context;
         public CodeGenerator _code = new CodeGenerator();
-
+        EmailService service = new EmailService();
         private IConfiguration _config;
 
         EmailService mailS = new EmailService();
@@ -132,13 +133,37 @@ namespace ClickNCheck.Controllers
             return Unauthorized();
         }
 
-        //TODO:
-       //// [Authorize]
-       // [Route("logout")]
-       // public async Task<IActionResult> Logout()
-       // {
-       //     await HttpContext.SignOutAsync();
-       //     return Ok();
-       // }
+        //The method below will allow a user to retrieve their password, if it is forgotten and will be sent to them via email
+        [HttpGet]
+        [Route("FogotPassword/email")]
+        public ActionResult<User> GetPasswordViaEmail(string passportNumber, string email)
+        {
+            var user =  _context.User.Where(u=>u.ID_Passport==passportNumber && u.Email==email).ToList();
+            foreach (var u in user)
+            {
+                var mailBody = service.RecoverPassword();
+                mailBody = mailBody.Replace("{UserName}", u.Name);
+                mailBody = mailBody.Replace("{Password}", u.Password);
+                service.SendMail(u.Email, "Password Recovery", mailBody);
+            }
+            return Ok(user);
+        }
+
+        //The method below will allow a user to retrieve their password, if it is forgotten and will be sent to them via sms 
+        [HttpGet]
+        [Route("FogotPassword/phone")]
+        public  ActionResult<User> GetPasswordViaPhone(string passportNumber, string phonenumber)
+        {
+            var user = _context.User.Where(u => u.ID_Passport == passportNumber && u.Phone == phonenumber).ToList();
+            foreach (var u in user)
+            {
+                string message = $"Hi {u.Name}, ClickNCheck has received your request to recover your password, your password is:{u.password} \n" +
+                     $"Please Note: You have 30 days to provide us with a new password, a 5 day notice will be sent to renew your password";
+
+                smsService.sendsms(message,u.Phone);
+            }
+
+            return Ok(user);
+        }
     }
 }
