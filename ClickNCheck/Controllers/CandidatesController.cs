@@ -357,7 +357,8 @@ namespace ClickNCheck.Controllers
         public async Task<IActionResult> PutConsent(int id)
         {
             var candidate = _context.Candidate.Where(c => c.ID == id).FirstOrDefault();
-            if (id != candidate.ID)
+
+            if (candidate == null)
             {
                 return BadRequest();
             }
@@ -381,7 +382,9 @@ namespace ClickNCheck.Controllers
                     throw;
                 }
             }
-            CandidateConsentedEmail(new int[]{id});
+            EmailService emailserv = new EmailService();
+
+            emailserv.CandidateConsentedEmail(id);
 
             return Ok("Consent recieved");
         }
@@ -408,7 +411,6 @@ namespace ClickNCheck.Controllers
                     formFile.CopyTo(ms);
                     var fileBytes = ms.ToArray();
                     uploadSuccess = await uploadService.UploadToBlob(formFile.FileName, fileBytes, null);
-
                 }
             }
 
@@ -421,39 +423,6 @@ namespace ClickNCheck.Controllers
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
-        }
-
-        // POST: api/Candidates/CandidateConsentedEmail
-        [HttpPost]
-        [Route("CandidateConsentedEmail")]
-        public ActionResult<JObject> CandidateConsentedEmail([FromBody]int[] candidateIDs)
-        {
-            JObject results = new JObject();
-
-            foreach (int id in candidateIDs)
-            {
-                var cnd = _context.Candidate.Find(id);
-
-                if (cnd == null)
-                    throw new Exception("failed to find candidate it in database");
-
-                int orgID = cnd.OrganisationID;
-                var org =  _context.Organisation.Find(orgID);
-                string mailBody = service.CandidateConsentedMail();
-                //reformat email content
-                mailBody = mailBody.Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", org.Name); 
-                try
-                {
-                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
-                    results.Add(id.ToString(), serv);
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-
-            return Ok(results);
         }
 
         //The method will send a recruiter an email based on whether they are authorised to add checks or not to a job profile
