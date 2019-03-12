@@ -27,7 +27,7 @@ namespace ClickNCheck.Services
                 //calculate the number of days
                 int daysLeft = (user.PasswordExpiryDate - today).Days;
                 //if less than 5 notify user
-                if (daysLeft <= 5)
+                if (daysLeft == 5)
                 {
                     string body = emailService.PasswordExpiry();
                     body = body.Replace("UserName", user.Name);
