@@ -528,6 +528,15 @@ namespace ClickNCheck.Controllers
             }
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("IsPasswordExpired/{id}")]
+        public ActionResult<bool> IsPasswordExpired(int id)
+        {
+            var user = _context.User.Find(id);
+            return (user.PasswordExpiryDate - DateTime.Now).Days <= 0;
+        }
+
     }
 
 
