@@ -14,6 +14,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using ClickNCheck.Services;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace ClickNCheck.Controllers
 {
@@ -135,11 +136,11 @@ namespace ClickNCheck.Controllers
         }
 
         //The method below will allow a user to retrieve their password, if it is forgotten and will be sent to them via email
-        [HttpGet]
-        [Route("FogotPassword/email")]
-        public ActionResult<User> GetPasswordViaEmail(string passportNumber, string email)
+        [HttpPost]
+        [Route("ForgotPassword/email")]
+        public ActionResult<User> GetPasswordViaEmail([FromBody]JObject jObj)
         {
-            var user =  _context.User.Where(u=>u.ID_Passport==passportNumber && u.Email==email).ToList();
+            var user = _context.User.Where(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Email == jObj["email"].ToString()).ToList();
             foreach (var u in user)
             {
                 var mailBody = service.RecoverPassword();
@@ -151,16 +152,16 @@ namespace ClickNCheck.Controllers
         }
 
         //The method below will allow a user to retrieve their password, if it is forgotten and will be sent to them via sms 
-        [HttpGet]
-        [Route("FogotPassword/phone")]
-        public  ActionResult<User> GetPasswordViaPhone(string passportNumber, string phonenumber)
+        [HttpPost]
+        [Route("ForgotPassword/phone")]
+        public ActionResult<User> GetPasswordViaPhone([FromBody]JObject jObj)
         {
-            var user = _context.User.Where(u => u.ID_Passport == passportNumber && u.Phone == phonenumber).ToList();
+            var user = _context.User.Where(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Phone == jObj["phonenumber"].ToString()).ToList();
             foreach (var u in user)
             {
                 string message = $"Hi {u.Name}, ClickNCheck has received your request to recover your password, your password is: {u.Password} \n" +
                      $"Please Note: You have 30 days to provide us with a new password, a 5 day notice will be sent to renew your password";
-                sMSService.SendSMS(message,u.Phone);
+                sMSService.SendSMS(message, u.Phone);
             }
             return Ok(user);
         }
