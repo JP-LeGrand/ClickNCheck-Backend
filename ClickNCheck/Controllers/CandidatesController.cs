@@ -352,7 +352,7 @@ namespace ClickNCheck.Controllers
         }
 
         //The method below updates the consent to true when candidate approves 
-        [HttpPut]
+        [HttpGet]
         [Route("PutConsent/{id}")]
         public async Task<IActionResult> PutConsent(int id)
         {
@@ -381,8 +381,9 @@ namespace ClickNCheck.Controllers
                     throw;
                 }
             }
+            CandidateConsentedEmail(new int[]{id});
 
-            return Ok(candidate);
+            return Ok("Consent recieved");
         }
 
 
@@ -425,7 +426,7 @@ namespace ClickNCheck.Controllers
         // POST: api/Candidates/CandidateConsentedEmail
         [HttpPost]
         [Route("CandidateConsentedEmail")]
-        public async Task<ActionResult<JObject>> CandidateConsentedEmail([FromBody]int[] candidateIDs)
+        public ActionResult<JObject> CandidateConsentedEmail([FromBody]int[] candidateIDs)
         {
             JObject results = new JObject();
 
@@ -436,25 +437,23 @@ namespace ClickNCheck.Controllers
                 if (cnd == null)
                     throw new Exception("failed to find candidate it in database");
 
-                int orgID = 1;
-                //orgID = cnd.Organisation.ID;
-
-                var org = _context.Organisation.Find(orgID);
+                int orgID = cnd.OrganisationID;
+                var org =  _context.Organisation.Find(orgID);
                 string mailBody = service.CandidateConsentedMail();
                 //reformat email content
-                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); 
+                mailBody = mailBody.Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", org.Name); 
                 try
                 {
                     bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
                     results.Add(id.ToString(), serv);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
 
                 }
             }
 
-            return results;
+            return Ok(results);
         }
 
         //The method will send a recruiter an email based on whether they are authorised to add checks or not to a job profile
@@ -525,9 +524,8 @@ namespace ClickNCheck.Controllers
                 {
                     case 0:
                         //Email
-
                         EmailService consentEmail = new EmailService();
-                        string emailBody = consentEmail.CandidateMail().Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", orgName);
+                        string emailBody = consentEmail.CandidateMail().Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", orgName).Replace("#TTT", $"{cnd.ID}");
                         success = consentEmail.SendMail(cnd.Email, "Candidate Consent", emailBody);
                         break;
                     case 1:
