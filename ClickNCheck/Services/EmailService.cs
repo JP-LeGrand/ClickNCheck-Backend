@@ -97,7 +97,7 @@ namespace ClickNCheck
             return emailBody;
         }
 
-       public string CandidateMail()
+        public string CandidateMail()
         {
 
             string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\CandidateEmail.html"));
@@ -137,6 +137,12 @@ namespace ClickNCheck
         public string RecoverPassword()
         {
             string emailBody= System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\UserRecoverPassword.html"));
+            return emailBody;
+        }
+
+        public string PasswordExpiry()
+        {
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\PasswordExpiryEmail.html"));
             return emailBody;
         }
 

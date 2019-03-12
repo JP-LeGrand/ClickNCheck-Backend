@@ -110,7 +110,10 @@ namespace ClickNCheck
 
             app.UseMvc();
             VerificationChecking verificationChecking = new VerificationChecking();
-            RecurringJob.AddOrUpdate(() => verificationChecking.doStuff(), Cron.MinuteInterval(1));
+            Jobs jobs = new Jobs();
+            RecurringJob.AddOrUpdate(() => verificationChecking.doStuff(), Cron.MinuteInterval(30));
+            RecurringJob.AddOrUpdate(() => jobs.CheckUserPasswords(), Cron.Daily);
+
             
             //Solution to hangfire not working online
             app.UseHangfireDashboard("/hangfire", new DashboardOptions

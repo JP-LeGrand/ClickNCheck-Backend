@@ -499,10 +499,33 @@ namespace ClickNCheck.Controllers
                 }
             }
 
+
+
             if (bloburl != "")
                 return Ok("Upload Success");
             else
                 return NotFound("Upload Error");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("UpdatePassword/{id}")]
+        public async Task<ActionResult<string>> UpdatePasswordAsync(int id, [FromBody]string password)
+        {
+            var user = _context.User.Find(id);
+
+            user.Password = password;
+            user.PasswordExpiryDate = DateTime.Now.AddDays(30);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
     }
