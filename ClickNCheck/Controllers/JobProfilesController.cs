@@ -109,7 +109,7 @@ namespace ClickNCheck.Controllers
 
                     if (services == null)
                     {
-                        return NotFound("The vendor " + services.Name + " does not exist");
+                        continue;
                     }
                     //add vendor to job profile
                     j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
@@ -128,7 +128,7 @@ namespace ClickNCheck.Controllers
 
                     if (services == null)
                     {
-                        return NotFound("The vendor " + services.Name + " does not exist");
+                        continue;
                     }
                     //add vendor to job profile
                     j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
