@@ -12,7 +12,7 @@ namespace ClickNCheck.Models
     public class Candidate
     {
         public int ID { get; set; }
-        
+        public Guid Guid { get; set; }
         public string Name { get; set; }
         
         public string ID_Passport { get; set; }
