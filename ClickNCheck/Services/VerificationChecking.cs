@@ -56,7 +56,6 @@ namespace ClickNCheck.Services
                                 j.Candidate.Maiden_Surname,
                                 j.Candidate.ID_Passport,
                                 j.Candidate.ID_Type,
-                                j.Candidate.HasConsented,
                                 j.Candidate.Phone,
                                 j.Candidate.Email,
                                 CandidateVerificationID = i.ID,
@@ -68,25 +67,30 @@ namespace ClickNCheck.Services
             //ExecuteCheck();
             foreach(object item in objList)
             {
-               
                 JObject jItem = JObject.FromObject(new {item });
                 int candidateId = (int)jItem["item"]["CandidateID"];
-                var candidate = _context.Candidate.Find(candidateId);
-
-                if (candidate.HasConsented)
+                
+                VerificationCheck vrc = _context.VerificationCheck.Find((int) jItem["item"]["VerificationCheckID"]);
+                List<Candidate_Verification> thecvc = vrc.Candidate_Verification.ToList();
+                foreach (var candVerif in thecvc)
                 {
-                    int servID = (int)jItem["item"]["ServicesID"];
-                    Models.Services serv = _context.Services.Find(servID);
-                    ExecuteCheck(candidateId, serv);
-                }
-                else {
-                    //the remove the candidate
-
-                    //objList.Remove(candidate);
+                    if(candVerif.CandidateID == candidateId)
+                    {
+                        if (candVerif.HasConsented)
+                        {
+                            int servID = (int)jItem["item"]["ServicesID"];
+                            Models.Services serv = _context.Services.Find(servID);
+                            ExecuteCheck(candVerif.CandidateID, serv);
+                        }
+                        else
+                        {
+                            //the remove the candidate
+                            // he as not given consent yet
+                            //objList.Remove(candidate);
+                        }
+                    }
                 }
             }
-
-
         }
         public void ExecuteCheck(int candidateID, Models.Services service)
         {

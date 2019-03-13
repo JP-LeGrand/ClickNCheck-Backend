@@ -142,7 +142,6 @@ namespace ClickNCheck.Controllers
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
             {
                 Email = (string)x["Email"],
-                HasConsented = (bool)x["HasConsented"],
                 ID_Passport = (string)x["ID_Passport"],
                 ID_Type = (string)x["ID_Type"],
                 Maiden_Surname = (string)x["Maiden_Surname"],
@@ -353,27 +352,48 @@ namespace ClickNCheck.Controllers
 
         //The method below updates the consent to true when candidate approves 
         [HttpGet]
-        [Route("PutConsent/{id}")]
-        public async Task<IActionResult> PutConsent(int id)
+        [Route("PutConsent/{verificationID}/{candidateGUID}")]
+        public async Task<IActionResult> PutConsent(int verificationID, Guid candidateGUID)
         {
-            var candidate = _context.Candidate.Where(c => c.ID == id).FirstOrDefault();
+            List<Candidate> candidatesList = _context.Candidate.ToList();
+            int candidateID = -1;
 
-            if (candidate == null)
+            foreach (var cnd in candidatesList)
             {
-                return BadRequest();
+                if (cnd.Guid.Equals(candidateGUID))
+                    candidateID = cnd.ID;
             }
 
+            if (candidateID == -1)
+            {
+                return BadRequest("Candidate not found");
+            }
+
+            var candidate = _context.Candidate.Find(candidateID);
             _context.Entry(candidate).State = EntityState.Modified;
 
             try
             {
-                candidate.HasConsented = true;
-                _context.Candidate.Update(candidate);
-                await _context.SaveChangesAsync();
+                VerificationCheck verfiCheck = _context.VerificationCheck.Find(verificationID);
+                List<Candidate_Verification> cvcList = verfiCheck.Candidate_Verification.ToList();
+                foreach ( Candidate_Verification cvc in cvcList )
+                {
+                    if(cvc.CandidateID == candidateID)
+                    {
+                        cvc.HasConsented = true;
+                        _context.VerificationCheck.Update(verfiCheck);
+                        await _context.SaveChangesAsync();
+
+                        EmailService emailserv = new EmailService();
+                        emailserv.CandidateConsentedEmail(candidateID);
+
+                        break;
+                    }
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CandidateExists(id))
+                if (!CandidateExists(candidateID))
                 {
                     return NotFound();
                 }
@@ -382,21 +402,32 @@ namespace ClickNCheck.Controllers
                     throw;
                 }
             }
-            EmailService emailserv = new EmailService();
-
-            emailserv.CandidateConsentedEmail(id);
 
             return Ok("Consent recieved");
         }
 
 
         [HttpGet]
-        [Route("ConsentCandidate/{id}")]
-        public async Task<ActionResult<Candidate>> ConsentCandidate(int id, [FromForm]IFormCollection indemnityFile)
+        [Route("ConsentCandidate/{verificheckID}/{id}")]
+        public async Task<ActionResult<Candidate>> ConsentCandidate(int verificheckID, int id, [FromForm]IFormCollection indemnityFile)
         {
             var candidate = await _context.Candidate.FindAsync(id);
-            candidate.HasConsented = true;
-            _context.SaveChanges();
+            VerificationCheck verifCheck = _context.VerificationCheck.Find(verificheckID);
+            List < Candidate_Verification > cvcList = verifCheck.Candidate_Verification.ToList();
+
+            if (cvcList != null)
+            {
+                foreach(Candidate_Verification cvc in cvcList)
+                {
+                    if(cvc.CandidateID == id)
+                    {
+                        cvc.HasConsented = true;
+                        _context.SaveChanges();
+                        break;
+                    }
+                }
+            }
+            else return NotFound("Verification check not found");
 
             var uploadSuccess = false;
             foreach (var formFile in indemnityFile.Files.ToList())
@@ -469,36 +500,33 @@ namespace ClickNCheck.Controllers
             return Ok(verCheck);
         }
         [HttpPost]
-        [Route("sendCandidateConsent")]
-        public ActionResult<JObject> sendCandidateConsent([FromBody]JArray information)
+        [Route("sendCandidateConsent/{verificationID}")]
+        public ActionResult<JObject> sendCandidateConsent(int verificationID, [FromBody]int[] candidate)
         {
-            List<JToken> listOfCandidates = information.ToList();
-
             JArray succeededToSend = new JArray();
             JArray failedToSend = new JArray();
 
             JObject combinedList = new JObject ();
-            foreach(JObject candidate in listOfCandidates)
+            foreach(int candidateId in candidate)
             {
-                int candidateId = (int)candidate.SelectToken("candidateId");
-                int consentType = (int)candidate.SelectToken("consentType");
-
                 Candidate cnd = _context.Candidate.Find(candidateId);
                 string orgName = _context.Organisation.Find(cnd.OrganisationID).Name;
                 if (cnd == null)
                     return NotFound("Could not find candidate");
 
                 bool success = false;
-                switch (consentType)
+                switch (1)
                 {
                     case 0:
                         //Email
                         EmailService consentEmail = new EmailService();
-                        string emailBody = consentEmail.CandidateMail().Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", orgName).Replace("#TTT", $"{cnd.ID}");
+                        string emailBody = consentEmail.CandidateMail().Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", $"{orgName}");
+                        emailBody = emailBody.Replace("{verificationID}", $"{verificationID}").Replace("{candidateGUID}", $"{cnd.Guid}");
                         success = consentEmail.SendMail(cnd.Email, "Candidate Consent", emailBody);
                         break;
                     case 1:
                         //SMS
+                        //When you get the consent reply, how would you know to which job this candidate was giving consent for.
                         string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
                         SMSService consentSMS = new SMSService();
                         consentSMS.SendSMS(messageBody, cnd.Phone);
