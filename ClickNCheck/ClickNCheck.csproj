@@ -40,6 +40,9 @@
     <None Update="Files\CandidateEmail.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\PasswordChanged.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\PasswordExpiryEmail.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
