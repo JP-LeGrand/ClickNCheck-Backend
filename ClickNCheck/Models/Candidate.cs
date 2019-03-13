@@ -23,7 +23,6 @@ namespace ClickNCheck.Models
         public bool isVerified { get; set; }
         public string Maiden_Surname { get; set; }
         public string Email { get; set; }
-        public bool HasConsented { get; set; }
         public string Phone { get; set; }
         
         public int OrganisationID { get; set; }

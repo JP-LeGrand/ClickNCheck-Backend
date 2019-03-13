@@ -9,7 +9,7 @@ namespace ClickNCheck.Models
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public int Cost  { get; set; }
+        public double Cost  { get; set; }
         public string TurnaroundTime { get; set; }
         public string URL { get; set; }
         public bool isAvailable { get; set; }

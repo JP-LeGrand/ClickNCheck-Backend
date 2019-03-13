@@ -192,7 +192,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 1,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "Compuscan credit report",
                 TurnaroundTime = "2 days",
@@ -205,7 +205,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 2,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "Experian employment report",
                 TurnaroundTime = "2 days",
@@ -218,7 +218,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 3,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "Lexis Nexis criminal report",
                 TurnaroundTime = "2 days",
@@ -231,7 +231,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 4,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "MIE identity report",
                 TurnaroundTime = "2 days",
@@ -244,7 +244,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 5,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "PNet driver's report",
                 TurnaroundTime = "2 days",
@@ -257,7 +257,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 6,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "Umalusi academic report",
                 TurnaroundTime = "2 days",
@@ -270,7 +270,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 7,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "Transunion residency report",
                 TurnaroundTime = "2 days",
@@ -283,7 +283,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 8,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "XDS personal report",
                 TurnaroundTime = "2 days",
@@ -296,7 +296,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 9,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "SAPS criminal report",
                 TurnaroundTime = "2 days",
@@ -309,7 +309,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 10,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "FSCA credit report",
                 TurnaroundTime = "2 days",
@@ -322,7 +322,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 11,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "INSETA employment report",
                 TurnaroundTime = "2 days",
@@ -335,7 +335,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 12,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "SAQA academic report",
                 TurnaroundTime = "2 days",
@@ -348,7 +348,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 13,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "Traffic Department driver's report",
                 TurnaroundTime = "2 days",
@@ -361,7 +361,7 @@ namespace ClickNCheck.Data
             modelBuilder.Entity<Models.Services>().HasData(new
             {
                 ID = 14,
-                Cost = 100,
+                Cost = 100.00,
                 isAvailable = true,
                 Name = "Home Affairs identity report",
                 TurnaroundTime = "2 days",
