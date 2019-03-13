@@ -808,6 +808,7 @@ namespace ClickNCheck.Data
                 HasConsented = true,
                 Phone = "2342423423",
                 Password = "dgsfhsf",
+                Guid = System.Guid.NewGuid(),
                 OrganisationID = 1
             });
             modelBuilder.Entity<Candidate>().HasData(new
@@ -825,6 +826,7 @@ namespace ClickNCheck.Data
                 HasConsented = true,
                 Phone = "2342423423",
                 Password = "dgsfhsf",
+                Guid = System.Guid.NewGuid(),
                 OrganisationID = 1
             });
             modelBuilder.Entity<Candidate>().HasData(new
@@ -842,6 +844,7 @@ namespace ClickNCheck.Data
                 HasConsented = true,
                 Phone = "2342423423",
                 Password = "dgsfhsf",
+                Guid = System.Guid.NewGuid(),
                 OrganisationID = 1
             });
             modelBuilder.Entity<Candidate>().HasData(new
@@ -859,6 +862,7 @@ namespace ClickNCheck.Data
                 HasConsented = true,
                 Phone = "2342423423",
                 Password = "dgsfhsf",
+                Guid = System.Guid.NewGuid(),
                 OrganisationID = 1
             });
             modelBuilder.Entity<Candidate>().HasData(new
@@ -876,6 +880,7 @@ namespace ClickNCheck.Data
                 HasConsented = true,
                 Phone = "2342423423",
                 Password = "dgsfhsf",
+                Guid = System.Guid.NewGuid(),
                 OrganisationID = 1
             });
             modelBuilder.Entity<Candidate>().HasData(new
@@ -893,6 +898,7 @@ namespace ClickNCheck.Data
                 HasConsented = true,
                 Phone = "2342423423",
                 Password = "dgsfhsf",
+                Guid = System.Guid.NewGuid(),
                 OrganisationID = 1
             });
         }

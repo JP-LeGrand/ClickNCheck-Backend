@@ -352,12 +352,13 @@ namespace ClickNCheck.Controllers
         }
 
         //The method below updates the consent to true when candidate approves 
-        [HttpPut]
+        [HttpGet]
         [Route("PutConsent/{id}")]
         public async Task<IActionResult> PutConsent(int id)
         {
             var candidate = _context.Candidate.Where(c => c.ID == id).FirstOrDefault();
-            if (id != candidate.ID)
+
+            if (candidate == null)
             {
                 return BadRequest();
             }
@@ -381,8 +382,11 @@ namespace ClickNCheck.Controllers
                     throw;
                 }
             }
+            EmailService emailserv = new EmailService();
 
-            return Ok(candidate);
+            emailserv.CandidateConsentedEmail(id);
+
+            return Ok("Consent recieved");
         }
 
 
@@ -407,7 +411,6 @@ namespace ClickNCheck.Controllers
                     formFile.CopyTo(ms);
                     var fileBytes = ms.ToArray();
                     uploadSuccess = await uploadService.UploadToBlob(formFile.FileName, fileBytes, null);
-
                 }
             }
 
@@ -420,41 +423,6 @@ namespace ClickNCheck.Controllers
         private bool JobProfileExists(int id)
         {
             return _context.JobProfile.Any(e => e.ID == id);
-        }
-
-        // POST: api/Candidates/CandidateConsentedEmail
-        [HttpPost]
-        [Route("CandidateConsentedEmail")]
-        public async Task<ActionResult<JObject>> CandidateConsentedEmail([FromBody]int[] candidateIDs)
-        {
-            JObject results = new JObject();
-
-            foreach (int id in candidateIDs)
-            {
-                var cnd = _context.Candidate.Find(id);
-
-                if (cnd == null)
-                    throw new Exception("failed to find candidate it in database");
-
-                int orgID = 1;
-                //orgID = cnd.Organisation.ID;
-
-                var org = _context.Organisation.Find(orgID);
-                string mailBody = service.CandidateConsentedMail();
-                //reformat email content
-                mailBody = mailBody.Replace("CandidateName", cnd.Name).Replace("OrganisationName", org.Name); 
-                try
-                {
-                    bool serv = service.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
-                    results.Add(id.ToString(), serv);
-                }
-                catch (Exception e)
-                {
-
-                }
-            }
-
-            return results;
         }
 
         //The method will send a recruiter an email based on whether they are authorised to add checks or not to a job profile
@@ -499,6 +467,54 @@ namespace ClickNCheck.Controllers
             }
 
             return Ok(verCheck);
+        }
+        [HttpPost]
+        [Route("sendCandidateConsent")]
+        public ActionResult<JObject> sendCandidateConsent([FromBody]JArray information)
+        {
+            List<JToken> listOfCandidates = information.ToList();
+
+            JArray succeededToSend = new JArray();
+            JArray failedToSend = new JArray();
+
+            JObject combinedList = new JObject ();
+            foreach(JObject candidate in listOfCandidates)
+            {
+                int candidateId = (int)candidate.SelectToken("candidateId");
+                int consentType = (int)candidate.SelectToken("consentType");
+
+                Candidate cnd = _context.Candidate.Find(candidateId);
+                string orgName = _context.Organisation.Find(cnd.OrganisationID).Name;
+                if (cnd == null)
+                    return NotFound("Could not find candidate");
+
+                bool success = false;
+                switch (consentType)
+                {
+                    case 0:
+                        //Email
+                        EmailService consentEmail = new EmailService();
+                        string emailBody = consentEmail.CandidateMail().Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", orgName).Replace("#TTT", $"{cnd.ID}");
+                        success = consentEmail.SendMail(cnd.Email, "Candidate Consent", emailBody);
+                        break;
+                    case 1:
+                        //SMS
+                        string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
+                        SMSService consentSMS = new SMSService();
+                        consentSMS.SendSMS(messageBody, cnd.Phone);
+                        //status
+                        success = true;
+                        break;
+                    default:break;
+                }
+
+                if (success)
+                    succeededToSend.Add(candidate);
+                else failedToSend.Add(candidate);
+            }
+            combinedList.Add("failedToSend", failedToSend);
+            combinedList.Add("succeededToSend", succeededToSend);
+            return Ok(combinedList);
         }
     }
 }
