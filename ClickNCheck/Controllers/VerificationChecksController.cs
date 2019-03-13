@@ -93,23 +93,48 @@ namespace ClickNCheck.Controllers
 
         // POST: api/VerificationChecks
         [HttpPost]
-        [Route("CreateVerificationCheck")]
-        public async Task<ActionResult<VerificationCheck>> CreateVerificationCheck(VerificationCheck verificationCheck)
+        [Route("CreateVerificationCheck/{jobprofileid}")]
+        public async Task<ActionResult<VerificationCheck>> CreateVerificationCheck(int jobprofileid, [FromBody]JObject jObject)
         {
-            var jpAuth = _context.JobProfile.Find(verificationCheck.JobProfileID).authorisationRequired;
-            if(jpAuth)
+            //create VC first
+            JobProfile jobProfile = null;
+            try
             {
-                verificationCheck.IsAuthorize = false;
+                jobProfile = _context.JobProfile.Find(jobprofileid);
             }
-            else
-            {
-                verificationCheck.IsAuthorize = true;
-            }
+            catch { return NotFound("Job profile not found"); }
 
-            _context.VerificationCheck.Add(verificationCheck);
+            bool IsAuthorized = jobProfile.authorisationRequired ? false: true;
+
+            JArray array = (JArray)jObject["checks"];
+            int[] checks = array.Select(jv => (int)jv).ToArray();
+
+            VerificationCheck vc = new VerificationCheck
+            {
+                Title = string.Concat(jobProfile.Title, "VC"),
+                JobProfileID = jobprofileid,
+                IsAuthorize = IsAuthorized,
+                RecruiterID = (int)jObject["recruiterID"],
+                IsComplete = (bool)jObject["IsComplete"]
+                
+            };
+
+            for (int i = 0; i < checks.Length; i++)
+            {
+                var services = await _context.Services.FindAsync(checks[i]);
+
+                if (services == null)
+                {
+                    continue;
+                }
+                //add verificationCheckChecks table to VerificationCheck to link to services
+                vc.VerificationCheckChecks.Add(new VerificationCheckChecks { VerificationCheck = vc, Services = services, Order = i + 1 });
+            }
+            _context.VerificationCheck.Add(vc);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVerificationCheck", new { id = verificationCheck.ID }, verificationCheck);
+            //Add VC Checks
+            return Ok();
         }
 
         // DELETE: api/VerificationChecks/5
