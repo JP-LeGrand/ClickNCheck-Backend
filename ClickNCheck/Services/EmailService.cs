@@ -19,7 +19,9 @@ using Limilabs.Client.POP3;
 using MailMessage = System.Net.Mail.MailMessage;
 using ClickNCheck.Services.ResponseService;
 using ClickNCheck.Services.Classifier;
-
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using ClickNCheck.Data;
 
 namespace ClickNCheck
 {
@@ -318,6 +320,29 @@ namespace ClickNCheck
             return Convert.FromBase64String(result.ToString());
         }
 
+        // CandidateConsentedEmail
+        public ActionResult<bool> CandidateConsentedEmail(int candidateID)
+        {
+            JObject results = new JObject();
+            ClickNCheckContext _context = new ClickNCheckContext();
+            var cnd = _context.Candidate.Find(candidateID);
+
+            if (cnd == null)
+                throw new Exception("failed to find candidate it in database");
+
+            int orgID = cnd.OrganisationID;
+            var org = _context.Organisation.Find(orgID);
+
+            string mailBody = this.CandidateConsentedMail();
+            //reformat email content
+            mailBody = mailBody.Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", org.Name);
+
+            //keep track of which email succeeded and which didn't
+            bool serv = this.SendMail(cnd.Email, "We have just recieved consent to verification", mailBody);
+
+
+            return serv;
+        }
     }
 }
 
