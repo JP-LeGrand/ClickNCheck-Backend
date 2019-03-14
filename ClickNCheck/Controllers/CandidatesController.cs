@@ -266,7 +266,7 @@ namespace ClickNCheck.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, additionID);
+            checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID);
 
             return Ok();
         }
