@@ -229,7 +229,7 @@ namespace ClickNCheck.Controllers
                                     }
                                     else
                                     {
-                                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID);
                                         verCount++;
                                     }
                                 }
