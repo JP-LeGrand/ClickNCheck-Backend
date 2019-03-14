@@ -46,6 +46,7 @@ namespace ClickNCheck.Data
         public DbSet<UserType> UserType { get; set; }
         public DbSet<Vendor> Vendor { get; set; }
         public DbSet<Results> Result { get; set; }
+        public DbSet<VerificationCheckChecks> VerificationCheckChecks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

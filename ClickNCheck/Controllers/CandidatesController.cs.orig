@@ -283,6 +283,7 @@ namespace ClickNCheck.Controllers
                             select s).ToList();
             var VerificationCheckChecks = _context.VerificationCheckChecks.Where(x => x.VerificationCheckID == id).ToList();
             var vcChecks = new List<Candidate_Verification_Check>();
+
             //convert object to array
             JArray jcandidates = (JArray)jObject["candidates"];
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
@@ -294,14 +295,16 @@ namespace ClickNCheck.Controllers
                 Name = (string)x["Name"],
                 Surname = (string)x["Surname"],
                 Phone = (string)x["Phone"],
-                OrganisationID = (int)x["OrganisationID"]2
+                OrganisationID = (int)x["OrganisationID"]
             }).ToList();
+
             List<int> candIds = new List<int>();
             
             //Create each candidate seperately
             for (int x = 0; x < candidates.Count; x++)
             {
                 var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
+
                 if (entry != null)
                 {
                     //eturn Ok("user exists");
@@ -320,11 +323,13 @@ namespace ClickNCheck.Controllers
                     await _context.SaveChangesAsync();
                     candIds.Add(candidates[x].ID);
                 }
+
                 var candidate_Verification = await _context.Candidate_Verification.ToListAsync();
                 //Assign candidates to verification
                 for (int i = 0; i < candIds.Count; i++)
                 {
                     var candid = await _context.Candidate.FindAsync(candIds[i]);
+
                     if (candid == null)
                     {
                         return NotFound("The candidate " + candid.Name + candid.Surname + " does not exist");
@@ -342,13 +347,16 @@ namespace ClickNCheck.Controllers
                         sendCandidateConsent(id, candIds[i]);
                     }
                 }
+
                 //update verification object
                 _context.Entry(vc).State = EntityState.Modified;
             }
+
             //make the Candidate_Verification_checks
             var cdList = (from s in _context.Candidate_Verification
                           where s.VerificationCheckID == vc.ID
                           select s).ToList();
+
             var NotStartedStatus = await _context.CheckStatusType.FindAsync(5);
             var VC = await _context.CheckStatusType.FindAsync(5);
 
@@ -375,7 +383,11 @@ namespace ClickNCheck.Controllers
         {
             return _context.Candidate.Any(e => e.ID == id);
         }
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> Dev
         [HttpPost]
         [Route("changePassword/{id}")]
         public async Task<ActionResult<Candidate>> changePassword(int id, [FromBody]string password)
@@ -545,13 +557,24 @@ namespace ClickNCheck.Controllers
             if (cnd == null)
                 return NotFound("Could not find candidate");
                 
+<<<<<<< HEAD
+                //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
+                string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
+                SMSService consentSMS = new SMSService();
+                try
+                {
+                    consentSMS.SendSMS(messageBody, cnd.Phone);
+                    succeededToSend.Add(candidateId);
+                }
+                catch(Exception) { failedToSend.Add(candidateId); }
+=======
             //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
             string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
             SMSService consentSMS = new SMSService();
             try
             {
                 consentSMS.SendSMS(messageBody, cnd.Phone);
-                    succeededToSend.Add(candidateId);
+>>>>>>> Dev
             }
             catch(Exception e) { failedToSend.Add(candidateId); }
             succeededToSend.Add(candidateId);
