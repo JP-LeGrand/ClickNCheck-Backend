@@ -84,9 +84,9 @@ namespace ClickNCheck.Services
                         }
                         else
                         {
-                            //the remove the candidate
-                            // he as not given consent yet
-                            //objList.Remove(candidate);
+                            //TODO
+                            //the remove the candidate like : objList.Remove(candidate);
+                            //he as not given consent yet
                         }
                     }
                 }
