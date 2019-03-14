@@ -26,11 +26,42 @@ namespace ClickNCheck.Controllers
             string phoneNumber = $"+{ phone.Substring(3)}";
             var messagingResponse = new MessagingResponse();
 
+            string body = responses.Body.Trim();
             try
             {
-                string[] arBody = responses.Body.Trim().Split(" ");
-                verificationID = Convert.ToInt32(arBody[0]);
-                answer = arBody[1];
+                if(body.Contains(" "))
+                {
+                    string[] arBody = body.Split(" ");
+                    if (arBody.Count() != 2)
+                        throw new Exception();
+                    try
+                    {
+                        verificationID = Convert.ToInt32(arBody[0]);
+                        answer = arBody[1];
+                    }
+                    catch (Exception)
+                    {
+                        verificationID = Convert.ToInt32(arBody[1]);
+                        answer = arBody[0];
+                    }
+                    
+                }
+                else
+                {
+                    //TODO
+                    bool prevCharWasAlph = true;
+                    foreach (char c in body.ToLower())
+                    {
+                        if(prevCharWasAlph && c <= 'z' && c >= 'a' )
+                        {
+                            //you have an alpha again
+                        }
+                        else if (!prevCharWasAlph && c <= 'z' && c >= 'a')
+                        {
+                            //you have an alpha again
+                        }
+                    }
+                }
             }
             catch (Exception)
             {
