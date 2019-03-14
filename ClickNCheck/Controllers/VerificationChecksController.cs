@@ -111,7 +111,7 @@ namespace ClickNCheck.Controllers
 
             VerificationCheck vc = new VerificationCheck
             {
-                Title = string.Concat(jobProfile.Title, "VC"),
+                Title = jobProfile.Title,
                 JobProfileID = jobprofileid,
                 IsAuthorize = IsAuthorized,
                 RecruiterID = (int)jObject["recruiterID"],
@@ -134,7 +134,7 @@ namespace ClickNCheck.Controllers
             await _context.SaveChangesAsync();
 
             //Add VC Checks
-            return Ok();
+            return Ok(vc.ID);
         }
 
         // DELETE: api/VerificationChecks/5
