@@ -111,7 +111,7 @@ namespace ClickNCheck.Controllers
 
             VerificationCheck vc = new VerificationCheck
             {
-                Title = string.Concat(jobProfile.Title, "VC"),
+                Title = jobProfile.Title,
                 JobProfileID = jobprofileid,
                 IsAuthorize = IsAuthorized,
                 RecruiterID = (int)jObject["recruiterID"],

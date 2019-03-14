@@ -283,7 +283,6 @@ namespace ClickNCheck.Controllers
                             select s).ToList();
             var VerificationCheckChecks = _context.VerificationCheckChecks.Where(x => x.VerificationCheckID == id).ToList();
             var vcChecks = new List<Candidate_Verification_Check>();
-
             //convert object to array
             JArray jcandidates = (JArray)jObject["candidates"];
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
@@ -297,14 +296,12 @@ namespace ClickNCheck.Controllers
                 Phone = (string)x["Phone"],
                 OrganisationID = (int)x["OrganisationID"]
             }).ToList();
-
             List<int> candIds = new List<int>();
             
             //Create each candidate seperately
             for (int x = 0; x < candidates.Count; x++)
             {
                 var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
-
                 if (entry != null)
                 {
                     //eturn Ok("user exists");
@@ -323,13 +320,11 @@ namespace ClickNCheck.Controllers
                     await _context.SaveChangesAsync();
                     candIds.Add(candidates[x].ID);
                 }
-
                 var candidate_Verification = await _context.Candidate_Verification.ToListAsync();
                 //Assign candidates to verification
                 for (int i = 0; i < candIds.Count; i++)
                 {
                     var candid = await _context.Candidate.FindAsync(candIds[i]);
-
                     if (candid == null)
                     {
                         return NotFound("The candidate " + candid.Name + candid.Surname + " does not exist");
@@ -347,16 +342,13 @@ namespace ClickNCheck.Controllers
                         sendCandidateConsent(id, candIds[i]);
                     }
                 }
-
                 //update verification object
                 _context.Entry(vc).State = EntityState.Modified;
             }
-
             //make the Candidate_Verification_checks
             var cdList = (from s in _context.Candidate_Verification
                           where s.VerificationCheckID == vc.ID
                           select s).ToList();
-
             var NotStartedStatus = await _context.CheckStatusType.FindAsync(5);
             var VC = await _context.CheckStatusType.FindAsync(5);
 
@@ -417,19 +409,14 @@ namespace ClickNCheck.Controllers
 
             try
             {
-                VerificationCheck verfiCheck = _context.VerificationCheck.Find(verificationID);
-                var cvcl = verfiCheck.Candidate_Verification.Where(u=> u.VerificationCheckID== verificationID);
-                List<Candidate_Verification> cvcList = verfiCheck.Candidate_Verification.Where(cvc => cvc.VerificationCheckID == verificationID).ToList();
+                List<Candidate_Verification> cvcList = _context.Candidate_Verification.Where(it =>it.VerificationCheckID == verificationID).ToList();
                 foreach ( Candidate_Verification cvc in cvcList )
                 {
                     if(cvc.CandidateID == candidate.ID)
                     {
                         cvc.HasConsented = true;
-                        _context.VerificationCheck.Update(verfiCheck);
+                        _context.Candidate_Verification.Update(cvc);
                         await _context.SaveChangesAsync();
-
-                        EmailService emailserv = new EmailService();
-                        emailserv.CandidateConsentedEmail(candidate.ID);
 
                         break;
                     }
@@ -564,6 +551,7 @@ namespace ClickNCheck.Controllers
             try
             {
                 consentSMS.SendSMS(messageBody, cnd.Phone);
+                    succeededToSend.Add(candidateId);
             }
             catch(Exception e) { failedToSend.Add(candidateId); }
             succeededToSend.Add(candidateId);
