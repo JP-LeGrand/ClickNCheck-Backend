@@ -350,42 +350,36 @@ namespace ClickNCheck.Controllers
             }
         }
 
+
         //The method below updates the consent to true when candidate approves 
         [HttpGet]
-        [Route("PutConsent/{verificationID}/{candidateGUID}")]
-        public async Task<IActionResult> PutConsent(int verificationID, Guid candidateGUID)
+        [Route("PutConsent/{verificationID}/{phoneNumber}/{answer}")]
+        public async Task<IActionResult> PutConsent(int verificationID, string phoneNumber, string answer )
         {
-            List<Candidate> candidatesList = _context.Candidate.ToList();
-            int candidateID = -1;
+            List<Candidate> candidatesList = _context.Candidate.Where(c => c.Phone == phoneNumber).ToList();
 
-            foreach (var cnd in candidatesList)
+            if ( candidatesList.Count != 1 )
             {
-                if (cnd.Guid.Equals(candidateGUID))
-                    candidateID = cnd.ID;
+                return BadRequest("The unique candidate not found!");
             }
 
-            if (candidateID == -1)
-            {
-                return BadRequest("Candidate not found");
-            }
-
-            var candidate = _context.Candidate.Find(candidateID);
-            _context.Entry(candidate).State = EntityState.Modified;
+            Candidate candidate = candidatesList.First();
 
             try
             {
                 VerificationCheck verfiCheck = _context.VerificationCheck.Find(verificationID);
-                List<Candidate_Verification> cvcList = verfiCheck.Candidate_Verification.ToList();
+                var cvcl = verfiCheck.Candidate_Verification.Where(u=> u.VerificationCheckID== verificationID);
+                List<Candidate_Verification> cvcList = verfiCheck.Candidate_Verification.Where(cvc => cvc.VerificationCheckID == verificationID).ToList();
                 foreach ( Candidate_Verification cvc in cvcList )
                 {
-                    if(cvc.CandidateID == candidateID)
+                    if(cvc.CandidateID == candidate.ID)
                     {
                         cvc.HasConsented = true;
                         _context.VerificationCheck.Update(verfiCheck);
                         await _context.SaveChangesAsync();
 
                         EmailService emailserv = new EmailService();
-                        emailserv.CandidateConsentedEmail(candidateID);
+                        emailserv.CandidateConsentedEmail(candidate.ID);
 
                         break;
                     }
@@ -393,7 +387,7 @@ namespace ClickNCheck.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CandidateExists(candidateID))
+                if (!CandidateExists(candidate.ID))
                 {
                     return NotFound();
                 }
