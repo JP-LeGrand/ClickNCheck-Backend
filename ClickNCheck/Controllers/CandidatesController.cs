@@ -294,7 +294,7 @@ namespace ClickNCheck.Controllers
                 Name = (string)x["Name"],
                 Surname = (string)x["Surname"],
                 Phone = (string)x["Phone"],
-                OrganisationID = (int)x["OrganisationID"]2
+                OrganisationID = (int)x["OrganisationID"]
             }).ToList();
             List<int> candIds = new List<int>();
             
