@@ -284,9 +284,6 @@ namespace ClickNCheck.Controllers
             var vcChecks = new List<Candidate_Verification_Check>();
 
             //convert object to array
-            JArray array = (JArray)jObject["services"];
-            int[] services = array.Select(jv => (int)jv).ToArray();
-
             JArray jcandidates = (JArray)jObject["candidates"];
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
             {
@@ -314,14 +311,6 @@ namespace ClickNCheck.Controllers
                 }
                 else
                 {
-                    var verChecks = _context.Candidate_Verification_Check.Where(verc => verc.Candidate_VerificationID == id).ToList();
-                    string checks = "";
-                    foreach (var check in verChecks)
-                    {
-                        checks += "<li>" + check.Services.CheckCategory.Category + "</li>";
-                    }
-                    var org = _context.Organisation.FirstOrDefault(o => o.ID == candidates[x].OrganisationID);
-                    
                     _context.Candidate.Add(candidates[x]);
                     await _context.SaveChangesAsync();
                     candIds.Add(candidates[x].ID);
