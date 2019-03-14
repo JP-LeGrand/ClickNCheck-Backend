@@ -271,69 +271,111 @@ namespace ClickNCheck.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("CreateCandidate/{id}")]
+        public async Task<ActionResult<Candidate>> CreateCandidates(int id, JObject jObject)
+        {
+            var vc = await _context.VerificationCheck.FindAsync(id);
+
+            var jpChecks = (from s in _context.JobProfile_Check
+                            where s.JobProfileID == vc.JobProfileID
+                            select s).ToList();
+            var VerificationCheckChecks = _context.VerificationCheckChecks.Where(x => x.VerificationCheckID == id).ToList();
+            var vcChecks = new List<Candidate_Verification_Check>();
+
+            //convert object to array
+            JArray jcandidates = (JArray)jObject["candidates"];
+            List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
+            {
+                Email = (string)x["Email"],
+                ID_Passport = (string)x["ID_Passport"],
+                ID_Type = (string)x["ID_Type"],
+                Maiden_Surname = (string)x["Maiden_Surname"],
+                Name = (string)x["Name"],
+                Surname = (string)x["Surname"],
+                Phone = (string)x["Phone"],
+                OrganisationID = (int)x["OrganisationID"]
+            }).ToList();
+
+            List<int> candIds = new List<int>();
+            
+            //Create each candidate seperately
+            for (int x = 0; x < candidates.Count; x++)
+            {
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
+
+                if (entry != null)
+                {
+                    //eturn Ok("user exists");
+                    continue;
+                }
+                else
+                {
+                    _context.Candidate.Add(candidates[x]);
+                    await _context.SaveChangesAsync();
+                    candIds.Add(candidates[x].ID);
+                }
+
+                var candidate_Verification = await _context.Candidate_Verification.ToListAsync();
+                //Assign candidates to verification
+                for (int i = 0; i < candIds.Count; i++)
+                {
+                    var candid = await _context.Candidate.FindAsync(candIds[i]);
+
+                    if (candid == null)
+                    {
+                        return NotFound("The candidate " + candid.Name + candid.Surname + " does not exist");
+                    }
+                    //add candidates to jverification
+                    Candidate_Verification addition = new Candidate_Verification { Candidate = candid, VerificationCheck = vc };
+                    if (candidate_Verification.Contains(addition))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        vc.Candidate_Verification.Add(addition);
+                        await _context.SaveChangesAsync();
+                       
+                    }
+                }
+
+                //update verification object
+                _context.Entry(vc).State = EntityState.Modified;
+            }
+
+            //make the Candidate_Verification_checks
+            var cdList = (from s in _context.Candidate_Verification
+                          where s.VerificationCheckID == vc.ID
+                          select s).ToList();
+
+            var NotStartedStatus = await _context.CheckStatusType.FindAsync(5);
+            var VC = await _context.CheckStatusType.FindAsync(5);
+
+            for (int i = 0; i < cdList.Count; i++)
+            {
+                foreach(var VerificationCheckCheck in VerificationCheckChecks)
+                {
+                    var s = await _context.Services.FindAsync(VerificationCheckCheck.ServicesID);
+                    Candidate_Verification_Check candidate_Verification_Check = new Candidate_Verification_Check();
+                    candidate_Verification_Check.Candidate_Verification = cdList[i];
+                    candidate_Verification_Check.Services = s;
+                    candidate_Verification_Check.Order = VerificationCheckCheck.Order;
+                    candidate_Verification_Check.CheckStatusType = NotStartedStatus;
+                    _context.Candidate_Verification_Check.Add(candidate_Verification_Check);
+
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         private bool CandidateExists(int id)
         {
             return _context.Candidate.Any(e => e.ID == id);
         }
-
-        ////TODO:
-        //// POST: api/Candidates/5/AssignCandidates
-        //[HttpPost]
-        //[Route("{id}/AssignCandidates")]
-        //public async Task<IActionResult> AssignCandidates(int id, [FromBody]int[] ids)
-        //{
-        //    int jobId = id;
-
-        //    VerificationRequest v = new VerificationRequest();
-        //    v.DateStarted = DateTime.Now;
-
-        //    //find job profile
-        //    var jobProfile = await _context.JobProfile.FindAsync(jobId);
-
-        //    if (jobProfile == null)
-        //    {
-        //        return NotFound("This Job Profile does not exist");
-        //    }
-
-        //    //find Candidates
-        //    for (int i = 0; i < ids.Length; i++)
-        //    {
-        //        var candidate = await _context.Candidate.FindAsync(ids[i]);
-
-        //        if (candidate == null)
-        //        {
-        //            return NotFound($"The recruiter {candidate.Name} {candidate.Surname} does not exist");
-        //        }
-        //        //add Candidates to verification request
-        //        v.Candidate_VerificationRequest.Add(new Candidate_VerificationRequest { VerificationRequest = v, Candidate = candidate });
-
-        //    }
-
-        //    //add verification request to job profile
-        //    jobProfile.VerificationRequest.Add(v);
-        //    //save changes to job profile
-        //    _context.Entry(jobProfile).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        var exists = _context.User.Any(e => e.ID == jobId);
-        //        if (!JobProfileExists(jobId))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return Ok(jobProfile);
-        //}
-
+        
         [HttpPost]
         [Route("changePassword/{id}")]
         public async Task<ActionResult<Candidate>> changePassword(int id, [FromBody]string password)
