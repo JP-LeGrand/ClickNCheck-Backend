@@ -134,7 +134,7 @@ namespace ClickNCheck.Controllers
             await _context.SaveChangesAsync();
 
             //Add VC Checks
-            return Ok();
+            return Ok(vc.ID);
         }
 
         // DELETE: api/VerificationChecks/5
