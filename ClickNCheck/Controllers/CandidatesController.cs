@@ -493,6 +493,7 @@ namespace ClickNCheck.Controllers
 
             return Ok(verCheck);
         }
+
         [HttpPost]
         [Route("sendCandidateConsent/{verificationID}")]
         public ActionResult<JObject> sendCandidateConsent(int verificationID, [FromBody]int[] candidate)
@@ -507,32 +508,16 @@ namespace ClickNCheck.Controllers
                 string orgName = _context.Organisation.Find(cnd.OrganisationID).Name;
                 if (cnd == null)
                     return NotFound("Could not find candidate");
-
-                bool success = false;
-                switch (1)
+                
+                //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
+                string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
+                SMSService consentSMS = new SMSService();
+                try
                 {
-                    case 0:
-                        //Email
-                        EmailService consentEmail = new EmailService();
-                        string emailBody = consentEmail.CandidateMail().Replace("{CandidateName}", cnd.Name).Replace("{OrganisationName}", $"{orgName}");
-                        emailBody = emailBody.Replace("{verificationID}", $"{verificationID}").Replace("{candidateGUID}", $"{cnd.Guid}");
-                        success = consentEmail.SendMail(cnd.Email, "Candidate Consent", emailBody);
-                        break;
-                    case 1:
-                        //SMS
-                        //When you get the consent reply, how would you know to which job this candidate was giving consent for.
-                        string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
-                        SMSService consentSMS = new SMSService();
-                        consentSMS.SendSMS(messageBody, cnd.Phone);
-                        //status
-                        success = true;
-                        break;
-                    default:break;
+                    consentSMS.SendSMS(messageBody, cnd.Phone);
                 }
-
-                if (success)
-                    succeededToSend.Add(candidate);
-                else failedToSend.Add(candidate);
+                catch(Exception) { failedToSend.Add(candidateId); }
+                succeededToSend.Add(candidateId);
             }
             combinedList.Add("failedToSend", failedToSend);
             combinedList.Add("succeededToSend", succeededToSend);

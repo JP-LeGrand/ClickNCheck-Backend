@@ -148,6 +148,12 @@ namespace ClickNCheck
             return emailBody;
         }
 
+        public string PasswordChange()
+        {
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\PasswordChanged.html"));
+            return emailBody;
+        }
+
         public void CheckMails(MailMessage smtpMail)
         {
             try

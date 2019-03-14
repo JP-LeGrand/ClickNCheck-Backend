@@ -109,7 +109,7 @@ namespace ClickNCheck.Controllers
 
                     if (services == null)
                     {
-                        return NotFound("The vendor " + services.Name + " does not exist");
+                        continue;
                     }
                     //add vendor to job profile
                     j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
@@ -128,7 +128,7 @@ namespace ClickNCheck.Controllers
 
                     if (services == null)
                     {
-                        return NotFound("The vendor " + services.Name + " does not exist");
+                        continue;
                     }
                     //add vendor to job profile
                     j.JobProfile_Check.Add(new JobProfile_Checks { JobProfile = j, Services = services, Order = i + 1 });
@@ -250,7 +250,18 @@ namespace ClickNCheck.Controllers
         [Route("getAllChecks")]
         public async Task<IEnumerable<object>> getAllChecks(int id)
         {
-            var allChecks = await _context.Services.ToListAsync();
+            var allChecks = await (from i in _context.Services
+                                   join x in _context.CheckCategory on i.CheckCategoryID equals x.ID 
+                                   where i.CheckCategoryID == x.ID
+                                   select new
+                                   {
+                                       i.ID,
+                                       i.Name,
+                                       i.isAvailable,
+                                       CheckTypeID = x.ID,
+                                       CheckType = x.Category
+                                   }
+                                       ).ToListAsync();
 
             return allChecks;
         }
@@ -260,13 +271,15 @@ namespace ClickNCheck.Controllers
         public async Task<IEnumerable<object>> getChecks(int id)
         {
             var checks = await (from i in _context.JobProfile_Check
-                                join x in _context.Services on i.ServicesID equals x.ID into joinTable
-                                from z in joinTable.DefaultIfEmpty()
+                                join x in _context.Services on i.ServicesID equals x.ID 
+                                join z in _context.CheckCategory on x.CheckCategoryID equals z.ID
                                 where i.JobProfileID == id
                                 select new
                                 {
-                                    z.ID,
-                                    z.Name
+                                    x.ID,
+                                    x.Name,
+                                    CheckCategoryID = z.ID,
+                                    z.Category
                                 }).ToListAsync();
 
             return checks;

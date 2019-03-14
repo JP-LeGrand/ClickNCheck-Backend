@@ -513,16 +513,25 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<string>> UpdatePasswordAsync(int id, [FromBody]string password)
         {
             var user = _context.User.Find(id);
-
-            user.Password = password;
-            user.PasswordExpiryDate = DateTime.Now.AddDays(30);
-
-            try
+            if(user != null)
             {
-                await _context.SaveChangesAsync();
-                return Ok();
+                user.Password = password;
+                user.PasswordExpiryDate = DateTime.Now.AddDays(30);
+
+                try
+                {
+                    var mailbody = emailService.PasswordChange();
+                    mailbody = mailbody.Replace("UserName", user.Name);
+                    emailService.SendMail(user.Email, "Password Changed", mailbody);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                catch (Exception)
+                {
+                    return BadRequest();
+                }
             }
-            catch(Exception ex)
+            else
             {
                 return BadRequest();
             }
