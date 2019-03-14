@@ -11,6 +11,7 @@ using ClickNCheck.Services;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace ClickNCheck.Controllers
 {
@@ -229,7 +230,7 @@ namespace ClickNCheck.Controllers
                                     }
                                     else
                                     {
-                                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, candidate_Verification[0].ID);
+                                        checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID);
                                         verCount++;
                                     }
                                 }
@@ -266,7 +267,106 @@ namespace ClickNCheck.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID, additionID);
+            checkAuth.changedChecks(_context, vc.RecruiterID, vc.ID);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("CreateCandidate/{id}")]
+        public async Task<ActionResult<Candidate>> CreateCandidates(int id, JObject jObject)
+        {
+            var vc = await _context.VerificationCheck.FindAsync(id);
+
+            var jpChecks = (from s in _context.JobProfile_Check
+                            where s.JobProfileID == vc.JobProfileID
+                            select s).ToList();
+            var VerificationCheckChecks = _context.VerificationCheckChecks.Where(x => x.VerificationCheckID == id).ToList();
+            var vcChecks = new List<Candidate_Verification_Check>();
+            //convert object to array
+            JArray jcandidates = (JArray)jObject["candidates"];
+            List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
+            {
+                Email = (string)x["Email"],
+                ID_Passport = (string)x["ID_Passport"],
+                ID_Type = (string)x["ID_Type"],
+                Maiden_Surname = (string)x["Maiden_Surname"],
+                Name = (string)x["Name"],
+                Surname = (string)x["Surname"],
+                Phone = (string)x["Phone"],
+                OrganisationID = (int)x["OrganisationID"]
+            }).ToList();
+            List<int> candIds = new List<int>();
+            
+            //Create each candidate seperately
+            for (int x = 0; x < candidates.Count; x++)
+            {
+                var entry = await _context.Candidate.FirstOrDefaultAsync(d => d.Email == candidates[x].Email);
+                if (entry != null)
+                {
+                    //eturn Ok("user exists");
+                    continue;
+                }
+                else
+                {
+                    if(candidates[x].Phone.Substring(0,1) == "0")
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("+27");
+                        sb.Append(candidates[x].Phone.Substring(1, 9));
+                        candidates[x].Phone = sb.ToString();
+                    }
+                    _context.Candidate.Add(candidates[x]);
+                    await _context.SaveChangesAsync();
+                    candIds.Add(candidates[x].ID);
+                }
+                var candidate_Verification = await _context.Candidate_Verification.ToListAsync();
+                //Assign candidates to verification
+                for (int i = 0; i < candIds.Count; i++)
+                {
+                    var candid = await _context.Candidate.FindAsync(candIds[i]);
+                    if (candid == null)
+                    {
+                        return NotFound("The candidate " + candid.Name + candid.Surname + " does not exist");
+                    }
+                    //add candidates to jverification
+                    Candidate_Verification addition = new Candidate_Verification { Candidate = candid, VerificationCheck = vc };
+                    if (candidate_Verification.Contains(addition))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        vc.Candidate_Verification.Add(addition);
+                        await _context.SaveChangesAsync();
+                        sendCandidateConsent(id, candIds[i]);
+                    }
+                }
+                //update verification object
+                _context.Entry(vc).State = EntityState.Modified;
+            }
+            //make the Candidate_Verification_checks
+            var cdList = (from s in _context.Candidate_Verification
+                          where s.VerificationCheckID == vc.ID
+                          select s).ToList();
+            var NotStartedStatus = await _context.CheckStatusType.FindAsync(5);
+            var VC = await _context.CheckStatusType.FindAsync(5);
+
+            for (int i = 0; i < cdList.Count; i++)
+            {
+                foreach(var VerificationCheckCheck in VerificationCheckChecks)
+                {
+                    var s = await _context.Services.FindAsync(VerificationCheckCheck.ServicesID);
+                    Candidate_Verification_Check candidate_Verification_Check = new Candidate_Verification_Check();
+                    candidate_Verification_Check.Candidate_Verification = cdList[i];
+                    candidate_Verification_Check.Services = s;
+                    candidate_Verification_Check.Order = VerificationCheckCheck.Order;
+                    candidate_Verification_Check.CheckStatusType = NotStartedStatus;
+                    _context.Candidate_Verification_Check.Add(candidate_Verification_Check);
+
+                }
+            }
+            await _context.SaveChangesAsync();
 
             return Ok();
         }
@@ -275,65 +375,7 @@ namespace ClickNCheck.Controllers
         {
             return _context.Candidate.Any(e => e.ID == id);
         }
-
-        ////TODO:
-        //// POST: api/Candidates/5/AssignCandidates
-        //[HttpPost]
-        //[Route("{id}/AssignCandidates")]
-        //public async Task<IActionResult> AssignCandidates(int id, [FromBody]int[] ids)
-        //{
-        //    int jobId = id;
-
-        //    VerificationRequest v = new VerificationRequest();
-        //    v.DateStarted = DateTime.Now;
-
-        //    //find job profile
-        //    var jobProfile = await _context.JobProfile.FindAsync(jobId);
-
-        //    if (jobProfile == null)
-        //    {
-        //        return NotFound("This Job Profile does not exist");
-        //    }
-
-        //    //find Candidates
-        //    for (int i = 0; i < ids.Length; i++)
-        //    {
-        //        var candidate = await _context.Candidate.FindAsync(ids[i]);
-
-        //        if (candidate == null)
-        //        {
-        //            return NotFound($"The recruiter {candidate.Name} {candidate.Surname} does not exist");
-        //        }
-        //        //add Candidates to verification request
-        //        v.Candidate_VerificationRequest.Add(new Candidate_VerificationRequest { VerificationRequest = v, Candidate = candidate });
-
-        //    }
-
-        //    //add verification request to job profile
-        //    jobProfile.VerificationRequest.Add(v);
-        //    //save changes to job profile
-        //    _context.Entry(jobProfile).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        var exists = _context.User.Any(e => e.ID == jobId);
-        //        if (!JobProfileExists(jobId))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return Ok(jobProfile);
-        //}
-
+        
         [HttpPost]
         [Route("changePassword/{id}")]
         public async Task<ActionResult<Candidate>> changePassword(int id, [FromBody]string password)
@@ -350,42 +392,31 @@ namespace ClickNCheck.Controllers
             }
         }
 
+
         //The method below updates the consent to true when candidate approves 
         [HttpGet]
-        [Route("PutConsent/{verificationID}/{candidateGUID}")]
-        public async Task<IActionResult> PutConsent(int verificationID, Guid candidateGUID)
+        [Route("PutConsent/{verificationID}/{phoneNumber}/{answer}")]
+        public async Task<IActionResult> PutConsent(int verificationID, string phoneNumber, string answer )
         {
-            List<Candidate> candidatesList = _context.Candidate.ToList();
-            int candidateID = -1;
+            List<Candidate> candidatesList = _context.Candidate.Where(c => c.Phone == phoneNumber).ToList();
 
-            foreach (var cnd in candidatesList)
+            if ( candidatesList.Count != 1 )
             {
-                if (cnd.Guid.Equals(candidateGUID))
-                    candidateID = cnd.ID;
+                return BadRequest("The unique candidate not found!");
             }
 
-            if (candidateID == -1)
-            {
-                return BadRequest("Candidate not found");
-            }
-
-            var candidate = _context.Candidate.Find(candidateID);
-            _context.Entry(candidate).State = EntityState.Modified;
+            Candidate candidate = candidatesList.First();
 
             try
             {
-                VerificationCheck verfiCheck = _context.VerificationCheck.Find(verificationID);
-                List<Candidate_Verification> cvcList = verfiCheck.Candidate_Verification.ToList();
+                List<Candidate_Verification> cvcList = _context.Candidate_Verification.Where(it =>it.VerificationCheckID == verificationID).ToList();
                 foreach ( Candidate_Verification cvc in cvcList )
                 {
-                    if(cvc.CandidateID == candidateID)
+                    if(cvc.CandidateID == candidate.ID)
                     {
                         cvc.HasConsented = true;
-                        _context.VerificationCheck.Update(verfiCheck);
+                        _context.Candidate_Verification.Update(cvc);
                         await _context.SaveChangesAsync();
-
-                        EmailService emailserv = new EmailService();
-                        emailserv.CandidateConsentedEmail(candidateID);
 
                         break;
                     }
@@ -393,7 +424,7 @@ namespace ClickNCheck.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CandidateExists(candidateID))
+                if (!CandidateExists(candidate.ID))
                 {
                     return NotFound();
                 }
@@ -502,29 +533,29 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("sendCandidateConsent/{verificationID}")]
-        public ActionResult<JObject> sendCandidateConsent(int verificationID, [FromBody]int[] candidate)
+        public ActionResult<JObject> sendCandidateConsent(int verificationID, [FromBody]int candidateId)
         {
             JArray succeededToSend = new JArray();
             JArray failedToSend = new JArray();
 
             JObject combinedList = new JObject ();
-            foreach(int candidateId in candidate)
-            {
-                Candidate cnd = _context.Candidate.Find(candidateId);
-                string orgName = _context.Organisation.Find(cnd.OrganisationID).Name;
-                if (cnd == null)
-                    return NotFound("Could not find candidate");
+
+            Candidate cnd = _context.Candidate.Find(candidateId);
+            string orgName = _context.Organisation.Find(cnd.OrganisationID).Name;
+            if (cnd == null)
+                return NotFound("Could not find candidate");
                 
-                //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
-                string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
-                SMSService consentSMS = new SMSService();
-                try
-                {
-                    consentSMS.SendSMS(messageBody, cnd.Phone);
-                }
-                catch(Exception) { failedToSend.Add(candidateId); }
-                succeededToSend.Add(candidateId);
+            //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
+            string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
+            SMSService consentSMS = new SMSService();
+            try
+            {
+                consentSMS.SendSMS(messageBody, cnd.Phone);
+                    succeededToSend.Add(candidateId);
             }
+            catch(Exception e) { failedToSend.Add(candidateId); }
+            succeededToSend.Add(candidateId);
+
             combinedList.Add("failedToSend", failedToSend);
             combinedList.Add("succeededToSend", succeededToSend);
             return Ok(combinedList);

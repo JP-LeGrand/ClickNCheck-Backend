@@ -14,9 +14,9 @@ namespace ClickNCheck.Services
         {
         }
 
-        public void changedChecks(ClickNCheckContext _context, int recID, int verCheckID, int candidateVerificationID)
+        public void changedChecks(ClickNCheckContext _context, int recID, int verCheckID)
         {
-            var verChecks = _context.Candidate_Verification_Check.Where(x => x.Candidate_VerificationID == candidateVerificationID).ToList();
+            var verChecks = _context.VerificationCheckChecks.Where(c => c.VerificationCheckID == verCheckID).OrderBy(v=>v.Order);
             
             var recruiter = _context.User.Find(recID);
             var manager = _context.User.Find(recruiter.ManagerID); 
