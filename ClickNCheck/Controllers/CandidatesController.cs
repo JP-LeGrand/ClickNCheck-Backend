@@ -11,6 +11,7 @@ using ClickNCheck.Services;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace ClickNCheck.Controllers
 {
@@ -311,6 +312,13 @@ namespace ClickNCheck.Controllers
                 }
                 else
                 {
+                    if(candidates[x].Phone.Substring(0,1) == "0")
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("+27");
+                        sb.Append(candidates[x].Phone.Substring(1, 9));
+                        candidates[x].Phone = sb.ToString();
+                    }
                     _context.Candidate.Add(candidates[x]);
                     await _context.SaveChangesAsync();
                     candIds.Add(candidates[x].ID);
@@ -336,7 +344,7 @@ namespace ClickNCheck.Controllers
                     {
                         vc.Candidate_Verification.Add(addition);
                         await _context.SaveChangesAsync();
-                       
+                        sendCandidateConsent(id, candIds[i]);
                     }
                 }
 
@@ -544,29 +552,28 @@ namespace ClickNCheck.Controllers
 
         [HttpPost]
         [Route("sendCandidateConsent/{verificationID}")]
-        public ActionResult<JObject> sendCandidateConsent(int verificationID, [FromBody]int[] candidate)
+        public ActionResult<JObject> sendCandidateConsent(int verificationID, [FromBody]int candidateId)
         {
             JArray succeededToSend = new JArray();
             JArray failedToSend = new JArray();
 
             JObject combinedList = new JObject ();
-            foreach(int candidateId in candidate)
-            {
-                Candidate cnd = _context.Candidate.Find(candidateId);
-                string orgName = _context.Organisation.Find(cnd.OrganisationID).Name;
-                if (cnd == null)
-                    return NotFound("Could not find candidate");
+
+            Candidate cnd = _context.Candidate.Find(candidateId);
+            string orgName = _context.Organisation.Find(cnd.OrganisationID).Name;
+            if (cnd == null)
+                return NotFound("Could not find candidate");
                 
-                //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
-                string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
-                SMSService consentSMS = new SMSService();
-                try
-                {
-                    consentSMS.SendSMS(messageBody, cnd.Phone);
-                }
-                catch(Exception) { failedToSend.Add(candidateId); }
-                succeededToSend.Add(candidateId);
+            //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
+            string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
+            SMSService consentSMS = new SMSService();
+            try
+            {
+                consentSMS.SendSMS(messageBody, cnd.Phone);
             }
+            catch(Exception e) { failedToSend.Add(candidateId); }
+            succeededToSend.Add(candidateId);
+
             combinedList.Add("failedToSend", failedToSend);
             combinedList.Add("succeededToSend", succeededToSend);
             return Ok(combinedList);
