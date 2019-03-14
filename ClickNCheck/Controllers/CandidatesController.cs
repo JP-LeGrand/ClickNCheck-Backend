@@ -294,7 +294,7 @@ namespace ClickNCheck.Controllers
                 Name = (string)x["Name"],
                 Surname = (string)x["Surname"],
                 Phone = (string)x["Phone"],
-                OrganisationID = (int)x["OrganisationID"]2
+                OrganisationID = (int)x["OrganisationID"]
             }).ToList();
             List<int> candIds = new List<int>();
             
@@ -391,50 +391,53 @@ namespace ClickNCheck.Controllers
                 return BadRequest();
             }
         }
-
-
+        
         //The method below updates the consent to true when candidate approves 
         [HttpGet]
         [Route("PutConsent/{verificationID}/{phoneNumber}/{answer}")]
         public async Task<IActionResult> PutConsent(int verificationID, string phoneNumber, string answer )
         {
-            List<Candidate> candidatesList = _context.Candidate.Where(c => c.Phone == phoneNumber).ToList();
-
-            if ( candidatesList.Count != 1 )
+            if (answer.ToLower().Contains("yes"))
             {
-                return BadRequest("The unique candidate not found!");
-            }
+                List<Candidate> candidatesList = _context.Candidate.Where(c => c.Phone == phoneNumber).ToList();
 
-            Candidate candidate = candidatesList.First();
-
-            try
-            {
-                List<Candidate_Verification> cvcList = _context.Candidate_Verification.Where(it =>it.VerificationCheckID == verificationID).ToList();
-                foreach ( Candidate_Verification cvc in cvcList )
+                if (candidatesList.Count != 1)
                 {
-                    if(cvc.CandidateID == candidate.ID)
-                    {
-                        cvc.HasConsented = true;
-                        _context.Candidate_Verification.Update(cvc);
-                        await _context.SaveChangesAsync();
+                    return BadRequest("The unique candidate not found!");
+                }
 
-                        break;
+                Candidate candidate = candidatesList.First();
+
+                try
+                {
+                    List<Candidate_Verification> cvcList = _context.Candidate_Verification.Where(it => it.VerificationCheckID == verificationID).ToList();
+                    foreach (Candidate_Verification cvc in cvcList)
+                    {
+                        if (cvc.CandidateID == candidate.ID)
+                        {
+                            cvc.HasConsented = true;
+                            _context.Candidate_Verification.Update(cvc);
+                            await _context.SaveChangesAsync();
+
+                            break;
+                        }
                     }
                 }
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CandidateExists(candidate.ID))
+                catch (DbUpdateConcurrencyException)
                 {
-                    return NotFound();
+                    if (!CandidateExists(candidate.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return Ok("Consent recieved");
+                return Ok("Consent recieved.");
+            }
+            return Ok("Consent not given.");
         }
 
 
@@ -551,10 +554,9 @@ namespace ClickNCheck.Controllers
             try
             {
                 consentSMS.SendSMS(messageBody, cnd.Phone);
-                    succeededToSend.Add(candidateId);
+                succeededToSend.Add(candidateId);
             }
-            catch(Exception e) { failedToSend.Add(candidateId); }
-            succeededToSend.Add(candidateId);
+            catch(Exception) { failedToSend.Add(candidateId); }
 
             combinedList.Add("failedToSend", failedToSend);
             combinedList.Add("succeededToSend", succeededToSend);
