@@ -105,7 +105,7 @@ namespace ClickNCheck.Controllers
             }
             catch { return NotFound("Job profile not found"); }
 
-            var jpChecks = _context.JobProfile_Check.Where(x => x.JobProfileID == jobprofileid).ToArray();
+            var jpChecks = _context.JobProfile_Check.Where(x => x.JobProfileID == jobprofileid).OrderBy(x => x.Order).ToArray();
 
             bool IsAuthorized = jobProfile.authorisationRequired ? false: true;
 
@@ -146,7 +146,7 @@ namespace ClickNCheck.Controllers
                 }
                 else
                 {
-                    for (int m = 0; m <= jpChecks.Length; m++)
+                    for (int m = 0; m < jpChecks.Length; m++)
                     {
                         if (jpChecks[m].ServicesID == (int)array[m])
                         {
