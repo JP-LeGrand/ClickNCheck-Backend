@@ -12,7 +12,6 @@ namespace ClickNCheck.Models
 
     public class User
     {
-   
 
         public int ID { get; set; }
         public Guid Guid { get; set; }
@@ -33,7 +32,7 @@ namespace ClickNCheck.Models
         public int LinkCodeID { get; set; }
         public LinkCode LinkCode { get; set; }
         public DateTime PasswordExpiryDate { get; set; }
-        
+        public int PasswordCount { get; set; }
         public ICollection<Recruiter_JobProfile> Recruiter_JobProfile { get; set; } = new List<Recruiter_JobProfile>();
         
         public ICollection<Recruiter_Candidate> Recruiter_Candidate { get; set; } = new List<Recruiter_Candidate>();

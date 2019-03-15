@@ -197,7 +197,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Compuscan credit report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/SOAPCheck/Umalusi",
+                URL = "https://checkserviceapi.azurewebsites.net/api/SOAPCheck/Umalusi",
                 VendorID = 1,
                 CheckCategoryID = 1,
                 APIType = 0 
@@ -210,7 +210,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Experian employment report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
+                URL = "https://checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
                 VendorID = 2,
                 CheckCategoryID = 5,
                 APIType = 1
@@ -223,7 +223,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Lexis Nexis criminal report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/mail",
+                URL = "https://checkserviceapi.azurewebsites.net/mail",
                 VendorID = 3,
                 CheckCategoryID = 2,
                 APIType = 2
@@ -236,7 +236,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "MIE identity report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/longRunningEndpoint/theEndpoint",
+                URL = "https://checkserviceapi.azurewebsites.net/api/longRunningEndpoint/theEndpoint",
                 VendorID = 4,
                 CheckCategoryID = 3,
                 APIType = 3
@@ -249,7 +249,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "PNet driver's report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/SOAPCheck/PNet",
+                URL = "https://checkserviceapi.azurewebsites.net/api/SOAPCheck/PNet",
                 VendorID = 5,
                 CheckCategoryID = 4,
                 APIType = 0
@@ -262,7 +262,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Umalusi academic report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
+                URL = "https://checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
                 VendorID = 6,
                 CheckCategoryID = 6,
                 APIType = 1
@@ -275,7 +275,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Transunion residency report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/mail",
+                URL = "https://checkserviceapi.azurewebsites.net/mail",
                 VendorID = 7,
                 CheckCategoryID = 7,
                 APIType = 2
@@ -288,7 +288,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "XDS personal report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/longRunningEndpoint/theEndpoint",
+                URL = "https://checkserviceapi.azurewebsites.net/api/longRunningEndpoint/theEndpoint",
                 VendorID = 8,
                 CheckCategoryID = 8,
                 APIType = 3
@@ -301,7 +301,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "SAPS criminal report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/SOAPCheck/SAPS",
+                URL = "https://checkserviceapi.azurewebsites.net/api/SOAPCheck/SAPS",
                 VendorID = 9,
                 CheckCategoryID = 2,
                 APIType = 0
@@ -314,7 +314,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "FSCA credit report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
+                URL = "https://checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
                 VendorID = 10,
                 CheckCategoryID = 1,
                 APIType = 1
@@ -327,7 +327,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "INSETA employment report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/mail",
+                URL = "https://checkserviceapi.azurewebsites.net/mail",
                 VendorID = 11,
                 CheckCategoryID = 5,
                 APIType = 2
@@ -340,7 +340,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "SAQA academic report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/longRunningEndpoint/theEndpoint",
+                URL = "https://checkserviceapi.azurewebsites.net/api/longRunningEndpoint/theEndpoint",
                 VendorID = 12,
                 CheckCategoryID = 6,
                 APIType = 3
@@ -353,7 +353,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Traffic Department driver's report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/SOAPCheck/TrafficDepartment",
+                URL = "https://checkserviceapi.azurewebsites.net/api/SOAPCheck/TrafficDepartment",
                 VendorID = 13,
                 CheckCategoryID = 4,
                 APIType = 0
@@ -366,7 +366,7 @@ namespace ClickNCheck.Data
                 isAvailable = true,
                 Name = "Home Affairs identity report",
                 TurnaroundTime = "2 days",
-                URL = "checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
+                URL = "https://checkserviceapi.azurewebsites.net/api/RestCheck/Experian",
                 VendorID = 14,
                 CheckCategoryID = 5,
                 APIType = 1
@@ -560,6 +560,7 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 4,
                 Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
@@ -568,7 +569,7 @@ namespace ClickNCheck.Data
                 Name = "administrator",
                 Surname = "man",
                 Email = "mmohale@retrorabbit.co.za",
-                Phone = "08334419512",
+                Phone = "+27649019205",
                 EmployeeNumber = 54646,
                 Otp = "54346546",
                 OrganisationID = 1,
@@ -577,6 +578,7 @@ namespace ClickNCheck.Data
                 UserTypeID = 1,
                 Guid = System.Guid.NewGuid(),
                 Password = "123456789",
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
@@ -585,7 +587,7 @@ namespace ClickNCheck.Data
                 Name = "Super",
                 Surname = "administrator",
                 Email = "mmohale@retrorabbit.co.za",
-                Phone = "08334419512",
+                Phone = "+27649019205",
                 EmployeeNumber = 54646,
                 Otp = "54346546",
                 OrganisationID = 1,
@@ -594,15 +596,16 @@ namespace ClickNCheck.Data
                 UserTypeID = 2,
                 Guid = System.Guid.NewGuid(),
                 Password = "123456789",
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
             {
                 ID = 4,
-                Name = "Recruiter1",
-                Surname = "man",
-                Email = "tvurayayi@retrorabbit.com",
-                Phone = "08334419512",
+                Name = "Keoabetswe",
+                Surname = "Morake",
+                Email = "kmorake@retrorabbit.co.za",
+                Phone = "+27649019205",
                 EmployeeNumber = 542435,
                 Otp = "54346546",
                 Password = "123",
@@ -611,6 +614,7 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 3,
                 Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
             modelBuilder.Entity<User>().HasData(new
@@ -619,7 +623,7 @@ namespace ClickNCheck.Data
                 Name = "Operator",
                 Surname = "man",
                 Email = "xdlamini@retrorabbit.com",
-                Phone = "08334419512",
+                Phone = "+27649019205",
                 EmployeeNumber = 2345,
                 Otp = "54346546",
                 Password = "123",
@@ -628,25 +632,27 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 5,
                 Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
 
             modelBuilder.Entity<User>().HasData(new
             {
                 ID = 6,
-                Name = "Recruiter",
-                Surname = "Recruiter",
-                Email = "mmohale@retrotabbit.co.za",
-                Phone = "08334419512",
+                Name = "Jaco",
+                Surname = "van den Heever",
+                Email = "jaco@sanddollardesign.co.za",
+                Phone = "+27728244888",
                 EmployeeNumber = 2345,
                 Otp = "0",
-                Password = "rec",
+                Password = "CR@ZYmanga1",
                 OrganisationID = 1,
                 LinkCodeID = 5,
                 ManagerID = 1,
                 UserTypeID = 6,
                 PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
                 Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
 
@@ -656,7 +662,7 @@ namespace ClickNCheck.Data
                 Name = "Admin",
                 Surname = "Admin",
                 Email = "mpinanemohale@gmail.com",
-                Phone = "08334419512",
+                Phone = "+27649019205",
                 EmployeeNumber = 2345,
                 Otp = "0",
                 Password = "admin",
@@ -666,25 +672,27 @@ namespace ClickNCheck.Data
                 UserTypeID = 6,
                 PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
                 Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
 
             modelBuilder.Entity<User>().HasData(new
             {
                 ID = 8,
-                Name = "Admin",
-                Surname = "Recruiter",
-                Email = "1363679@students.wits.ac.za",
-                Phone = "08334419512",
+                Name = "Gerome",
+                Surname = "Schutte",
+                Email = "gschutte@retrorabbit.co.za",
+                Phone = "+27814201753",
                 EmployeeNumber = 2345,
                 Otp = "0",
                 OrganisationID = 1,
-                Password = "admin_rec",
+                Password = "G3rome$chutte",
                 LinkCodeID = 5,
                 ManagerID = 1,
                 UserTypeID = 6,
                 PictureUrl = "https://clicknchecksite.blob.core.windows.net/ba30e302-fdc5-4f37-8ddf-f53ad8f23a76/Images/8db88b9d-98e1-447e-851b-2989d1302517788720.jpg",
                 Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
 
