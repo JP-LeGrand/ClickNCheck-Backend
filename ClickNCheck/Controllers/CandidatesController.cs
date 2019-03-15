@@ -562,5 +562,25 @@ namespace ClickNCheck.Controllers
             combinedList.Add("succeededToSend", succeededToSend);
             return Ok(combinedList);
         }
+
+        [HttpPost]
+        [Route("checkCandidates")]
+        public async Task<ActionResult<Candidate>> checkCandidates([FromBody] string[] candidates)
+        {
+            List<Candidate> results = new List<Candidate>();
+
+            for (int i = 0; i < candidates.Length; i++)
+            {
+                var c = _context.Candidate.Where(x => x.Email == candidates[i]).ToList();
+
+                if (c != null)
+                {
+                    results.Add(c[0]);
+                }
+            }
+
+            return Ok(results);
+
+        }
     }
 }
