@@ -549,7 +549,7 @@ namespace ClickNCheck.Controllers
                 return NotFound("Could not find candidate");
                 
             //SMS ONLY //When you get the consent reply, how would you know to which job this candidate was giving consent for.
-            string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. If you know what this is about then please reply with 'YES' to consent.";
+            string messageBody = $@"Good day {cnd.Name}, {orgName} would like to perform a background check on you. Follow this link for more details: https:\/\/link.com. If you know what this is about then please reply with 'YES' to consent.";
             SMSService consentSMS = new SMSService();
             try
             {
