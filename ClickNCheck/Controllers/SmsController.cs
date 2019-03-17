@@ -39,7 +39,7 @@ namespace ClickNCheck.Controllers
                         verificationID = Convert.ToInt32(arBody[0]);
                         answer = arBody[1];
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         verificationID = Convert.ToInt32(arBody[1]);
                         answer = arBody[0];
