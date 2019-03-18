@@ -392,55 +392,6 @@ namespace ClickNCheck.Controllers
             }
         }
         
-        //The method below updates the consent to true when candidate approves 
-        [HttpGet]
-        [Route("PutConsent/{verificationID}/{phoneNumber}/{answer}")]
-        public async Task<IActionResult> PutConsent(int verificationID, string phoneNumber, string answer )
-        {
-            if (answer.ToLower().Contains("yes"))
-            {
-                List<Candidate> candidatesList = _context.Candidate.Where(c => c.Phone == phoneNumber).ToList();
-
-                if (candidatesList.Count != 1)
-                {
-                    return BadRequest("The unique candidate not found!");
-                }
-
-                Candidate candidate = candidatesList.First();
-
-                try
-                {
-                    List<Candidate_Verification> cvcList = _context.Candidate_Verification.Where(it => it.VerificationCheckID == verificationID).ToList();
-                    foreach (Candidate_Verification cvc in cvcList)
-                    {
-                        if (cvc.CandidateID == candidate.ID)
-                        {
-                            cvc.HasConsented = true;
-                            _context.Candidate_Verification.Update(cvc);
-                            await _context.SaveChangesAsync();
-
-                            break;
-                        }
-                    }
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CandidateExists(candidate.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                return Ok("Consent recieved.");
-            }
-            return Ok("Consent not given.");
-        }
-
-
         [HttpGet]
         [Route("ConsentCandidate/{verificheckID}/{id}")]
         public async Task<ActionResult<Candidate>> ConsentCandidate(int verificheckID, int id, [FromForm]IFormCollection indemnityFile)
