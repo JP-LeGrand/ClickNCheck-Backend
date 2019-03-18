@@ -285,7 +285,7 @@ namespace ClickNCheck.Controllers
             var vcChecks = new List<Candidate_Verification_Check>();
             //convert object to array
             JArray jcandidates = (JArray)jObject["candidates"];
-            int orgID = (int)jObject["OrganisationID"];
+            int orgID = vc.JobProfile.Organisation.ID;
             var org = _context.Organisation.Find(orgID);
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
             {
