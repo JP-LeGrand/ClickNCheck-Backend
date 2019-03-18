@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ClickNCheck.Data;
 using ClickNCheck.Models;
 using Newtonsoft.Json.Linq;
+using ClickNCheck.Services;
 
 namespace ClickNCheck.Controllers
 {
@@ -104,19 +105,21 @@ namespace ClickNCheck.Controllers
             }
             catch { return NotFound("Job profile not found"); }
 
+            var jpChecks = _context.JobProfile_Check.Where(x => x.JobProfileID == jobprofileid).OrderBy(x => x.Order).ToArray();
+
             bool IsAuthorized = jobProfile.authorisationRequired ? false: true;
 
             JArray array = (JArray)jObject["checks"];
             int[] checks = array.Select(jv => (int)jv).ToArray();
-
+            
             VerificationCheck vc = new VerificationCheck
             {
-                Title = string.Concat(jobProfile.Title, "VC"),
+                Title = jobProfile.Title,
                 JobProfileID = jobprofileid,
                 IsAuthorize = IsAuthorized,
                 RecruiterID = (int)jObject["recruiterID"],
                 IsComplete = (bool)jObject["IsComplete"]
-                
+
             };
 
             for (int i = 0; i < checks.Length; i++)
@@ -133,8 +136,32 @@ namespace ClickNCheck.Controllers
             _context.VerificationCheck.Add(vc);
             await _context.SaveChangesAsync();
 
+            VerificationCheckAuth auth = new VerificationCheckAuth();
+            //run authorization check
+            if (vc.IsAuthorize == false)
+            {
+                if (!(jpChecks.Length == checks.Length))
+                {
+                    auth.changedChecks(_context, vc.RecruiterID, vc.ID);
+                }
+                else
+                {
+                    for (int m = 0; m < jpChecks.Length; m++)
+                    {
+                        if (jpChecks[m].ServicesID == (int)array[m])
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            auth.changedChecks(_context, vc.RecruiterID, vc.ID);
+                            break;
+                        }
+                    }
+                }
+            }
             //Add VC Checks
-            return Ok();
+            return Ok(vc.ID);
         }
 
         // DELETE: api/VerificationChecks/5
