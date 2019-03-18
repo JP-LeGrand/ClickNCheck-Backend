@@ -41,12 +41,13 @@ namespace ClickNCheck.Controllers
         // ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] string[] credentials) //string email, string password)
         {
+            Hashing _hashing = new Hashing();
             var user = await _context.User
                 .SingleOrDefaultAsync(m => m.Email == credentials[0]);
-
+            string hashedpass = _hashing.MD5Hash(credentials[1] + user.Salt);
             if (user != null)
             {
-                if (credentials[1] == user.Password)
+                if (hashedpass.Equals(user.Password))
                 {
 
                     return Ok(user.ID);
@@ -75,6 +76,18 @@ namespace ClickNCheck.Controllers
             return Ok(otp);
         }
 
+        [HttpPost]
+        [Route("ResendOTP")]
+        public ActionResult<User> ResendOTP([FromBody]int user_id)
+        {
+            string otp = _code.randomNumberGenerator();
+            User user = _context.User.Find(user_id);
+            user.Otp = otp;
+            _context.Update(user);
+            _context.SaveChanges();
+            mailS.SendMail(user.Email, "OTP", "<p>" + otp + "</p>");
+            return Ok(otp);
+        }
 
         [HttpPost]
         [Route("checkOtp")]
