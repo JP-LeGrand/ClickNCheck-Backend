@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.RefCheck.Models
 {
-    public class CriminalCheckRefCheck
+    public class RefCheckCriminalCheck
     {
         public int CheckKey { get; set; }
         public string Country { get; set; }
