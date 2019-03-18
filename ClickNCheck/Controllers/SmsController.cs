@@ -9,6 +9,7 @@ using Twilio.AspNet.Common;
 using Twilio.AspNet.Core;
 using Twilio.TwiML;
 using ClickNCheck.Data;
+using ClickNCheck.Services;
 
 namespace ClickNCheck.Controllers
 {
@@ -70,9 +71,9 @@ namespace ClickNCheck.Controllers
             }
             messagingResponse.Message($"We are happy to confirm to have recieved you consent: {responses.Body}" );
 
-            CandidatesController candidates = new CandidatesController(new ClickNCheckContext());
+            SMSService smsServ = new SMSService();
 
-            await candidates.PutConsent(verificationID, phoneNumber, answer);
+            await smsServ.PutConsent(verificationID, phoneNumber, answer);
 
             return TwiML(messagingResponse);
         }
