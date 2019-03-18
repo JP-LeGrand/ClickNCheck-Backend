@@ -8,11 +8,28 @@ namespace ClickNCheck.RefCheck.Models
 {
     public class RefCheckCriminalCheck
     {
+        public RefCheckCriminalCheck(int checkKey, string country, string gender, string population, string searchTypes, string residentialAddress1, string residentialAddress2, string fingerPrints, string previousCharges)
+        {
+            this.CheckKey = checkKey;
+            this.Country = country;
+            this.Gender = gender;
+            this.Population = population;
+            this.SearchTypes = searchTypes;
+            this.ResidentialAddress1 = residentialAddress1;
+            this.ResidentialAddress2 = residentialAddress2;
+            this.FingerPrintsTakenAt = fingerPrints;
+            this.PreviousCharges = previousCharges;
+
+        }
+
         public int CheckKey { get; set; }
         public string Country { get; set; }
-        public IdecoGenderCodes Gender { get; set; }
-        public IdecoPopulationGroupCodes Population { get; set; }
-        public IdecoSearchTypeCodes SearchTypes { get; set; }
+        //Ideco Gender Codes
+        public string Gender { get; set; }
+        //Ideco Population groups
+        public string Population { get; set; }
+        //Ideco Search Types codes
+        public string SearchTypes { get; set; }
         //Current residential address lines
         public string ResidentialAddress1 { get; set; }
         public string ResidentialAddress2 { get; set; }

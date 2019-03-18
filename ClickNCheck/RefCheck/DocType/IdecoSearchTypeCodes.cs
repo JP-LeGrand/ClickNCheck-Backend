@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.RefCheck.DocType
 {
-    public class IdecoSearchTypeCodes
+    public static class IdecoSearchTypeCodes
     {
-        public readonly string PreEmploymentIndividiual = "IND";
-        public readonly string PreEmploymentGamblingLicenseApplicants ="GLA";
-        public readonly string Corporate = "COR";
+        public static readonly string PreEmploymentIndividiual = "IND";
+        public static readonly string PreEmploymentGamblingLicenseApplicants ="GLA";
+        public static readonly string Corporate = "COR";
     }
 }

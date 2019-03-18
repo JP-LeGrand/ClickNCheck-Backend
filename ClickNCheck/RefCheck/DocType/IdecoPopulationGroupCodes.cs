@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace ClickNCheck.RefCheck.DocType
 {
-    public class IdecoPopulationGroupCodes
+    public static class IdecoPopulationGroupCodes
     {
-        public readonly string Black = "B";
-        public readonly string BlackAndColoured = "BC";
-        public readonly string White = "W";
-        public readonly string Coloured = "C";
-        public readonly string Asian = "A";
-        public readonly string Other = "O";
+        public static readonly string Black = "B";
+        public static readonly string BlackAndColoured = "BC";
+        public static readonly string White = "W";
+        public static readonly string Coloured = "C";
+        public static readonly string Asian = "A";
+        public static readonly string Other = "O";
     }
 }
