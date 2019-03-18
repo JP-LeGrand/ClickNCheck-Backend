@@ -9,11 +9,13 @@ using ClickNCheck.Data;
 using ClickNCheck.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class JobProfilesController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
@@ -163,6 +165,7 @@ namespace ClickNCheck.Controllers
         // POST: api/JobProfiles/5/AssignRecruiters
         [HttpPost]
         [Route("{id}/AssignRecruiters")]
+        [Authorize]
         public async Task<IActionResult> AssignRecruiters(int id, [FromBody]JObject ids)
         {
             int jobId = id;
@@ -228,14 +231,14 @@ namespace ClickNCheck.Controllers
 
 
         [HttpGet]
-        [Route("recruiterJobs/{id}")]
-        public async Task<IEnumerable<object>> getRecJobs(int id)
+        [Route("recruiterJobs")]
+        public async Task<IEnumerable<object>> getRecJobs()
         {
 
             var entry = await (from i in _context.Recruiter_JobProfile
                                join u in _context.JobProfile on i.JobProfileId equals u.ID into joinTable
                                from p in joinTable.DefaultIfEmpty()
-                               where i.RecruiterId == id
+                               where i.RecruiterId == Convert.ToInt32(User.Claims.First().Value)
                                select new
                                {
                                    p.ID,
@@ -271,7 +274,7 @@ namespace ClickNCheck.Controllers
         public async Task<IEnumerable<object>> getChecks(int id)
         {
             var checks = await (from i in _context.JobProfile_Check
-                                join x in _context.Services on i.ServicesID equals x.ID 
+                                join x in _context.Services on i.ServicesID equals x.ID
                                 join z in _context.CheckCategory on x.CheckCategoryID equals z.ID
                                 where i.JobProfileID == id
                                 select new
