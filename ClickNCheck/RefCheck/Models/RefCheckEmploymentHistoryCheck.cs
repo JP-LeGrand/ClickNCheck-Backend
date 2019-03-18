@@ -14,11 +14,18 @@ namespace ClickNCheck.RefCheck.Models
         public string Employer { get; set; }
         public DateTime EmploymentEndDate { get; set; }
         public DateTime EmploymentStartDate { get; set; }
-        public EmploymentTypeCode EmploymentTypeCode { get; set; }
+        public string EmploymentTypeCode { get; set; }
         public string LastPositionHeld { get; set; }
         public string RefereeContactNumber { get; set; }
         public string RefereeName { get; set; }
-        public Region Province { get; set; }
+        public string Province { get; set; }
         public string StaffEmployeeNumber { get; set; }
+
+        public RefCheckEmploymentHistoryCheck()
+        {
+            //YOU WOULD DO SOMETHING LIKE THIS
+            this.Province = Region.getCode("Gauteng");
+            this.EmploymentTypeCode = EmploymentType.getCode("Fulltime");
+        }
     }
 }
