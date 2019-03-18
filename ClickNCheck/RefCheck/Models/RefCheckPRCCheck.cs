@@ -14,7 +14,7 @@ namespace ClickNCheck.RefCheck.Models
         public RefCheckPRCCheck(string CheckKey, string PassportNumber, string PermitNumber)
         {
             this.CheckKey = CheckKey;
-            this.PassportNumber = PasswportNumber;
+            this.PassportNumber = PassportNumber;
             this.PermitNumber = PermitNumber;
         }
     }
