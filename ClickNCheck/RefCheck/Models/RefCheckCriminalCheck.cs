@@ -1,6 +1,7 @@
 ﻿using ClickNCheck.RefCheck.DocType;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace ClickNCheck.RefCheck.Models
 {
     public class RefCheckCriminalCheck
     {
-        public RefCheckCriminalCheck(int checkKey, string country, string gender, string population, string searchTypes, string residentialAddress1, string residentialAddress2, string fingerPrints, string previousCharges)
+        public RefCheckCriminalCheck(string checkKey, string country, string gender, string population, string searchTypes, string residentialAddress1, string residentialAddress2, string fingerPrints, string previousCharges)
         {
             this.CheckKey = checkKey;
             this.Country = country;
@@ -21,11 +22,14 @@ namespace ClickNCheck.RefCheck.Models
             this.PreviousCharges = previousCharges;
 
         }
-
-        public int CheckKey { get; set; }
+        [Required]
+        public string CheckKey { get; set; }
+        [Required]
         public string Country { get; set; }
+        [Required]
         //Ideco Gender Codes
         public string Gender { get; set; }
+        [Required]
         //Ideco Population groups
         public string Population { get; set; }
         //Ideco Search Types codes
@@ -35,6 +39,7 @@ namespace ClickNCheck.RefCheck.Models
         public string ResidentialAddress2 { get; set; }
         //Indicating where the finger prints where taken
         public string FingerPrintsTakenAt { get; set; }
+        [Required]
         //If no charges exist then the value should be NO.
         public string PreviousCharges { get; set; }
     }
