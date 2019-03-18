@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ClickNCheck.RefCheck.DocTypes
+namespace ClickNCheck.RefCheck.DocType
 {
     public class BankCodes
     {

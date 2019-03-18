@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using ClickNCheck.RefCheck.DocType;
 
 namespace ClickNCheck.RefCheck.Models
 {
@@ -12,11 +9,9 @@ namespace ClickNCheck.RefCheck.Models
         [MaxLength(20)]
         public int AccountNumber { get; set; }
         [Required]
-        public int AccountTypeCode { get; set; }
+        public AccountTypes AccountTypeCode { get; set; }
         [Required]
-        [MaxLength(2)]
-        [MinLength(2)]
-        public string BankCode { get; set; }
+        public BankCodes BankCode { get; set; }
         [Required]
         public string CheckKey { get; set; }
         [Required]

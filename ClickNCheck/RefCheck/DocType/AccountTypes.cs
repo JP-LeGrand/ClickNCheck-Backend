@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ClickNCheck.RefCheck.DocTypes
+namespace ClickNCheck.RefCheck.DocType
 {
-    public static class AccountTypes
+    public class AccountTypes
     {
         public const int NotKnown = 0;
         public const int Current = 1;
