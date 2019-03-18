@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClickNCheck.RefCheck.DocType;
+using System;
 
 namespace ClickNCheck.RefCheck.Models
 {
@@ -16,6 +14,11 @@ namespace ClickNCheck.RefCheck.Models
         public string Employer { get; set; }
         public DateTime EmploymentEndDate { get; set; }
         public DateTime EmploymentStartDate { get; set; }
-        //public EmploymentTypeCode { get; set; }
+        public EmploymentTypeCode EmploymentTypeCode { get; set; }
+        public string LastPositionHeld { get; set; }
+        public string RefereeContactNumber { get; set; }
+        public string RefereeName { get; set; }
+        public Region Province { get; set; }
+        public string StaffEmployeeNumber { get; set; }
     }
 }
