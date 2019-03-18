@@ -270,13 +270,13 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpGet]
-        [Route("jobChecks")]
-        public async Task<IEnumerable<object>> getChecks()
+        [Route("jobChecks/{id}")]
+        public async Task<IEnumerable<object>> getChecks(int id)
         {
             var checks = await (from i in _context.JobProfile_Check
                                 join x in _context.Services on i.ServicesID equals x.ID
                                 join z in _context.CheckCategory on x.CheckCategoryID equals z.ID
-                                where i.JobProfileID == Convert.ToInt32(User.Identity.Name)
+                                where i.JobProfileID == id
                                 select new
                                 {
                                     x.ID,
