@@ -7,8 +7,8 @@ namespace ClickNCheck.RefCheck.DocType
 {
     public class IdecoSearchTypeCodes
     {
-        public static readonly string PreEmploymentIndividiual = "IND";
-        public static readonly string PreEmploymentGamblingLicenseApplicants ="GLA";
-        public static readonly string Corporate = "COR";
+        public readonly string PreEmploymentIndividiual = "IND";
+        public readonly string PreEmploymentGamblingLicenseApplicants ="GLA";
+        public readonly string Corporate = "COR";
     }
 }

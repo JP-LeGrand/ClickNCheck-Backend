@@ -7,7 +7,7 @@ namespace ClickNCheck.RefCheck.DocType
 {
     public class IdecoGenderCodes
     {
-        public static readonly string Femaile = "F";
-        public static readonly string Male = "M";
+        public readonly string Femaile = "F";
+        public readonly string Male = "M";
     }
 }
