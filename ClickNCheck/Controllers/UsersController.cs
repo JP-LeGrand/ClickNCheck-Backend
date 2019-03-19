@@ -102,6 +102,49 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost]
+        [Route("CreateRecruiters/{id}")]
+        public ActionResult<User> CreateRecruiters(int id, JObject jObject)
+        {
+            //find the organisation using the admin id
+            var admin = _context.User.Find(id);
+            Organisation org = admin.Organisation;
+            var role = _context.UserType.Find(3);
+
+            User recruiter = new User();
+            recruiter.Name = (string)jObject["Name"];
+            recruiter.Email = (string)jObject["Email"];
+            recruiter.EmployeeNumber = (int)jObject["EmployeeNumber"];
+            recruiter.Organisation = org;
+            recruiter.OrganisationID = org.ID;
+            recruiter.Phone = (string)jObject["Phone"];
+            recruiter.Surname = (string)jObject["Surname"];
+            //recruiter.Roles = (string)jObject["Surname"];
+
+            Roles r = new Roles();
+
+            r.UserType = role;
+            r.User = recruiter;
+
+            string code = "";
+            CodeGenerator _codeGenerator = new CodeGenerator();
+            EmailService _emailService = new EmailService();
+            LinkCode _linkCode = new LinkCode();
+            code = _codeGenerator.generateCode();
+            _linkCode.Code = code;
+            _linkCode.Used = false;
+            recruiter.LinkCode = _linkCode;
+            recruiter.Guid = Guid.NewGuid();
+
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
+            emailBody = emailBody.Replace("href=\"#\" ", "href=\"" + Constants.BASE_URL + "Users/signup/" + code + "\"");
+            emailService.SendMail(recruiter.Email, "Recruiter Signup", emailBody);
+
+            _context.User.Add(recruiter);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost]
         [Route("PostUsers")]
         public ActionResult<User> PostUsers(JObject users_usertypes)
         {
