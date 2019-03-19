@@ -619,6 +619,42 @@ namespace ClickNCheck.Data
             });
             modelBuilder.Entity<User>().HasData(new
             {
+                ID = 10,
+                Name = "Recruiter2",
+                Surname = "man",
+                Email = "kmuranga@retrorabbit.co.za",
+                Phone = "+27649019205",
+                EmployeeNumber = 542435,
+                Otp = "54346546",
+                Password = "123",
+                OrganisationID = 1,
+                LinkCodeID = 4,
+                ManagerID = 1,
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
+                PasswordExpiryDate = System.DateTime.Now
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
+                ID = 9,
+                Name = "Recruiter1",
+                Surname = "man",
+                Email = "u13278012@tuks.co.za",
+                Phone = "+27649019205",
+                EmployeeNumber = 542435,
+                Otp = "54346546",
+                Password = "123",
+                OrganisationID = 1,
+                LinkCodeID = 4,
+                ManagerID = 1,
+                UserTypeID = 3,
+                Guid = System.Guid.NewGuid(),
+                PasswordCount = 0,
+                PasswordExpiryDate = System.DateTime.Now
+            });
+            modelBuilder.Entity<User>().HasData(new
+            {
                 ID = 5,
                 Name = "Operator",
                 Surname = "man",
@@ -775,6 +811,54 @@ namespace ClickNCheck.Data
                 authorisationRequired = true
             });
 
+            modelBuilder.Entity<JobProfile>().HasData(new
+            {
+                ID = 3,
+                Title = "Project Manager",
+                JobCode = "222",
+                isCompleted = true,
+                isTemplate = false,
+                checksNeedVerification = false,
+                OrganisationID = 1,
+                authorisationRequired = true
+            });
+
+            modelBuilder.Entity<JobProfile>().HasData(new
+            {
+                ID = 4,
+                Title = "CEO",
+                JobCode = "333",
+                isCompleted = true,
+                isTemplate = false,
+                checksNeedVerification = false,
+                OrganisationID = 1,
+                authorisationRequired = true
+            });
+
+            modelBuilder.Entity<JobProfile>().HasData(new
+            {
+                ID = 5,
+                Title = "Senior Software Developer",
+                JobCode = "444",
+                isCompleted = true,
+                isTemplate = false,
+                checksNeedVerification = false,
+                OrganisationID = 1,
+                authorisationRequired = true
+            });
+
+            modelBuilder.Entity<JobProfile>().HasData(new
+            {
+                ID = 6,
+                Title = "Junior Software Developer",
+                JobCode = "777",
+                isCompleted = true,
+                isTemplate = false,
+                checksNeedVerification = false,
+                OrganisationID = 1,
+                authorisationRequired = true
+            });
+
             modelBuilder.Entity<Recruiter_JobProfile>().HasData(new
             {
                 JobProfileId = 1,
@@ -787,6 +871,30 @@ namespace ClickNCheck.Data
                 RecruiterId = 4
             });
 
+            modelBuilder.Entity<Recruiter_JobProfile>().HasData(new
+            {
+                JobProfileId = 3,
+                RecruiterId = 9
+            });
+
+            modelBuilder.Entity<Recruiter_JobProfile>().HasData(new
+            {
+                JobProfileId = 4,
+                RecruiterId = 9
+            });
+
+            modelBuilder.Entity<Recruiter_JobProfile>().HasData(new
+            {
+                JobProfileId = 5,
+                RecruiterId = 10
+            });
+
+            modelBuilder.Entity<Recruiter_JobProfile>().HasData(new
+            {
+                JobProfileId = 6,
+                RecruiterId = 10
+            });
+
             modelBuilder.Entity<JobProfile_Checks>().HasData(new
             {
                 JobProfileID = 1,
@@ -812,6 +920,107 @@ namespace ClickNCheck.Data
                 JobProfileID = 2,
                 ServicesID = 1,
                 Order = 2
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 3,
+                ServicesID = 2,
+                Order = 1
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 3,
+                ServicesID = 1,
+                Order = 2
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 3,
+                ServicesID = 7,
+                Order = 4
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 3,
+                ServicesID = 3,
+                Order = 3
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 4,
+                ServicesID = 2,
+                Order = 1
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 4,
+                ServicesID = 1,
+                Order = 2
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 4,
+                ServicesID = 7,
+                Order = 4
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 4,
+                ServicesID = 3,
+                Order = 3
+            });
+
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 5,
+                ServicesID = 2,
+                Order = 1
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 5,
+                ServicesID = 1,
+                Order = 2
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 5,
+                ServicesID = 7,
+                Order = 4
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 5,
+                ServicesID = 3,
+                Order = 3
+            });
+
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 6,
+                ServicesID = 2,
+                Order = 1
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 6,
+                ServicesID = 1,
+                Order = 2
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 6,
+                ServicesID = 7,
+                Order = 4
+            });
+            modelBuilder.Entity<JobProfile_Checks>().HasData(new
+            {
+                JobProfileID = 6,
+                ServicesID = 3,
+                Order = 3
             });
 
             modelBuilder.Entity<Candidate>().HasData(new
