@@ -309,12 +309,14 @@ namespace ClickNCheck.Controllers
                                 join x in _context.Services on i.ServicesID equals x.ID
                                 join z in _context.CheckCategory on x.CheckCategoryID equals z.ID
                                 where i.JobProfileID == id
+                                orderby i.Order
                                 select new
                                 {
                                     x.ID,
                                     x.Name,
                                     CheckCategoryID = z.ID,
-                                    z.Category
+                                    z.Category,
+                                    i.Order
                                 }).ToListAsync();
 
             return checks;

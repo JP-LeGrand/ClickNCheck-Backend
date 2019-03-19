@@ -41,12 +41,13 @@ namespace ClickNCheck.Controllers
         // ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] string[] credentials) //string email, string password)
         {
+            Hashing _hashing = new Hashing();
             var user = await _context.User
                 .SingleOrDefaultAsync(m => m.Email == credentials[0]);
-
+            string hashedpass = _hashing.MD5Hash(credentials[1] + user.Salt);
             if (user != null)
             {
-                if (credentials[1] == user.Password)
+                if (hashedpass.Equals(user.Password))
                 {
 
                     return Ok(user.ID);
@@ -75,6 +76,18 @@ namespace ClickNCheck.Controllers
             return Ok(otp);
         }
 
+        [HttpPost]
+        [Route("ResendOTP")]
+        public ActionResult<User> ResendOTP([FromBody]int user_id)
+        {
+            string otp = _code.randomNumberGenerator();
+            User user = _context.User.Find(user_id);
+            user.Otp = otp;
+            _context.Update(user);
+            _context.SaveChanges();
+            mailS.SendMail(user.Email, "OTP", "<p>" + otp + "</p>");
+            return Ok(otp);
+        }
 
         [HttpPost]
         [Route("checkOtp")]
@@ -140,15 +153,24 @@ namespace ClickNCheck.Controllers
         [Route("ForgotPassword/email")]
         public ActionResult<User> GetPasswordViaEmail([FromBody]JObject jObj)
         {
-            var user = _context.User.Where(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Email == jObj["email"].ToString()).ToList();
-            foreach (var u in user)
+            var newPassword = _code.generateCode();
+            try
             {
+                var user = _context.User.First(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Email == jObj["email"].ToString());
+                user.Password = newPassword;
+                user.PasswordExpiryDate = DateTime.Now;
+                _context.SaveChangesAsync();
                 var mailBody = service.RecoverPassword();
-                mailBody = mailBody.Replace("{UserName}", u.Name);
-                mailBody = mailBody.Replace("{Password}", u.Password);
-                service.SendMail(u.Email, "Password Recovery", mailBody);
+                mailBody = mailBody.Replace("{UserName}", user.Name);
+                mailBody = mailBody.Replace("{Password}", user.Password);
+                service.SendMail(user.Email, "Password Recovery", mailBody);
+                return Ok(user);
             }
-            return Ok(user);
+            catch (Exception e)
+            {
+                return BadRequest("Email was not sent");
+            }
+            
         }
 
         //The method below will allow a user to retrieve their password, if it is forgotten and will be sent to them via sms 
@@ -156,14 +178,23 @@ namespace ClickNCheck.Controllers
         [Route("ForgotPassword/phone")]
         public ActionResult<User> GetPasswordViaPhone([FromBody]JObject jObj)
         {
-            var user = _context.User.Where(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Phone == jObj["phonenumber"].ToString()).ToList();
-            foreach (var u in user)
+            var newPassword = _code.generateCode();
+            try
             {
-                string message = $"Hi {u.Name}, ClickNCheck has received your request to recover your password, your password is: {u.Password} \n" +
+                var user = _context.User.First(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Phone == jObj["phoneNumber"].ToString());
+                user.Password = newPassword;
+                user.PasswordExpiryDate = DateTime.Now;
+                _context.SaveChangesAsync();
+                string message = $"Hi {user.Name}, ClickNCheck has received your request to recover your password, your password is: {user.Password} \n" +
                      $"Please Note: You have 30 days to provide us with a new password, a 5 day notice will be sent to renew your password";
-                sMSService.SendSMS(message, u.Phone);
+                sMSService.SendSMS(message, user.Phone);
+                return Ok(user);
             }
-            return Ok(user);
+            catch (Exception e)
+            {
+                return BadRequest("SMS was not sent");
+            }
+ 
         }
     }
 }
