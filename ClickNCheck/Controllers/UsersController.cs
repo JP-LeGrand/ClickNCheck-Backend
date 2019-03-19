@@ -249,6 +249,7 @@ namespace ClickNCheck.Controllers
                 manager_id = Convert.ToInt32(id_pass_manager[2]);
             }
 
+            
 
             User user = _context.User.FirstOrDefault(d => d.ID == recruiter_id);
 
