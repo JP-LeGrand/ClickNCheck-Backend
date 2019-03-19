@@ -26,6 +26,7 @@ namespace ClickNCheck.Controllers
         public CodeGenerator _code = new CodeGenerator();
         EmailService service = new EmailService();
         SMSService sMSService = new SMSService();
+        Hashing Hashing = new Hashing();
         private IConfiguration _config;
 
         EmailService mailS = new EmailService();
@@ -154,15 +155,18 @@ namespace ClickNCheck.Controllers
         public ActionResult<User> GetPasswordViaEmail([FromBody]JObject jObj)
         {
             var newPassword = _code.generateCode();
+            string salt = _code.generateCode();
+            string hashedpassword = Hashing.MD5Hash(newPassword + salt);
             try
             {
                 var user = _context.User.First(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Email == jObj["email"].ToString());
-                user.Password = newPassword;
+                user.Password = hashedpassword;
+                user.Salt = salt;
                 user.PasswordExpiryDate = DateTime.Now;
                 _context.SaveChangesAsync();
                 var mailBody = service.RecoverPassword();
                 mailBody = mailBody.Replace("{UserName}", user.Name);
-                mailBody = mailBody.Replace("{Password}", user.Password);
+                mailBody = mailBody.Replace("{Password}", newPassword);
                 service.SendMail(user.Email, "Password Recovery", mailBody);
                 return Ok(user);
             }
@@ -179,13 +183,16 @@ namespace ClickNCheck.Controllers
         public ActionResult<User> GetPasswordViaPhone([FromBody]JObject jObj)
         {
             var newPassword = _code.generateCode();
+            string salt = _code.generateCode();
+            string hashedpassword = Hashing.MD5Hash(newPassword + salt);
             try
             {
                 var user = _context.User.First(u => u.ID_Passport == jObj["passportNumber"].ToString() && u.Phone == jObj["phoneNumber"].ToString());
-                user.Password = newPassword;
+                user.Password = hashedpassword;
+                user.Salt = salt;
                 user.PasswordExpiryDate = DateTime.Now;
                 _context.SaveChangesAsync();
-                string message = $"Hi {user.Name}, ClickNCheck has received your request to recover your password, your password is: {user.Password} \n" +
+                string message = $"Hi {user.Name}, ClickNCheck has received your request to recover your password, your password is: {newPassword} \n" +
                      $"Please Note: You have 30 days to provide us with a new password, a 5 day notice will be sent to renew your password";
                 sMSService.SendSMS(message, user.Phone);
                 return Ok(user);
