@@ -586,7 +586,7 @@ namespace ClickNCheck.Data
                 ID = 3,
                 Name = "Super",
                 Surname = "administrator",
-                Email = "mmohale@retrorabbit.co.za",
+                Email = "tvurayayi@retrorabbit.co.za",
                 Phone = "+27649019205",
                 EmployeeNumber = 54646,
                 Otp = "54346546",
