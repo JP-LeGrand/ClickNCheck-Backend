@@ -80,6 +80,7 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="RefCheck\Interfaces\" />
+    <Folder Include="RefCheck\DocType\" />
     <Folder Include="RefCheck\Models\" />
   </ItemGroup>
 
