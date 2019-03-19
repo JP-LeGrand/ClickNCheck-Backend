@@ -17,12 +17,13 @@ using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Collections;
+using Newtonsoft.Json;
 
 namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class UsersController : ControllerBase
     {
         private ClickNCheckContext _context;
@@ -432,6 +433,34 @@ namespace ClickNCheck.Controllers
 
             return managers;
         }
+
+        [HttpGet]
+        [Route("GetRecruiters")]
+        public JObject GetRecruiters()
+        {
+            int admin_id = Convert.ToInt32(User.Claims.First().Value);
+            var admin = _context.User.Find(admin_id);
+            List<Roles> rec_roles = _context.Roles.Where(r => r.UserTypeId == 3).ToList();
+
+            dynamic jrecruiters = new JObject();
+            List<JObject> lrecruiters = new List<JObject>();
+
+            for (int i = 0; i < rec_roles.Count(); i++)
+            {
+                var recruiter = _context.User.Find(rec_roles.ElementAt(i).UserId);
+
+                dynamic jrecruiter = new JObject();
+                jrecruiter.ID = recruiter.ID;
+                jrecruiter.Name = recruiter.Name;
+                jrecruiter.Surname = recruiter.Surname;
+                lrecruiters.Add(jrecruiter);
+            }
+
+            jrecruiters.Recruiters = JArray.FromObject(lrecruiters);
+
+            return jrecruiters;
+        }
+
 
         // GET: api/Users/GetAllRecruiters/5
         [HttpGet("Organization/{id}/recruiters")]
