@@ -9,11 +9,13 @@ using ClickNCheck.Data;
 using ClickNCheck.Models;
 using Newtonsoft.Json.Linq;
 using ClickNCheck.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class VerificationChecksController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
@@ -117,7 +119,7 @@ namespace ClickNCheck.Controllers
                 Title = jobProfile.Title,
                 JobProfileID = jobprofileid,
                 IsAuthorize = IsAuthorized,
-                RecruiterID = (int)jObject["recruiterID"],
+                RecruiterID = Convert.ToInt32(User.Claims.First().Value),
                 IsComplete = (bool)jObject["IsComplete"]
 
             };
