@@ -7,7 +7,7 @@ namespace ClickNCheck.Data
     {
         public ClickNCheckContext(DbContextOptions<ClickNCheckContext> options) : base(options)
         {
-           
+
         }
 
         public ClickNCheckContext()
@@ -200,7 +200,7 @@ namespace ClickNCheck.Data
                 URL = "https://checkserviceapi.azurewebsites.net/api/SOAPCheck/Umalusi",
                 VendorID = 1,
                 CheckCategoryID = 1,
-                APIType = 0 
+                APIType = 0
             });
 
             modelBuilder.Entity<Models.Services>().HasData(new
@@ -1131,8 +1131,276 @@ namespace ClickNCheck.Data
                 Guid = System.Guid.NewGuid(),
                 OrganisationID = 1
             });
+
+            modelBuilder.Entity<VerificationCheck>().HasData(new
+            {
+                ID = 1,
+                IsAuthorize = true,
+                IsComplete = true,
+                JobProfileID = 6,
+                RecruiterID = 10,
+                Title = "Junior Software Developer"
+            });
+
+            modelBuilder.Entity<Candidate_Verification>().HasData(new
+            {
+                ID = 1,
+                CandidateID = 1,
+                HasConsented = true,
+                VerificationCheckID = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification>().HasData(new
+            {
+                ID = 2,
+                CandidateID = 2,
+                HasConsented = true,
+                VerificationCheckID = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification>().HasData(new
+            {
+                ID = 3,
+                CandidateID = 3,
+                HasConsented = true,
+                VerificationCheckID = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification>().HasData(new
+            {
+                ID = 4,
+                CandidateID = 4,
+                HasConsented = true,
+                VerificationCheckID = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification>().HasData(new
+            {
+                ID = 5,
+                CandidateID = 5,
+                HasConsented = true,
+                VerificationCheckID = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 1,
+                Candidate_VerificationID = 1,
+                ServicesID = 1,
+                CheckStatusTypeID = 1,
+                Order = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 2,
+                Candidate_VerificationID = 1,
+                ServicesID = 2,
+                CheckStatusTypeID = 2,
+                Order = 2
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 3,
+                Candidate_VerificationID = 1,
+                ServicesID = 3,
+                CheckStatusTypeID = 3,
+                Order = 3
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 4,
+                Candidate_VerificationID = 1,
+                ServicesID = 7,
+                CheckStatusTypeID = 4,
+                Order = 4
+            });
+
+            ///
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 5,
+                Candidate_VerificationID = 2,
+                ServicesID = 1,
+                CheckStatusTypeID = 5,
+                Order = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 6,
+                Candidate_VerificationID = 2,
+                ServicesID = 2,
+                CheckStatusTypeID = 1,
+                Order = 2
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 7,
+                Candidate_VerificationID = 2,
+                ServicesID = 3,
+                CheckStatusTypeID = 2,
+                Order = 3
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 8,
+                Candidate_VerificationID = 2,
+                ServicesID = 7,
+                CheckStatusTypeID = 3,
+                Order = 4
+            });
+            ///
+
+            ///
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 9,
+                Candidate_VerificationID = 3,
+                ServicesID = 1,
+                CheckStatusTypeID = 4,
+                Order = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 10,
+                Candidate_VerificationID = 3,
+                ServicesID = 2,
+                CheckStatusTypeID = 5,
+                Order = 2
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 11,
+                Candidate_VerificationID = 3,
+                ServicesID = 3,
+                CheckStatusTypeID = 1,
+                Order = 3
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 12,
+                Candidate_VerificationID = 3,
+                ServicesID = 7,
+                CheckStatusTypeID = 4,
+                Order = 4
+            });
+            ///
+
+            ///
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 13,
+                Candidate_VerificationID = 4,
+                ServicesID = 1,
+                CheckStatusTypeID = 5,
+                Order = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 14,
+                Candidate_VerificationID = 4,
+                ServicesID = 2,
+                CheckStatusTypeID = 1,
+                Order = 2
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 15,
+                Candidate_VerificationID = 4,
+                ServicesID = 3,
+                CheckStatusTypeID = 2,
+                Order = 3
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 16,
+                Candidate_VerificationID = 4,
+                ServicesID = 7,
+                CheckStatusTypeID = 3,
+                Order = 4
+            });
+            ///
+
+            ///
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 17,
+                Candidate_VerificationID = 5,
+                ServicesID = 1,
+                CheckStatusTypeID = 5,
+                Order = 1
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 18,
+                Candidate_VerificationID = 5,
+                ServicesID = 2,
+                CheckStatusTypeID = 1,
+                Order = 2
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 19,
+                Candidate_VerificationID = 5,
+                ServicesID = 3,
+                CheckStatusTypeID = 2,
+                Order = 3
+            });
+
+            modelBuilder.Entity<Candidate_Verification_Check>().HasData(new
+            {
+                ID = 20,
+                Candidate_VerificationID = 5,
+                ServicesID = 7,
+                CheckStatusTypeID = 3,
+                Order = 4
+            });
+            ///
+
+            modelBuilder.Entity<VerificationCheckChecks>().HasData(new
+            {
+                ID = 1,
+                VerificationCheckID = 1,
+                ServicesID = 1,
+                Order = 1
+            });
+
+            modelBuilder.Entity<VerificationCheckChecks>().HasData(new
+            {
+                ID = 2,
+                VerificationCheckID = 1,
+                ServicesID = 2,
+                Order = 2
+            });
+
+            modelBuilder.Entity<VerificationCheckChecks>().HasData(new
+            {
+                ID = 3,
+                VerificationCheckID = 1,
+                ServicesID = 3,
+                Order = 3
+            });
+
+            modelBuilder.Entity<VerificationCheckChecks>().HasData(new
+            {
+                ID = 4,
+                VerificationCheckID = 1,
+                ServicesID = 7,
+                Order = 4
+            });
         }
-
-
     }
 }
