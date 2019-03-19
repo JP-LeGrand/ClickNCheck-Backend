@@ -33,6 +33,38 @@ namespace ClickNCheck.Controllers
             return await _context.JobProfile.ToListAsync();
         }
 
+        [HttpGet]
+        [Route("GetRecruiterJobProfile/{recruiter_id}")]
+        public JObject GetRecruiterJobProfile(int recruiter_id)
+        {
+            var rec_jobProfiles = _context.Recruiter_JobProfile.Where(r => r.RecruiterId == recruiter_id).ToList();
+
+            List<JObject> ljobProfiles = new List<JObject>();
+            dynamic jjobProfiles = new JObject();
+
+            if(rec_jobProfiles.Count() != 0)
+            {
+                for (int j = 0; j < rec_jobProfiles.Count(); j++)
+                {
+
+                    var jobProfile = _context.JobProfile.Find(rec_jobProfiles.ElementAt(j).JobProfileId);
+                    JObject jjobProfile = JObject.FromObject(jobProfile);
+                    ljobProfiles.Add(jjobProfile);
+                }
+                    
+            }
+            else
+            {
+                dynamic jjobProfile = new JObject();
+                jjobProfile.ID = 0;
+                ljobProfiles.Add(jjobProfile);
+            }
+
+            jjobProfiles.JobProfiles = JArray.FromObject(ljobProfiles);
+
+            return jjobProfiles;
+        }
+
         // GET: api/JobProfiles/5
         [HttpGet]
         [Route("GetJobProfile/{id}")]
@@ -289,9 +321,5 @@ namespace ClickNCheck.Controllers
 
             return checks;
         }
-
-
-
-
     }
 }
