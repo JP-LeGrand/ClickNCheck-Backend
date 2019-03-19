@@ -577,7 +577,7 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 1,
                 Guid = System.Guid.NewGuid(),
-                Password = "123456789",
+                Password = "123",
                 PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
@@ -595,7 +595,7 @@ namespace ClickNCheck.Data
                 ManagerID = 1,
                 UserTypeID = 2,
                 Guid = System.Guid.NewGuid(),
-                Password = "123456789",
+                Password = "123",
                 PasswordCount = 0,
                 PasswordExpiryDate = System.DateTime.Now
             });
@@ -665,7 +665,7 @@ namespace ClickNCheck.Data
                 Phone = "+27649019205",
                 EmployeeNumber = 2345,
                 Otp = "0",
-                Password = "admin",
+                Password = "123",
                 OrganisationID = 1,
                 LinkCodeID = 5,
                 ManagerID = 1,
@@ -773,6 +773,18 @@ namespace ClickNCheck.Data
                 checksNeedVerification = false,
                 OrganisationID = 1,
                 authorisationRequired = true
+            });
+
+            modelBuilder.Entity<Recruiter_JobProfile>().HasData(new
+            {
+                JobProfileId = 1,
+                RecruiterId = 4
+            });
+
+            modelBuilder.Entity<Recruiter_JobProfile>().HasData(new
+            {
+                JobProfileId = 2,
+                RecruiterId = 4
             });
 
             modelBuilder.Entity<JobProfile_Checks>().HasData(new
