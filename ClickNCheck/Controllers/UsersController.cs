@@ -32,6 +32,8 @@ namespace ClickNCheck.Controllers
         User _userModel = new User();
         Roles _role = new Roles();
         UploadService uploadService = new UploadService();
+        CodeGenerator codeGenerator = new CodeGenerator();
+        Hashing Hashing = new Hashing();
 
         public UsersController(ClickNCheckContext context)
         {
@@ -241,6 +243,8 @@ namespace ClickNCheck.Controllers
             int recruiter_id = Convert.ToInt32(id_pass_manager[0]);
             string pass = id_pass_manager[1];
             int manager_id = -1;
+            string salt = codeGenerator.generateCode();
+            string hashedpassword = Hashing.MD5Hash(pass + salt);
 
             if (id_pass_manager.Length > 2)
             {
@@ -258,7 +262,9 @@ namespace ClickNCheck.Controllers
 
             if (recruiters.Contains(user.ID))
             {
-                user.Password = pass;
+                user.Password = hashedpassword;
+                user.Salt = salt;
+                user.PasswordExpiryDate = DateTime.Now.AddDays(30);
                 user.ManagerID = manager_id;
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();
@@ -266,7 +272,9 @@ namespace ClickNCheck.Controllers
             }
             else if (admins.Contains(user.ID))
             {
-                user.Password = pass;
+                user.Password = hashedpassword;
+                user.Salt = salt;
+                user.PasswordExpiryDate = DateTime.Now.AddDays(30);
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();
                 return Ok("admin");
@@ -413,6 +421,7 @@ namespace ClickNCheck.Controllers
 
         // GET: api/Users/GetAllRecruiters/5
         [HttpGet("recruiter/organisation/managers/{recruiter_id}")]
+        [AllowAnonymous]
         public IEnumerable GetRecruiterOrganisationManagers(int recruiter_id)
         {
             var all_managers = _context.Roles.Where(x => x.UserTypeId == 4).Select(x => x.UserId);
@@ -543,9 +552,12 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<string>> UpdatePasswordAsync(int id, [FromBody]string password)
         {
             var user = _context.User.Find(id);
+            string salt = codeGenerator.generateCode();
+            string hashedpassword = Hashing.MD5Hash(password + salt);
             if(user != null)
             {
-                user.Password = password;
+                user.Password = hashedpassword;
+                user.Salt = salt;
                 user.PasswordExpiryDate = DateTime.Now.AddDays(30);
 
                 try
