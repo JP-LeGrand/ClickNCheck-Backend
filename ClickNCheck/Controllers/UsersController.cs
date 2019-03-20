@@ -239,7 +239,7 @@ namespace ClickNCheck.Controllers
 
                 if (recruiters.Contains(user.ID))
                 {
-                    return Redirect("https://s3.amazonaws.com/clickncheck-frontend-tafara/components/recruiter/recruiterRegistration/recruter_registration.html?code=" + user.ID);
+                    return Redirect("https://clicknchecksite.z13.web.core.windows.net//Recruiter/Register/" + user.ID);
                 }
                 else if (admins.Contains(user.ID))
                 {
@@ -294,12 +294,8 @@ namespace ClickNCheck.Controllers
                 manager_id = Convert.ToInt32(id_pass_manager[2]);
             }
 
-            
-
             User user = _context.User.FirstOrDefault(d => d.ID == recruiter_id);
-
-
-
+            
             var recruiters = _context.Roles.Where(x => x.UserTypeId == 3).Select(x => x.UserId).ToList();
             var admins = _context.Roles.Where(x => x.UserTypeId == 1).Select(x => x.UserId).ToList();
 
@@ -557,6 +553,7 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpPost("{id}/UploadFile")]
+        [AllowAnonymous]
         public async Task<IActionResult> UploadFile(int id, [FromForm]IFormCollection contractFiles)
         {
             var user = _context.User.Find(id);
