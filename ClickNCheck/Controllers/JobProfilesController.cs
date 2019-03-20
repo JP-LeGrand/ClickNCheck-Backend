@@ -34,6 +34,91 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllJobProfilesRecruiters")]
+        public List<JObject> GetAllJobProfilesRecruiters()
+        {
+            List<JObject> ljobProfiles = new List<JObject>();
+
+            var jobProfiles = _context.JobProfile.ToList();
+
+            foreach(var jobProfile in jobProfiles)
+            {
+                dynamic jjobProfile = new JObject();
+                jjobProfile.ID = jobProfile.ID;
+                jjobProfile.JobCode = jobProfile.JobCode;
+                jjobProfile.Title = jobProfile.Title;
+                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+
+                if(j_rec == null)
+                {
+                    jjobProfile.AssignedRecruiter = "-";
+                }
+                else
+                {
+                    var recruiter = _context.User.Find(j_rec.RecruiterId);
+                    jjobProfile.AssignedRecruiter = recruiter.Name + " " + recruiter.Surname;
+                }
+
+                ljobProfiles.Add(jjobProfile);
+
+            }
+
+
+            return ljobProfiles; 
+        }
+
+        [HttpGet]
+        [Route("GetUnassignedJobProfilesRecruiters")]
+        public List<JObject> GetUnassignedJobProfilesRecruiters()
+        {
+            List<JObject> ljobProfiles = new List<JObject>();
+
+            var jobProfiles = _context.JobProfile.ToList();
+
+            foreach (var jobProfile in jobProfiles)
+            {
+                dynamic jjobProfile = new JObject();
+                jjobProfile.ID = jobProfile.ID;
+                jjobProfile.JobCode = jobProfile.JobCode;
+                jjobProfile.Title = jobProfile.Title;
+                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+
+                if (j_rec == null)
+                {
+                    jjobProfile.AssignedRecruiter = "-";
+                    ljobProfiles.Add(jjobProfile);
+                }
+            }
+
+
+            return ljobProfiles;
+        }
+
+        [HttpGet]
+        [Route("GetAssignedJobProfilesRecruiters")]
+        public List<JObject> GetAssignedJobProfilesRecruiters()
+        {
+            List<JObject> ljobProfiles = new List<JObject>();
+
+            var jobProfiles = _context.JobProfile.ToList();
+
+            foreach (var jobProfile in jobProfiles)
+            {
+                dynamic jjobProfile = new JObject();
+                jjobProfile.ID = jobProfile.ID;
+                jjobProfile.JobCode = jobProfile.JobCode;
+                jjobProfile.Title = jobProfile.Title;
+                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+
+                if (j_rec != null)
+                {
+                    var recruiter = _context.User.Find(j_rec.RecruiterId);
+                    jjobProfile.AssignedRecruiter = recruiter.Name + " " + recruiter.Surname;
+                    ljobProfiles.Add(jjobProfile);
+                }
+            }
+            return ljobProfiles;
+        }
         [AllowAnonymous]
         [Route("GetRecruiterJobProfile/{id}")]
         public async Task<IEnumerable<object>> GetRecJobProfiles(int id)
