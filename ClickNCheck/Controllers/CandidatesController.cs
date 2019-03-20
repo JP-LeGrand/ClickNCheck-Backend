@@ -297,7 +297,8 @@ namespace ClickNCheck.Controllers
                 Surname = (string)x["Surname"],
                 Phone = (string)x["Phone"],
                 OrganisationID = orgID,
-                Organisation = org
+                Organisation = org,
+                Guid = Guid.NewGuid()
                 
             }).ToList();
             List<int> candIds = new List<int>();
