@@ -239,7 +239,7 @@ namespace ClickNCheck.Controllers
 
                 if (recruiters.Contains(user.ID))
                 {
-                    return Redirect("https://clicknchecksite.z13.web.core.windows.net//Recruiter/Register/" + user.ID);
+                    return Redirect("https://clicknchecksite.z13.web.core.windows.net/Recruiter/Register/" + user.ID);
                 }
                 else if (admins.Contains(user.ID))
                 {
