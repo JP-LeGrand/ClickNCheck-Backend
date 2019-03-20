@@ -15,7 +15,7 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class JobProfilesController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
@@ -47,23 +47,26 @@ namespace ClickNCheck.Controllers
                 jjobProfile.ID = jobProfile.ID;
                 jjobProfile.JobCode = jobProfile.JobCode;
                 jjobProfile.Title = jobProfile.Title;
-                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+                var all_j_rec = _context.Recruiter_JobProfile.Where(s => s.JobProfileId == jobProfile.ID).ToList();
 
-                if(j_rec == null)
+                if(all_j_rec.Count() == 0)
                 {
                     jjobProfile.AssignedRecruiter = "-";
                 }
                 else
                 {
-                    var recruiter = _context.User.Find(j_rec.RecruiterId);
-                    jjobProfile.AssignedRecruiter = recruiter.Name + " " + recruiter.Surname;
+                    List<string> recruiters = new List<string>();
+                    foreach (var j_rec in all_j_rec)
+                    {
+                        var recruiter = _context.User.Find(j_rec.RecruiterId);
+                        recruiters.Add(recruiter.Name + " " + recruiter.Surname + "; ");
+                    }
+                    jjobProfile.AssignedRecruiter = JArray.FromObject(recruiters);
                 }
 
                 ljobProfiles.Add(jjobProfile);
 
             }
-
-
             return ljobProfiles; 
         }
 
@@ -81,9 +84,9 @@ namespace ClickNCheck.Controllers
                 jjobProfile.ID = jobProfile.ID;
                 jjobProfile.JobCode = jobProfile.JobCode;
                 jjobProfile.Title = jobProfile.Title;
-                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+                var all_j_rec = _context.Recruiter_JobProfile.Where(s => s.JobProfileId == jobProfile.ID).ToList();
 
-                if (j_rec == null)
+                if (all_j_rec.Count() == 0)
                 {
                     jjobProfile.AssignedRecruiter = "-";
                     ljobProfiles.Add(jjobProfile);
@@ -108,12 +111,18 @@ namespace ClickNCheck.Controllers
                 jjobProfile.ID = jobProfile.ID;
                 jjobProfile.JobCode = jobProfile.JobCode;
                 jjobProfile.Title = jobProfile.Title;
-                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+                var all_j_rec = _context.Recruiter_JobProfile.Where(s => s.JobProfileId == jobProfile.ID).ToList();
 
-                if (j_rec != null)
+
+                if (all_j_rec.Count() != 0)
                 {
-                    var recruiter = _context.User.Find(j_rec.RecruiterId);
-                    jjobProfile.AssignedRecruiter = recruiter.Name + " " + recruiter.Surname;
+                    List<string> recruiters = new List<string>();
+                    foreach( var j_rec in all_j_rec)
+                    {
+                        var recruiter = _context.User.Find(j_rec.RecruiterId);
+                        recruiters.Add(recruiter.Name + " " + recruiter.Surname + "; ");
+                    }
+                    jjobProfile.AssignedRecruiter = JArray.FromObject(recruiters);
                     ljobProfiles.Add(jjobProfile);
                 }
             }
