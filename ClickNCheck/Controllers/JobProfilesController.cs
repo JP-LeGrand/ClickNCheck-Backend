@@ -15,7 +15,7 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize]
+    [Authorize]
     public class JobProfilesController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
