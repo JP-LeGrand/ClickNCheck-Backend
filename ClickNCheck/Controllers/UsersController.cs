@@ -32,6 +32,8 @@ namespace ClickNCheck.Controllers
         User _userModel = new User();
         Roles _role = new Roles();
         UploadService uploadService = new UploadService();
+        CodeGenerator codeGenerator = new CodeGenerator();
+        Hashing Hashing = new Hashing();
 
         public UsersController(ClickNCheckContext context)
         {
@@ -99,6 +101,49 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
             return await _context.User.ToListAsync();
+        }
+
+        [HttpPost]
+        [Route("CreateRecruiters/{id}")]
+        public ActionResult<User> CreateRecruiters(int id, JObject jObject)
+        {
+            //find the organisation using the admin id
+            var admin = _context.User.Find(id);
+            Organisation org = admin.Organisation;
+            var role = _context.UserType.Find(3);
+
+            User recruiter = new User();
+            recruiter.Name = (string)jObject["Name"];
+            recruiter.Email = (string)jObject["Email"];
+            recruiter.EmployeeNumber = (int)jObject["EmployeeNumber"];
+            recruiter.Organisation = org;
+            recruiter.OrganisationID = org.ID;
+            recruiter.Phone = (string)jObject["Phone"];
+            recruiter.Surname = (string)jObject["Surname"];
+            //recruiter.Roles = (string)jObject["Surname"];
+
+            Roles r = new Roles();
+
+            r.UserType = role;
+            r.User = recruiter;
+
+            string code = "";
+            CodeGenerator _codeGenerator = new CodeGenerator();
+            EmailService _emailService = new EmailService();
+            LinkCode _linkCode = new LinkCode();
+            code = _codeGenerator.generateCode();
+            _linkCode.Code = code;
+            _linkCode.Used = false;
+            recruiter.LinkCode = _linkCode;
+            recruiter.Guid = Guid.NewGuid();
+
+            string emailBody = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\RecruiterEmail.html"));
+            emailBody = emailBody.Replace("href=\"#\" ", "href=\"" + Constants.BASE_URL + "Users/signup/" + code + "\"");
+            emailService.SendMail(recruiter.Email, "Recruiter Signup", emailBody);
+
+            _context.User.Add(recruiter);
+            _context.SaveChanges();
+            return Ok();
         }
 
         [HttpPost]
@@ -241,6 +286,8 @@ namespace ClickNCheck.Controllers
             int recruiter_id = Convert.ToInt32(id_pass_manager[0]);
             string pass = id_pass_manager[1];
             int manager_id = -1;
+            string salt = codeGenerator.generateCode();
+            string hashedpassword = Hashing.MD5Hash(pass + salt);
 
             if (id_pass_manager.Length > 2)
             {
@@ -258,7 +305,9 @@ namespace ClickNCheck.Controllers
 
             if (recruiters.Contains(user.ID))
             {
-                user.Password = pass;
+                user.Password = hashedpassword;
+                user.Salt = salt;
+                user.PasswordExpiryDate = DateTime.Now.AddDays(30);
                 user.ManagerID = manager_id;
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();
@@ -266,7 +315,9 @@ namespace ClickNCheck.Controllers
             }
             else if (admins.Contains(user.ID))
             {
-                user.Password = pass;
+                user.Password = hashedpassword;
+                user.Salt = salt;
+                user.PasswordExpiryDate = DateTime.Now.AddDays(30);
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();
                 return Ok("admin");
@@ -413,6 +464,7 @@ namespace ClickNCheck.Controllers
 
         // GET: api/Users/GetAllRecruiters/5
         [HttpGet("recruiter/organisation/managers/{recruiter_id}")]
+        [AllowAnonymous]
         public IEnumerable GetRecruiterOrganisationManagers(int recruiter_id)
         {
             var all_managers = _context.Roles.Where(x => x.UserTypeId == 4).Select(x => x.UserId);
@@ -543,9 +595,12 @@ namespace ClickNCheck.Controllers
         public async Task<ActionResult<string>> UpdatePasswordAsync(int id, [FromBody]string password)
         {
             var user = _context.User.Find(id);
+            string salt = codeGenerator.generateCode();
+            string hashedpassword = Hashing.MD5Hash(password + salt);
             if(user != null)
             {
-                user.Password = password;
+                user.Password = hashedpassword;
+                user.Salt = salt;
                 user.PasswordExpiryDate = DateTime.Now.AddDays(30);
 
                 try

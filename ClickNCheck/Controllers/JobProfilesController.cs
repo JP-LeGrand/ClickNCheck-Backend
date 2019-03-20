@@ -15,7 +15,7 @@ namespace ClickNCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize]
+    [Authorize]
     public class JobProfilesController : ControllerBase
     {
         private readonly ClickNCheckContext _context;
@@ -119,37 +119,21 @@ namespace ClickNCheck.Controllers
             }
             return ljobProfiles;
         }
-
-        [HttpGet]
-        [Route("GetRecruiterJobProfile/{recruiter_id}")]
-        public JObject GetRecruiterJobProfile(int recruiter_id)
+        [AllowAnonymous]
+        [Route("GetRecruiterJobProfile/{id}")]
+        public async Task<IEnumerable<object>> GetRecJobProfiles(int id)
         {
-            var rec_jobProfiles = _context.Recruiter_JobProfile.Where(r => r.RecruiterId == recruiter_id).ToList();
+            var JobProfiles = await (from i in _context.Recruiter_JobProfile
+                               join u in _context.JobProfile on i.JobProfileId equals u.ID into joinTable
+                               from p in joinTable.DefaultIfEmpty()
+                               where i.RecruiterId == id
+                               select new
+                               {
+                                   p.ID,
+                                   p.Title
+                               }).ToListAsync();
 
-            List<JObject> ljobProfiles = new List<JObject>();
-            dynamic jjobProfiles = new JObject();
-
-            if(rec_jobProfiles.Count() != 0)
-            {
-                for (int j = 0; j < rec_jobProfiles.Count(); j++)
-                {
-
-                    var jobProfile = _context.JobProfile.Find(rec_jobProfiles.ElementAt(j).JobProfileId);
-                    JObject jjobProfile = JObject.FromObject(jobProfile);
-                    ljobProfiles.Add(jjobProfile);
-                }
-                    
-            }
-            else
-            {
-                dynamic jjobProfile = new JObject();
-                jjobProfile.ID = 0;
-                ljobProfiles.Add(jjobProfile);
-            }
-
-            jjobProfiles.JobProfiles = JArray.FromObject(ljobProfiles);
-
-            return jjobProfiles;
+            return JobProfiles;
         }
 
         // GET: api/JobProfiles/5

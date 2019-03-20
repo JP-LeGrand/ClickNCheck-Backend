@@ -285,7 +285,7 @@ namespace ClickNCheck.Controllers
             var vcChecks = new List<Candidate_Verification_Check>();
             //convert object to array
             JArray jcandidates = (JArray)jObject["candidates"];
-            int orgID = vc.JobProfile.Organisation.ID;
+            var orgID = _context.JobProfile.Find(vc.JobProfileID).OrganisationID;
             var org = _context.Organisation.Find(orgID);
             List<Candidate> candidates = ((JArray)jcandidates).Select(x => new Candidate
             {
@@ -372,7 +372,7 @@ namespace ClickNCheck.Controllers
             }
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok("yes");
         }
 
         private bool CandidateExists(int id)
