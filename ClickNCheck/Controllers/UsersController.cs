@@ -127,6 +127,7 @@ namespace ClickNCheck.Controllers
             r.UserType = role;
             r.User = recruiter;
 
+            recruiter.Roles.Add(r);
             string code = "";
             CodeGenerator _codeGenerator = new CodeGenerator();
             EmailService _emailService = new EmailService();

@@ -363,7 +363,7 @@ namespace ClickNCheck.Controllers
 
         [HttpGet]
         [Route("getAllChecks")]
-        public async Task<IEnumerable<object>> getAllChecks(int id)
+        public async Task<IEnumerable<object>> getAllChecks()
         {
             var allChecks = await (from i in _context.Services
                                    join x in _context.CheckCategory on i.CheckCategoryID equals x.ID 
