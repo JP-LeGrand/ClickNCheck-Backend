@@ -34,35 +34,106 @@ namespace ClickNCheck.Controllers
         }
 
         [HttpGet]
-        [Route("GetRecruiterJobProfile/{recruiter_id}")]
-        public JObject GetRecruiterJobProfile(int recruiter_id)
+        [Route("GetAllJobProfilesRecruiters")]
+        public List<JObject> GetAllJobProfilesRecruiters()
         {
-            var rec_jobProfiles = _context.Recruiter_JobProfile.Where(r => r.RecruiterId == recruiter_id).ToList();
-
             List<JObject> ljobProfiles = new List<JObject>();
-            dynamic jjobProfiles = new JObject();
 
-            if(rec_jobProfiles.Count() != 0)
-            {
-                for (int j = 0; j < rec_jobProfiles.Count(); j++)
-                {
+            var jobProfiles = _context.JobProfile.ToList();
 
-                    var jobProfile = _context.JobProfile.Find(rec_jobProfiles.ElementAt(j).JobProfileId);
-                    JObject jjobProfile = JObject.FromObject(jobProfile);
-                    ljobProfiles.Add(jjobProfile);
-                }
-                    
-            }
-            else
+            foreach(var jobProfile in jobProfiles)
             {
                 dynamic jjobProfile = new JObject();
-                jjobProfile.ID = 0;
+                jjobProfile.ID = jobProfile.ID;
+                jjobProfile.JobCode = jobProfile.JobCode;
+                jjobProfile.Title = jobProfile.Title;
+                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+
+                if(j_rec == null)
+                {
+                    jjobProfile.AssignedRecruiter = "-";
+                }
+                else
+                {
+                    var recruiter = _context.User.Find(j_rec.RecruiterId);
+                    jjobProfile.AssignedRecruiter = recruiter.Name + " " + recruiter.Surname;
+                }
+
                 ljobProfiles.Add(jjobProfile);
+
             }
 
-            jjobProfiles.JobProfiles = JArray.FromObject(ljobProfiles);
 
-            return jjobProfiles;
+            return ljobProfiles; 
+        }
+
+        [HttpGet]
+        [Route("GetUnassignedJobProfilesRecruiters")]
+        public List<JObject> GetUnassignedJobProfilesRecruiters()
+        {
+            List<JObject> ljobProfiles = new List<JObject>();
+
+            var jobProfiles = _context.JobProfile.ToList();
+
+            foreach (var jobProfile in jobProfiles)
+            {
+                dynamic jjobProfile = new JObject();
+                jjobProfile.ID = jobProfile.ID;
+                jjobProfile.JobCode = jobProfile.JobCode;
+                jjobProfile.Title = jobProfile.Title;
+                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+
+                if (j_rec == null)
+                {
+                    jjobProfile.AssignedRecruiter = "-";
+                    ljobProfiles.Add(jjobProfile);
+                }
+            }
+
+
+            return ljobProfiles;
+        }
+
+        [HttpGet]
+        [Route("GetAssignedJobProfilesRecruiters")]
+        public List<JObject> GetAssignedJobProfilesRecruiters()
+        {
+            List<JObject> ljobProfiles = new List<JObject>();
+
+            var jobProfiles = _context.JobProfile.ToList();
+
+            foreach (var jobProfile in jobProfiles)
+            {
+                dynamic jjobProfile = new JObject();
+                jjobProfile.ID = jobProfile.ID;
+                jjobProfile.JobCode = jobProfile.JobCode;
+                jjobProfile.Title = jobProfile.Title;
+                var j_rec = _context.Recruiter_JobProfile.FirstOrDefault(s => s.JobProfileId == jobProfile.ID);
+
+                if (j_rec != null)
+                {
+                    var recruiter = _context.User.Find(j_rec.RecruiterId);
+                    jjobProfile.AssignedRecruiter = recruiter.Name + " " + recruiter.Surname;
+                    ljobProfiles.Add(jjobProfile);
+                }
+            }
+            return ljobProfiles;
+        }
+        [AllowAnonymous]
+        [Route("GetRecruiterJobProfile/{id}")]
+        public async Task<IEnumerable<object>> GetRecJobProfiles(int id)
+        {
+            var JobProfiles = await (from i in _context.Recruiter_JobProfile
+                               join u in _context.JobProfile on i.JobProfileId equals u.ID into joinTable
+                               from p in joinTable.DefaultIfEmpty()
+                               where i.RecruiterId == id
+                               select new
+                               {
+                                   p.ID,
+                                   p.Title
+                               }).ToListAsync();
+
+            return JobProfiles;
         }
 
         // GET: api/JobProfiles/5
