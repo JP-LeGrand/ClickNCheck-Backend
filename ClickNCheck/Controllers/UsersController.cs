@@ -499,10 +499,14 @@ namespace ClickNCheck.Controllers
                 var recruiter = _context.User.Find(rec_roles.ElementAt(i).UserId);
 
                 dynamic jrecruiter = new JObject();
-                jrecruiter.ID = recruiter.ID;
-                jrecruiter.Name = recruiter.Name;
-                jrecruiter.Surname = recruiter.Surname;
-                lrecruiters.Add(jrecruiter);
+                if(recruiter.OrganisationID == admin.OrganisationID)
+                {
+                    jrecruiter.ID = recruiter.ID;
+                    jrecruiter.Name = recruiter.Name;
+                    jrecruiter.Surname = recruiter.Surname;
+                    lrecruiters.Add(jrecruiter);
+                }
+                
             }
 
             jrecruiters.Recruiters = JArray.FromObject(lrecruiters);
